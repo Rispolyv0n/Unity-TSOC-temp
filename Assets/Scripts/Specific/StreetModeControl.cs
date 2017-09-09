@@ -9,6 +9,7 @@ public class StreetModeControl : MonoBehaviour {
     public GameObject upperGameInfo;
     public GameObject GamePanel;
     public GameObject InfoPanel;
+    public GameObject CharImg;
     public GameObject map;
 
     public Toggle gameMode;
@@ -43,6 +44,7 @@ public class StreetModeControl : MonoBehaviour {
         {
             PlayerInfo.streetMode.gameMode = true;
             upperGameInfo.SetActive(true);
+            CharImg.SetActive(true);
             gameObj.isOn = true;
             infoObj.isOn = false;
             map.transform.localPosition = new Vector3(290, 332, 0);
@@ -50,6 +52,7 @@ public class StreetModeControl : MonoBehaviour {
         else {
             PlayerInfo.streetMode.gameMode = false;
             upperGameInfo.SetActive(false);
+            CharImg.SetActive(false);
             gameObj.isOn = false;
             infoObj.isOn = true;
             map.transform.localPosition = new Vector3(290, 492, 0);

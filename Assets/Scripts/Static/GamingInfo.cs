@@ -127,7 +127,7 @@ public class GamingInfo : MonoBehaviour {
         shop_clothes_size = 9;
         shop_furni_size = 9;
 
-        eventNum = 4;
+        eventNum = 2;
         characterNum = 2;
     }
 
@@ -138,11 +138,9 @@ public class GamingInfo : MonoBehaviour {
         
 
         props_info = new goods[shop_props_size];
-        clothes_info = new goods[shop_clothes_size];
         furni_info = new goods[shop_furni_size];
 
         setPropsInfo();
-        setClothesInfo();
         setFurniInfo();
 
         events = new eventInfo[eventNum];
@@ -188,21 +186,7 @@ public class GamingInfo : MonoBehaviour {
 
         //Debug.Log("setPropsInfo done");
     }
-    private void setClothesInfo()
-    {
-        for (int i = 0; i < shop_clothes_size; ++i)
-        {
-            clothes_info[i].id = i;
-            clothes_info[i].category = shop_clothes_ctgrNum;
-        }
-
-        clothes_info[0].id = 0;
-        clothes_info[0].name = "普通圍巾";
-        clothes_info[0].price = 200;
-        clothes_info[0].info = "他很普通，但就是有人能夠穿得很時尚。";
-
-        //Debug.Log("setClothesInfo done");
-    }
+   
     private void setFurniInfo()
     {
         for (int i = 0; i < shop_furni_size; ++i)
@@ -316,12 +300,12 @@ public class GamingInfo : MonoBehaviour {
         if (events[0].img == null) { Debug.Log("no img"); }
 
         events[1].num = 1;
-        events[1].title = "黑熊君踩到面膜跌倒1";
-        events[1].content = "啊啊，好想變白啊... 蒐集完面膜以後，要開始積極的每日敷臉、敷手、敷身體、敷腳... 得做好全身美白才行!! 面膜面膜...面膜在哪裡呢...?? !!!!!!??? !!!!!! (碰!!!!) ....... 哎呀不小心踩到面膜滑倒了... 腳底也會美白到呢...";
+        events[1].title = "尋找鳳梨的路上突然被抓走";
+        events[1].content = "咦咦咦咦???這個大叔是誰??? 為甚麼突然把我抓走??!!!! 什...什麼? 海鮮市場??? 不對啊!! 我已經熟了啊啊啊!!!!! 雖然其實我很好吃但是也不要吃我啊!!!";
         events[1].img = new Sprite();
-        events[1].img = Resources.Load<Sprite>("ImageSource/EventsImg/bear_slip");
+        events[1].img = Resources.Load<Sprite>("ImageSource/EventsImg/shrimp_caught");
         if (events[1].img == null) { Debug.Log("no img"); }
-
+        /*
         events[2].num = 2;
         events[2].title = "黑熊君踩到面膜跌倒2";
         events[2].content = "啊啊，好想變白啊... 蒐集完面膜以後，要開始積極的每日敷臉、敷手、敷身體、敷腳... 得做好全身美白才行!! 面膜面膜...面膜在哪裡呢...?? !!!!!!??? !!!!!! (碰!!!!) ....... 哎呀不小心踩到面膜滑倒了... 腳底也會美白到呢...";
@@ -335,6 +319,7 @@ public class GamingInfo : MonoBehaviour {
         events[3].img = new Sprite();
         events[3].img = Resources.Load<Sprite>("ImageSource/EventsImg/bear_slip");
         if (events[3].img == null) { Debug.Log("no img"); }
+        */
     }
 
     private void setCharactersInfo() {

@@ -60,6 +60,10 @@ public class PlayerInfo : MonoBehaviour {
     public struct eventItem {
         public int num;
         public int time;
+        public eventItem(int num, int time) {
+            this.num = num;
+            this.time = time;
+        }
     }
     static public List<eventItem> eventCollection;
 
@@ -189,6 +193,7 @@ public class PlayerInfo : MonoBehaviour {
         value_level = 1;
 
         // should get from http----------up
+        /*
         eventItem event_item = new eventItem();
         event_item.num = 0;
         event_item.time = 2;
@@ -198,6 +203,7 @@ public class PlayerInfo : MonoBehaviour {
         event_item2.num = 2;
         event_item2.time = 4;
         eventCollection.Add(event_item2);
+        */
 
         characterItem char_item = new characterItem();
         char_item.id = 0;
@@ -218,7 +224,7 @@ public class PlayerInfo : MonoBehaviour {
         value_playTime_hr=0; //
         value_playTime_day=0; //
         value_level=1;
-
+        /*
         eventItem event_item = new eventItem();
         event_item.num = 0;
         event_item.time = 2;
@@ -228,7 +234,7 @@ public class PlayerInfo : MonoBehaviour {
         event_item2.num = 2;
         event_item2.time = 4;
         eventCollection.Add(event_item2);
-
+        */
         fav_shopID_list.RemoveRange(0,fav_shopID_list.Count);
         fav_shopID_list.Add("001");
         fav_shopID_list.Add("002");

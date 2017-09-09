@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+// set the side light & decide if the spotlights of events should be lit up
+
 public class SetSideLight : MonoBehaviour {
 
     public GameObject obj_plane;
