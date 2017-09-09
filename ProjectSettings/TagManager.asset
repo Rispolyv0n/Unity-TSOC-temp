@@ -1,0 +1,71 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags:
+  - shop_buyBtn
+  - shop_ctgrBtn
+  - home_stock_props
+  - home_stock_clothes
+  - home_stock_furni
+  - home_stock_items
+  - game_beverage
+  - choose_blackPanel
+  - choose_charBtn
+  - choose_go
+  - ac
+  - spotlight
+  - dropdowns
+  - choose_control
+  - playerInfo
+  - GamingInfo
+  - home_stockControl
+  - home_itemInfoText
+  - ownerEdit_control
+  - reorderable
+  - newColumn
+  - content
+  - dayTime
+  - timeCheck
+  - shopInfoControl
+  - fav
+  - furniParent
+  - furniObj
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - 
+  - Water
+  - UI
+  - 
+  - 
+  - behindObjects
+  - frontBtn
+  - chooseControl
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0
