@@ -2,6 +2,10 @@
 using System.Collections;
 using UnityEngine.UI;
 
+// attach on the result_text on result_panel in the scene game_1
+// calculate the score according to the transform.position.y of the beverage & limit
+// score range: 1~10 
+
 public class ScoreCalculate : MonoBehaviour {
 
     private Text thisText;
@@ -27,16 +31,13 @@ public class ScoreCalculate : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-	
 	}
 
     private int getPoint() {
-        Debug.Log("L:"+limit.transform.position.y);
-        Debug.Log("B:"+beverage.transform.position.y);
-        int standard = 120;
-        int point = (int)Mathf.Abs(limit.transform.position.y- beverage.transform.position.y);
-        if (point > 50 && beverage.transform.position.y > limit.transform.position.y) return 1;
-        point = (100-Mathf.Abs(point-standard))/5;
+        int standard = 120; // beverage_pos.y + standard = limit_pos.y
+        int point = (int)Mathf.Abs(limit.transform.position.y- (beverage.transform.position.y + standard));
+        if (point > 100) return 1;
+        point = (100-point)/9;
         if (addWhat == 0)
         {
             PlayerInfo.value_intelligence += point;
