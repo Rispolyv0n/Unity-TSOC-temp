@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 
 public class OwnerInfo : MonoBehaviour {
 
@@ -33,7 +34,10 @@ public class OwnerInfo : MonoBehaviour {
         public List<ColumnItem> infoList;
     }
     static public storeInfoItem storeInfo; // the whole storeInfo
-    
+
+    // update time
+    static public DateTime updateTime;
+    static public bool hasUpdated;
 
 
     // make sure only this script can stay on
@@ -55,6 +59,8 @@ public class OwnerInfo : MonoBehaviour {
     void Start () {
         storeInfo.openTime = new day[7]; // storeInfo initialization : openTime array
         hasADF = false;
+        hasUpdated = false; // should get from http request
+        updateTime = new DateTime(); // should get from http request
         Debug.Log("OwnerInfo.cs start()");
     }
 	
