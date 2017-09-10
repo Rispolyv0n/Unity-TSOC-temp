@@ -22,6 +22,8 @@ public class StockControl : MonoBehaviour {
 
     public bool decorateMode;
 
+    public GameObject loadingPanel;
+
     // Use this for initialization
     void Start () {
         decorateMode = false;
@@ -42,13 +44,17 @@ public class StockControl : MonoBehaviour {
         obj_prefab = Resources.Load("Prefabs/Button_stockItem") as GameObject;
 
         setDecorationPos();
-        
+        Invoke("setLoadingOff",0.5f);
+    }
+
+    void setLoadingOff() {
+        loadingPanel.SetActive(false);
     }
 	
 	// Update is called once per frame
 	void Update () {
-	
-	}
+        
+    }
 
     public void setDecorateMode(bool on) {
         decorateMode = on;

@@ -16,8 +16,8 @@ public class RandomEventTrigger : MonoBehaviour {
         //maxHappenSecond = 600;
         if (PlayerInfo.currentCharacterID >= 0) {
             Random.seed = System.Guid.NewGuid().GetHashCode();
-            float happen = Random.Range(0, 1);
-            float happenChance = 0.4f;
+            float happen = Random.Range(0f, 1f);
+            float happenChance = 0.5f;
             float happenTime = Random.Range(minHappenSecond, maxHappenSecond);
 
             if (happen <= happenChance)
@@ -29,8 +29,13 @@ public class RandomEventTrigger : MonoBehaviour {
             {
                 Debug.Log("event won't happen");
             }
+
         }
-        
+        else
+        {
+            Debug.Log("no char, event won't happen");
+        }
+
     }
 
     void triggerEvent() {

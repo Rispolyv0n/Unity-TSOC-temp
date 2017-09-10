@@ -88,6 +88,15 @@ public class PlayerInfo : MonoBehaviour {
 
     static public string currentCheckingShopID;
 
+    // achievement
+    public struct achievementItem {
+        public int id;
+        public int level;
+    }
+    static public List<achievementItem> achievementCollection;
+
+
+
 
     // make sure only this script can stay on
     private void Awake()
@@ -112,7 +121,6 @@ public class PlayerInfo : MonoBehaviour {
     // Use this for initialization
     void Start () {
         
-
         fav_shopID_list = new List<string>();
         decoration = new List<decoInfo>();
         
@@ -123,6 +131,7 @@ public class PlayerInfo : MonoBehaviour {
 
         eventCollection = new List<eventItem>();
         characterCollection = new List<characterItem>();
+        achievementCollection = new List<achievementItem>();
 
         resetCurrentCharacter(-1);
         //setUserValueInfo();
@@ -137,13 +146,13 @@ public class PlayerInfo : MonoBehaviour {
         Debug.Log("PlayerInfo.Start() done");
     }
 	
-
-
-
 	// Update is called once per frame
 	void Update () {
 
     }
+
+
+
 
 
     public void setUserId(InputField id) {
@@ -162,7 +171,7 @@ public class PlayerInfo : MonoBehaviour {
     }
 
     private void setFirstLogIn() {
-        firstLogIn = true; // get from http
+        firstLogIn = false; // get from http
         if (firstLogIn)
         {
             firstGoHome = true;// get from http
@@ -238,6 +247,17 @@ public class PlayerInfo : MonoBehaviour {
         fav_shopID_list.RemoveRange(0,fav_shopID_list.Count);
         fav_shopID_list.Add("001");
         fav_shopID_list.Add("002");
+
+        achievementItem ac_item = new achievementItem();
+        ac_item.id = 0;
+        ac_item.level = 1;
+
+        achievementItem ac_item2 = new achievementItem();
+        ac_item2.id = 2;
+        ac_item2.level = 3;
+
+        achievementCollection.Add(ac_item);
+        achievementCollection.Add(ac_item2);
     }
 
     private void calculatePlayTime() {

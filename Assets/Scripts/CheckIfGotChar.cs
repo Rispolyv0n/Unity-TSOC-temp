@@ -26,8 +26,8 @@ public class CheckIfGotChar : MonoBehaviour {
             SceneManager.LoadScene("home");
         }
         else {
-            warningPanel.SetActive(true);
             goHome = true;
+            warningPanel.SetActive(true);
         }
         
     }
@@ -36,7 +36,7 @@ public class CheckIfGotChar : MonoBehaviour {
         if (PlayerInfo.streetMode.gameMode == false || PlayerInfo.streetMode.gameObj == false)
         {
             warningPanel.SetActive(true);
-            goHome = true;
+            goHome = false;
         }
         else if (!PlayerInfo.firstLogIn)
         {
@@ -44,8 +44,8 @@ public class CheckIfGotChar : MonoBehaviour {
             SceneManager.LoadScene("shop");
         }
         else {
-            warningPanel.SetActive(true);
             goHome = false;
+            warningPanel.SetActive(true);
         }
         
     }

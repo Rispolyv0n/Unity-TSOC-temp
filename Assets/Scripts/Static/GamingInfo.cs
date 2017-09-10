@@ -105,7 +105,27 @@ public class GamingInfo : MonoBehaviour {
     static public characterInfo[] characters;
     static public int characterNum;
 
-
+    // achievements
+    public struct achievementInfo {
+        public int id;
+        public int category; // 0 for char, 1 for event, 2 for others
+        public int relative_id;
+        public int condition_1;
+        public int condition_2;
+        public int condition_3;
+        public string title;
+        public string content_1;
+        public string content_2;
+        public string content_3;
+        public Sprite img_1;
+        public Sprite img_2;
+        public Sprite img_3;
+        public string coupon_1;
+        public string coupon_2;
+        public string coupon_3;
+    }
+    static public achievementInfo[] achievements;
+    static public int achievementNum;
 
 
 
@@ -129,6 +149,7 @@ public class GamingInfo : MonoBehaviour {
 
         eventNum = 2;
         characterNum = 2;
+        achievementNum = 5;
     }
 
     // Use this for initialization
@@ -148,6 +169,9 @@ public class GamingInfo : MonoBehaviour {
 
         characters = new characterInfo[characterNum];
         setCharactersInfo();
+
+        achievements = new achievementInfo[achievementNum];
+        setAchievementsInfo();
 
         // for example test
         setShopInfo();
@@ -340,6 +364,93 @@ public class GamingInfo : MonoBehaviour {
         characters[1].imgForCollect = Resources.Load<Sprite>("ImageSource/CharacterImg/Shrimp/pineapple");
     }
 
+    private void setAchievementsInfo() {
+        achievements[0].id = 0;
+        achievements[0].category = 0;
+        achievements[0].relative_id = 0;
+        achievements[0].condition_1 = 1;
+        achievements[0].condition_2 = 5;
+        achievements[0].condition_3 = 10;
+        achievements[0].title = "黑熊蒐集家";
+        achievements[0].content_1 = "蒐集1隻台灣黑熊。";
+        achievements[0].content_2 = "蒐集5隻台灣黑熊。";
+        achievements[0].content_3 = "蒐集10隻台灣黑熊。";
+        achievements[0].coupon_1 = "店家A優惠_1。";
+        achievements[0].coupon_2 = "店家A優惠_2。";
+        achievements[0].coupon_3 = "店家A優惠_3。";
+        achievements[0].img_1 = Resources.Load<Sprite>("ImageSource/BackgroundImage/Achievement/ac_bear_1");
+        achievements[0].img_2 = Resources.Load<Sprite>("ImageSource/BackgroundImage/Achievement/ac_bear_2");
+        achievements[0].img_3 = Resources.Load<Sprite>("ImageSource/BackgroundImage/Achievement/ac_bear_3");
 
-    
+        achievements[1].id = 1;
+        achievements[1].category = 0;
+        achievements[1].relative_id = 1;
+        achievements[1].condition_1 = 1;
+        achievements[1].condition_2 = 5;
+        achievements[1].condition_3 = 10;
+        achievements[1].title = "鳳梨蝦仁愛好者";
+        achievements[1].content_1 = "蒐集1隻蝦仁。";
+        achievements[1].content_2 = "蒐集5隻蝦仁。";
+        achievements[1].content_3 = "蒐集10隻蝦仁。";
+        achievements[1].coupon_1 = "店家B優惠_1。";
+        achievements[1].coupon_2 = "店家B優惠_2。";
+        achievements[1].coupon_3 = "店家B優惠_3。";
+        achievements[1].img_1 = Resources.Load<Sprite>("ImageSource/BackgroundImage/Achievement/ac_shrimp_1");
+        achievements[1].img_2 = Resources.Load<Sprite>("ImageSource/BackgroundImage/Achievement/ac_shrimp_2");
+        achievements[1].img_3 = Resources.Load<Sprite>("ImageSource/BackgroundImage/Achievement/ac_shrimp_3");
+
+        achievements[2].id = 2;
+        achievements[2].category = 1;
+        achievements[2].relative_id = 0;
+        achievements[2].condition_1 = 1;
+        achievements[2].condition_2 = 10;
+        achievements[2].condition_3 = 20;
+        achievements[2].title = "踩面膜達人";
+        achievements[2].content_1 = "蒐集1個\"黑熊君踩到面膜跌倒\"事件。";
+        achievements[2].content_2 = "蒐集10個\"黑熊君踩到面膜跌倒\"事件。";
+        achievements[2].content_3 = "蒐集20個\"黑熊君踩到面膜跌倒\"事件。";
+        achievements[2].coupon_1 = "店家C優惠_1。";
+        achievements[2].coupon_2 = "店家C優惠_2。";
+        achievements[2].coupon_3 = "店家C優惠_3。";
+        achievements[2].img_1 = Resources.Load<Sprite>("ImageSource/BackgroundImage/Achievement/ac_stampOnMask_1");
+        achievements[2].img_2 = Resources.Load<Sprite>("ImageSource/BackgroundImage/Achievement/ac_stampOnMask_2");
+        achievements[2].img_3 = Resources.Load<Sprite>("ImageSource/BackgroundImage/Achievement/ac_stampOnMask_3");
+
+        achievements[3].id = 3;
+        achievements[3].category = 1;
+        achievements[3].relative_id = 1;
+        achievements[3].condition_1 = 1;
+        achievements[3].condition_2 = 10;
+        achievements[3].condition_3 = 20;
+        achievements[3].title = "被抓走達人";
+        achievements[3].content_1 = "蒐集1個\"尋找鳳梨的路上突然被抓走\"事件。";
+        achievements[3].content_2 = "蒐集10個\"尋找鳳梨的路上突然被抓走\"事件。";
+        achievements[3].content_3 = "蒐集20個\"尋找鳳梨的路上突然被抓走\"事件。";
+        achievements[3].coupon_1 = "店家D優惠_1。";
+        achievements[3].coupon_2 = "店家D優惠_2。";
+        achievements[3].coupon_3 = "店家D優惠_3。";
+        achievements[3].img_1 = Resources.Load<Sprite>("ImageSource/BackgroundImage/Achievement/ac_getCaught_1");
+        achievements[3].img_2 = Resources.Load<Sprite>("ImageSource/BackgroundImage/Achievement/ac_getCaught_2");
+        achievements[3].img_3 = Resources.Load<Sprite>("ImageSource/BackgroundImage/Achievement/ac_getCaught_3");
+
+        achievements[4].id = 4;
+        achievements[4].category = 2;
+        achievements[4].relative_id = 0;
+        achievements[4].condition_1 = 1;
+        achievements[4].condition_2 = 7;
+        achievements[4].condition_3 = 14;
+        achievements[4].title = "成癮者";
+        achievements[4].content_1 = "遊戲時間滿24小時。";
+        achievements[4].content_2 = "遊戲時間滿168小時。";
+        achievements[4].content_3 = "遊戲時間滿336小時。";
+        achievements[4].coupon_1 = "店家E優惠_1。";
+        achievements[4].coupon_2 = "店家E優惠_2。";
+        achievements[4].coupon_3 = "店家E優惠_3。";
+        achievements[4].img_1 = Resources.Load<Sprite>("ImageSource/BackgroundImage/Achievement/ac_addicted_1");
+        achievements[4].img_2 = Resources.Load<Sprite>("ImageSource/BackgroundImage/Achievement/ac_addicted_2");
+        achievements[4].img_3 = Resources.Load<Sprite>("ImageSource/BackgroundImage/Achievement/ac_addicted_3");
+    }
+
+
+
 }
