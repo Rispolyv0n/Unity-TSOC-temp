@@ -20,11 +20,14 @@ public class WidthConstraint : MonoBehaviour {
 
     // called by the send button in the scene chatbot
     public void checkWidth() {
+        Debug.Log("checking:"+text.rectTransform.sizeDelta.x);
             if (text.rectTransform.sizeDelta.x > widthConstraint_text)
             {
+                Debug.Log("oversize");
                 b = text.GetComponent<LayoutElement>();
                 if (b != null)
                 {
+                    Debug.Log("adjusting");
                     b.preferredWidth = widthConstraint_text;
                 }
             }

@@ -8,6 +8,8 @@ public class PlayerInfo : MonoBehaviour {
 
     static PlayerInfo playerInfo;
 
+    static public string port;
+
     // personal info
     static public string user_email;
     static public string user_pw;
@@ -120,7 +122,8 @@ public class PlayerInfo : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        
+        port = ":4000";
+
         fav_shopID_list = new List<string>();
         decoration = new List<decoInfo>();
         

@@ -85,41 +85,46 @@ NavMeshSettings:
     cellSize: 0.16666667
     manualCellSize: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &320753609
+--- !u!1 &83001027
 GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   serializedVersion: 4
   m_Component:
-  - 4: {fileID: 320753611}
-  - 114: {fileID: 320753610}
+  - 4: {fileID: 83001029}
+  - 114: {fileID: 83001028}
   m_Layer: 0
-  m_Name: emptyTest
+  m_Name: empty_messageControl
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &320753610
+--- !u!114 &83001028
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 320753609}
+  m_GameObject: {fileID: 83001027}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bf316938e16e4584c87a1f31cadb9d2d, type: 3}
+  m_Script: {fileID: 11500000, guid: 781558bb0083f974796f1576fbb6b9ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!4 &320753611
+  messageFromUser: {fileID: 526093491}
+  chatbotMessagePrefab: {fileID: 188832, guid: 2c70cd99bde58e34aae196d7b8dafab7, type: 2}
+  sendMessageBtn: {fileID: 1745355563}
+  dialogParent: {fileID: 1669180450}
+  scrollView: {fileID: 1624980626}
+--- !u!4 &83001029
 Transform:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 320753609}
+  m_GameObject: {fileID: 83001027}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 186.72682, y: 343.24915, z: 0}
+  m_LocalPosition: {x: 203.88051, y: 348.01096, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -905,46 +910,6 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1484458857}
---- !u!1 &1591775335
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  serializedVersion: 4
-  m_Component:
-  - 4: {fileID: 1591775337}
-  - 114: {fileID: 1591775336}
-  m_Layer: 0
-  m_Name: empty_destroy
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1591775336
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1591775335}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8fe3a9a31d9332041bfb1cfb39c1e662, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  obj: {fileID: 320753609}
---- !u!4 &1591775337
-Transform:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1591775335}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 186.72682, y: 343.24915, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 3
 --- !u!1 &1624980626
 GameObject:
   m_ObjectHideFlags: 0
