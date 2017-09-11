@@ -30,8 +30,6 @@ TagManager:
   - timeCheck
   - shopInfoControl
   - fav
-  - furniParent
-  - furniObj
   layers:
   - Default
   - TransparentFX

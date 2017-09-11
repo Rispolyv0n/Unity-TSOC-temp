@@ -42,16 +42,6 @@ public class PlayerInfo : MonoBehaviour {
     static public List<stockItem> props_quant;
     static public List<stockItem> clothes_quant;
     static public List<stockItem> furni_quant;
-
-    // furni decoration
-    public struct decoInfo {
-        public int id;
-        public int numInUserList;
-        public Sprite img;
-        public Vector3 pos;
-    }
-    static public List<decoInfo> decoration;
-    //static public List<GameObject> decoration;
     
     // favorite shop list
     static public List<string> fav_shopID_list;
@@ -60,10 +50,6 @@ public class PlayerInfo : MonoBehaviour {
     public struct eventItem {
         public int num;
         public int time;
-        public eventItem(int num, int time) {
-            this.num = num;
-            this.time = time;
-        }
     }
     static public List<eventItem> eventCollection;
 
@@ -87,15 +73,6 @@ public class PlayerInfo : MonoBehaviour {
     static public streetModeStruct streetMode;
 
     static public string currentCheckingShopID;
-
-    // achievement
-    public struct achievementItem {
-        public int id;
-        public int level;
-    }
-    static public List<achievementItem> achievementCollection;
-
-
 
 
     // make sure only this script can stay on
@@ -121,8 +98,9 @@ public class PlayerInfo : MonoBehaviour {
     // Use this for initialization
     void Start () {
         
+
         fav_shopID_list = new List<string>();
-        decoration = new List<decoInfo>();
+
         
         
         props_quant = new List<stockItem>();
@@ -131,7 +109,6 @@ public class PlayerInfo : MonoBehaviour {
 
         eventCollection = new List<eventItem>();
         characterCollection = new List<characterItem>();
-        achievementCollection = new List<achievementItem>();
 
         resetCurrentCharacter(-1);
         //setUserValueInfo();
@@ -146,13 +123,13 @@ public class PlayerInfo : MonoBehaviour {
         Debug.Log("PlayerInfo.Start() done");
     }
 	
+
+
+
 	// Update is called once per frame
 	void Update () {
 
     }
-
-
-
 
 
     public void setUserId(InputField id) {
@@ -171,7 +148,7 @@ public class PlayerInfo : MonoBehaviour {
     }
 
     private void setFirstLogIn() {
-        firstLogIn = false; // get from http
+        firstLogIn = true; // get from http
         if (firstLogIn)
         {
             firstGoHome = true;// get from http
@@ -202,7 +179,6 @@ public class PlayerInfo : MonoBehaviour {
         value_level = 1;
 
         // should get from http----------up
-        /*
         eventItem event_item = new eventItem();
         event_item.num = 0;
         event_item.time = 2;
@@ -212,7 +188,6 @@ public class PlayerInfo : MonoBehaviour {
         event_item2.num = 2;
         event_item2.time = 4;
         eventCollection.Add(event_item2);
-        */
 
         characterItem char_item = new characterItem();
         char_item.id = 0;
@@ -233,7 +208,7 @@ public class PlayerInfo : MonoBehaviour {
         value_playTime_hr=0; //
         value_playTime_day=0; //
         value_level=1;
-        /*
+
         eventItem event_item = new eventItem();
         event_item.num = 0;
         event_item.time = 2;
@@ -243,21 +218,9 @@ public class PlayerInfo : MonoBehaviour {
         event_item2.num = 2;
         event_item2.time = 4;
         eventCollection.Add(event_item2);
-        */
-        fav_shopID_list.RemoveRange(0,fav_shopID_list.Count);
+
         fav_shopID_list.Add("001");
         fav_shopID_list.Add("002");
-
-        achievementItem ac_item = new achievementItem();
-        ac_item.id = 0;
-        ac_item.level = 1;
-
-        achievementItem ac_item2 = new achievementItem();
-        ac_item2.id = 2;
-        ac_item2.level = 3;
-
-        achievementCollection.Add(ac_item);
-        achievementCollection.Add(ac_item2);
     }
 
     private void calculatePlayTime() {

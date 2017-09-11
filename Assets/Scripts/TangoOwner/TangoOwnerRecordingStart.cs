@@ -1,4 +1,4 @@
-//-----------------------------------------------------------------------
+﻿//-----------------------------------------------------------------------
 // <copyright file="AreaDescriptionPicker.cs" company="Google">
 //
 // Copyright 2016 Google Inc. All Rights Reserved.
@@ -31,10 +31,8 @@ using UnityEngine.UI;
 /// This list controller present a toggle group of Tango space Area Descriptions. The list class also has interface
 /// to start the game and connect to Tango Service.
 /// </summary>
-public class AreaDescriptionPicker : MonoBehaviour, ITangoLifecycle
+public class TangoOwnerRecordingStart : MonoBehaviour, ITangoLifecycle
 {
-    public Canvas canvas_street;
-
     /// <summary>
     /// The prefab of a standard button in the scrolling list.
     /// </summary>
@@ -72,14 +70,17 @@ public class AreaDescriptionPicker : MonoBehaviour, ITangoLifecycle
     /// 
     /// The panel will be enabled when the game starts.
     /// </summary>
-    public GameObject m_gameControlPanel;
+    //public GameObject m_gameControlPanel;
 
     /// <summary>
     /// The GUI controller.
     /// 
     /// GUI controller will be enabled when the game starts.
     /// </summary>
-    public AreaLearningInGameController m_guiController;
+    //public AreaLearningInGameController m_guiController;
+    public TangoOwnerRecording m_guiController;
+
+    public GameObject controlObj;    
 
     /// <summary>
     /// A reference to TangoApplication instance.
@@ -100,18 +101,26 @@ public class AreaDescriptionPicker : MonoBehaviour, ITangoLifecycle
     /// Description.</param>
     public void StartGame()//bool isNewAreaDescription)
     {
-        gameObject.SetActive(false);
+        if (controlObj.GetComponent<RecordControl>().isRecording)
+        {
+            //stop recording
+            //m_poseController.gameObject.SetActive(false);
+            //m_tangoApplication.m_areaDescriptionLearningMode = false;//Boo Ke Yee     
+        }
+        else
+        {
+            //start recording
+            m_curAreaDescriptionUUID = null;
+        
+            m_guiController.m_curAreaDescription = null;
+            m_tangoApplication.m_areaDescriptionLearningMode = true;
+            m_tangoApplication.Startup(m_guiController.m_curAreaDescription);
 
-        m_curAreaDescriptionUUID = "f2953b36-b477-2fb9-81c5-1682a435250e";//204
-        AreaDescription areaDescription = AreaDescription.ForUUID(m_curAreaDescriptionUUID);
-        m_guiController.m_curAreaDescription = areaDescription;
-        m_tangoApplication.m_areaDescriptionLearningMode = m_enableLearningToggle.isOn;        
-        m_tangoApplication.Startup(m_guiController.m_curAreaDescription);
-
-        m_poseController.gameObject.SetActive(true);
-        m_guiController.enabled = true;
-        canvas_street.gameObject.SetActive(true);
-        //m_gameControlPanel.SetActive(true);
+            // Enable GUI controller to allow user tap and interactive with the environment.
+            m_poseController.gameObject.SetActive(true);
+            m_guiController.enabled = true;
+            //m_gameControlPanel.SetActive(true);
+        }        
     }
 
     /// <summary>
@@ -127,21 +136,21 @@ public class AreaDescriptionPicker : MonoBehaviour, ITangoLifecycle
         else
         {
             AndroidHelper.ShowAndroidToastMessage("Motion Tracking and Area Learning Permissions Needed");
-            
+
             // This is a fix for a lifecycle issue where calling
             // Application.Quit() here, and restarting the application
             // immediately results in a deadlocked app.
             AndroidHelper.AndroidQuit();
         }
     }
-    
+
     /// <summary>
     /// This is called when successfully connected to the Tango service.
     /// </summary>
     public void OnTangoServiceConnected()
     {
     }
-    
+
     /// <summary>
     /// This is called when disconnected from the Tango service.
     /// </summary>
@@ -157,22 +166,19 @@ public class AreaDescriptionPicker : MonoBehaviour, ITangoLifecycle
     public void Start()
     {
         m_tangoApplication = FindObjectOfType<TangoApplication>();
-        
+
         if (m_tangoApplication != null)
         {
             m_tangoApplication.Register(this);
-            m_tangoApplication.RequestPermissions();
-            /*if (AndroidHelper.IsTangoCorePresent())
+            if (AndroidHelper.IsTangoCorePresent())
             {
                 m_tangoApplication.RequestPermissions();
-            }*/
+            }
         }
         else
         {
             Debug.Log("No Tango Manager found in scene.");
         }
-
-        Invoke("StartGame", 0.1f);
     }
 
     /// <summary>
@@ -190,7 +196,6 @@ public class AreaDescriptionPicker : MonoBehaviour, ITangoLifecycle
             AndroidHelper.AndroidQuit();
         }
     }
-
     /*
     /// <summary>
     /// Refresh the scrolling list's content for both list.
@@ -244,3 +249,4 @@ public class AreaDescriptionPicker : MonoBehaviour, ITangoLifecycle
     }
     */
 }
+

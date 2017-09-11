@@ -58,8 +58,6 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/instruction_street.unity
   - enabled: 1
-    path: Assets/Scenes/ownerAddObj.unity
+    path: Assets/Scenes/streetTest.unity
   - enabled: 1
-    path: Assets/Scenes/chatbot.unity
-  - enabled: 1
-    path: Assets/Scenes/ownerInstruction.unity
+    path: Assets/Scenes/TangoOwnerRecording.unity

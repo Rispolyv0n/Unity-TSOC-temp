@@ -25,6 +25,7 @@ public class RandomPosition : MonoBehaviour {
     public void setRandomPosition() {
         Random.seed = System.Guid.NewGuid().GetHashCode();
         int getRandomInt = Random.Range(1,11);
+        Debug.Log(getRandomInt);
         this.transform.localPosition = new Vector3(this.transform.localPosition.x, getRandomInt * 41.5f - 323.5f, this.transform.localPosition.z);
     }
 }

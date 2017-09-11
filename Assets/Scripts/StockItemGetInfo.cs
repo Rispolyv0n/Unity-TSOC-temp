@@ -2,21 +2,16 @@
 using System.Collections;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
-using System;
 
 // attach on every stockItem(a prefab which will be instantiated when checking the stock) in the home scene (in the stock panel)
 // adding ownNum on its own, setting infoText and activating infoPanel when pressing
-// instantiating furni obj in the scene home, control the first time dragging
 
-public class StockItemGetInfo : MonoBehaviour , IPointerDownHandler, IPointerUpHandler, IBeginDragHandler, IDragHandler, IEndDragHandler{
+public class StockItemGetInfo : MonoBehaviour , IPointerDownHandler, IPointerUpHandler{
 
     private Button thisBtn;
 
     private GameObject infoPanel;
     private Text infoText;
-
-    private Image objImg; // for dragging to the home
-    private GameObject objPanel; // for objs
 
     public Text ownNumText;
     public int ownNum;
@@ -30,7 +25,6 @@ public class StockItemGetInfo : MonoBehaviour , IPointerDownHandler, IPointerUpH
 	// Use this for initialization
 	void Start () {
         thisBtn = GetComponent<Button>();
-        
         
         // find the correspond num in player's stockItemList
         switch (categoryNum) {
@@ -86,15 +80,20 @@ public class StockItemGetInfo : MonoBehaviour , IPointerDownHandler, IPointerUpH
             default:
                 break;
         }
-
-        objPanel = GameObject.FindGameObjectWithTag("furniParent");
-
-    }
+        
+	}
     
+
     // Update is called once per frame
     void Update () {
 
 	}
+
+    public void OnPointerUp(PointerEventData eventData)
+    {
+        infoPanel.SetActive(false);
+        //throw new NotImplementedException();
+    }
 
     public void OnPointerDown(PointerEventData eventData)
     {
@@ -114,90 +113,7 @@ public class StockItemGetInfo : MonoBehaviour , IPointerDownHandler, IPointerUpH
                 infoText.text = GamingInfo.furni_info[itemNum].name + "。\n" + GamingInfo.furni_info[itemNum].price + "元\n" + GamingInfo.furni_info[itemNum].info;
                 break;
         }
-    }
 
-    public void OnPointerUp(PointerEventData eventData)
-    {
-        infoPanel.SetActive(false);
-    }
-
-    
-    public void OnBeginDrag(PointerEventData eventData)
-    {
-        if (categoryNum == 2 && ownNum > 0)
-        {
-            /*
-            Image obj = Resources.Load<Image>("Prefabs/Image_furniObj");
-            objImg = Instantiate(obj);
-            */
-            objImg = Instantiate(img);
-            objImg.tag = "furniObj";
-            objImg.sprite = img.overrideSprite;
-            objImg.transform.SetParent(objPanel.transform);
-            objImg.gameObject.AddComponent<DragAlong>();
-            objImg.GetComponent<DragAlong>().id = itemNum;
-            objImg.GetComponent<DragAlong>().numInUserList = numInUserList;
-        }
-        else if (categoryNum == 0 && ownNum > 0) {
-            objImg = Instantiate(img);
-            objImg.sprite = img.overrideSprite;
-            objImg.transform.SetParent(objPanel.transform);
-            objImg.transform.position = Input.mousePosition;
-        }
-        
-    }
-
-    public void OnDrag(PointerEventData eventData)
-    {
-        if (objImg != null) {
-            objImg.transform.position = Input.mousePosition;
-        }
-        
-    }
-
-    public void OnEndDrag(PointerEventData eventData)
-    {
-        if (objImg != null)
-        {
-            if (objImg.transform.localPosition.y < -765)
-            {
-                Destroy(objImg.gameObject);
-            }
-            else {
-                if (categoryNum == 2)
-                {
-                    objImg.transform.position = Input.mousePosition;
-                    if (ownNum > 0)
-                    {
-                        ownNum--;
-                        PlayerInfo.furni_quant[numInUserList] = new PlayerInfo.stockItem(itemNum, PlayerInfo.furni_quant[numInUserList].quant - 1);
-                    }
-                    ownNumText.text = "擁有數量 : " + PlayerInfo.furni_quant[numInUserList].quant;
-                }
-                else if (categoryNum == 0) {
-                    objImg.transform.position = Input.mousePosition;
-                    if (ownNum > 0)
-                    {
-                        ownNum--;
-                        PlayerInfo.props_quant[numInUserList] = new PlayerInfo.stockItem(itemNum, PlayerInfo.props_quant[numInUserList].quant - 1);
-                        switch (itemNum) {
-                            case 0:
-                                PlayerInfo.value_strength += 10;
-                                break;
-                            case 1:
-                                PlayerInfo.value_intelligence += 10;
-                                break;
-                            case 2:
-                                PlayerInfo.value_like += 10;
-                                break;
-                        }
-                    }
-                    ownNumText.text = "擁有數量 : " + PlayerInfo.props_quant[numInUserList].quant;
-                    Destroy(objImg.gameObject);
-                }
-                
-            }
-            
-        }
+        //throw new NotImplementedException();
     }
 }
