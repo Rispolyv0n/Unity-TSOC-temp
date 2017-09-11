@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 
 // attached on the button_send in the chatbot scene
 // to get the user input and display it in the scrollView
+// send the user input to http request, get the chatbot reply message and display it
 
 public class DisplayDialog : MonoBehaviour{
 
@@ -23,6 +24,7 @@ public class DisplayDialog : MonoBehaviour{
     private string url;
     private string stringFromUser;
     private string stringFromChatbot;
+    
 
     // Use this for initialization
     void Start () {
@@ -39,12 +41,16 @@ public class DisplayDialog : MonoBehaviour{
         obj_u.transform.GetChild(0).GetComponent<Text>().text = user_input.text;
         obj_u.transform.SetParent(dialogParent.transform);
 
-        StartCoroutine(adjusting_u());
-        tillNextFrame();
+        // rearrange the width of the dialog box in the end of the frame
+        yield return new WaitForEndOfFrame();
+        obj_u.GetComponent<WidthConstraint>().checkWidth();
+        scrollView.GetComponent<ScrollRect>().verticalNormalizedPosition = 0;
+
 
         stringFromUser = user_input.text;
         user_input.text = "";
 
+        bool hasReceivedMessage = false;
         using (UnityWebRequest sending = UnityWebRequest.Get(url + stringFromUser))
         {
 
@@ -62,25 +68,17 @@ public class DisplayDialog : MonoBehaviour{
                 obj_c = Instantiate(chatbotMessagePrefab);
                 obj_c.transform.GetChild(0).GetComponent<Text>().text = stringFromChatbot;
                 obj_c.transform.SetParent(dialogParent.transform);
-                Debug.Log("start checking");
-                
-                StartCoroutine(adjusting_c());
-                /*
-                yield return new WaitForEndOfFrame();
-                obj_c.GetComponent<WidthConstraint>().checkWidth();
-                scrollView.GetComponent<ScrollRect>().verticalNormalizedPosition = 0;
-                */
+
+                hasReceivedMessage = true;
             }
 
         }
+        if (hasReceivedMessage) {
+            yield return new WaitForEndOfFrame(); // don't know why waitforendofframe should appear twice, wait until next end of frame?
+            StartCoroutine(adjusting_c());
+        }
 
         
-    }
-
-    IEnumerator adjusting_u() {
-        yield return new WaitForEndOfFrame();
-        obj_u.GetComponent<WidthConstraint>().checkWidth();
-        scrollView.GetComponent<ScrollRect>().verticalNormalizedPosition = 0;
     }
 
     IEnumerator adjusting_c()
@@ -89,16 +87,6 @@ public class DisplayDialog : MonoBehaviour{
         obj_c.GetComponent<WidthConstraint>().checkWidth();
         scrollView.GetComponent<ScrollRect>().verticalNormalizedPosition = 0;
     }
-
-    IEnumerator tillNextFrame() {
-        yield return 0;
-    }
-    /*
-    IEnumerator sendMessage()
-    {
-        
-    }
-    */
     // Update is called once per frame
     void Update () {
 	

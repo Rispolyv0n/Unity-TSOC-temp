@@ -85,50 +85,6 @@ NavMeshSettings:
     cellSize: 0.16666667
     manualCellSize: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &83001027
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  serializedVersion: 4
-  m_Component:
-  - 4: {fileID: 83001029}
-  - 114: {fileID: 83001028}
-  m_Layer: 0
-  m_Name: empty_messageControl
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &83001028
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 83001027}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 781558bb0083f974796f1576fbb6b9ba, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  messageFromUser: {fileID: 526093491}
-  chatbotMessagePrefab: {fileID: 188832, guid: 2c70cd99bde58e34aae196d7b8dafab7, type: 2}
-  sendMessageBtn: {fileID: 1745355563}
-  dialogParent: {fileID: 1669180450}
-  scrollView: {fileID: 1624980626}
---- !u!4 &83001029
-Transform:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 83001027}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 203.88051, y: 348.01096, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 2
 --- !u!1 &443950034
 GameObject:
   m_ObjectHideFlags: 0
