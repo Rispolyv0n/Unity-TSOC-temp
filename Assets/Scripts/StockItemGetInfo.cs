@@ -96,6 +96,12 @@ public class StockItemGetInfo : MonoBehaviour , IPointerDownHandler, IPointerUpH
 
 	}
 
+    IEnumerator adjustPanelSize() {
+        yield return 0;
+        infoPanel.GetComponent<RectTransform>().sizeDelta = new Vector2(infoPanel.GetComponent<RectTransform>().sizeDelta.x, infoText.GetComponent<RectTransform>().sizeDelta.y + 20);
+        infoPanel.transform.GetChild(0).GetComponent<RectTransform>().sizeDelta = new Vector2(infoPanel.transform.GetChild(0).GetComponent<RectTransform>().sizeDelta.x, infoText.GetComponent<RectTransform>().sizeDelta.y + 20);
+    }
+
     public void OnPointerDown(PointerEventData eventData)
     {
         infoPanel = GameObject.FindGameObjectWithTag("home_stockControl").GetComponent<StockControl>().infoPanel;
@@ -114,6 +120,8 @@ public class StockItemGetInfo : MonoBehaviour , IPointerDownHandler, IPointerUpH
                 infoText.text = GamingInfo.furni_info[itemNum].name + "。\n" + GamingInfo.furni_info[itemNum].price + "元\n" + GamingInfo.furni_info[itemNum].info;
                 break;
         }
+
+        StartCoroutine(adjustPanelSize());
     }
 
     public void OnPointerUp(PointerEventData eventData)

@@ -259,7 +259,7 @@ public class GamingInfo : MonoBehaviour {
         furni_info[1].id = 1;
         furni_info[1].name = "冷氣";
         furni_info[1].price = 300;
-        furni_info[1].info = "電費的主要來源，大家要愛地球^^";
+        furni_info[1].info = "電費的主要來源，大家要愛地球^^喔咿喔咿喔咿喔咿喔咿喔咿喔";
         furni_info[1].img = Resources.Load<Sprite>("ImageSource/ShopItemImg/conditioner");
 
         //Debug.Log("setFurniInfo done");
