@@ -17,10 +17,12 @@ public class SetHaveGoneStreet : MonoBehaviour {
     public void setHasGoneStreet()
     {
         PlayerInfo.firstGoStreet = false;
+        /*
         if (PlayerInfo.firstGoHome == false && PlayerInfo.firstGoStreet == false)
         {
             PlayerInfo.firstLogIn = false;
         }
+        */
     }
 
     // Update is called once per frame

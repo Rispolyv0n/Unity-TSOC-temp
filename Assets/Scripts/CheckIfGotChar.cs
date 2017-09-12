@@ -21,7 +21,7 @@ public class CheckIfGotChar : MonoBehaviour {
             warningPanel.SetActive(true);
             goHome = true;
         }
-        else if (!PlayerInfo.firstLogIn)
+        else if (!PlayerInfo.firstGoHome)
         {
             SceneManager.LoadScene("home");
         }
@@ -38,7 +38,7 @@ public class CheckIfGotChar : MonoBehaviour {
             warningPanel.SetActive(true);
             goHome = false;
         }
-        else if (!PlayerInfo.firstLogIn)
+        else if (!PlayerInfo.firstGoHome)
         {
             GamingInfo.fromHomeStreet = false;
             SceneManager.LoadScene("shop");

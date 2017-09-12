@@ -127,6 +127,21 @@ public class GamingInfo : MonoBehaviour {
     static public achievementInfo[] achievements;
     static public int achievementNum;
 
+    // level up threshold
+    static public int totalPoints_toLv2;
+    static public int totalPoints_toLv3;
+    static public int totalPoints_toDone;
+
+    // ratio of different endings
+    static public int likePoints_lowerBoundary;
+    static public int likePoints_higherBoundary;
+    static public float ratio_low_bad;
+    static public float ratio_low_strange;
+    static public float ratio_mid_bad;
+    static public float ratio_mid_strange;
+    static public float ratio_mid_good;
+    static public float ratio_high_strange;
+    static public float ratio_high_good;
 
 
     // make sure only this script can stay on
@@ -150,7 +165,23 @@ public class GamingInfo : MonoBehaviour {
         eventNum = 2;
         characterNum = 2;
         achievementNum = 5;
-    }
+
+        // level up theshold
+        totalPoints_toLv2 = 200;
+        totalPoints_toLv3 = 400;
+        totalPoints_toDone = 700;
+
+        // ratio of different endings
+        likePoints_lowerBoundary = 300;
+        likePoints_higherBoundary = 500;
+        ratio_low_bad = 0.7f;
+        ratio_low_strange = 0.3f;
+        ratio_mid_bad = 0.2f;
+        ratio_mid_strange = 0.4f;
+        ratio_mid_good = 0.4f;
+        ratio_high_strange = 0.2f;
+        ratio_high_good = 0.8f;
+}
 
     // Use this for initialization
     void Start () {

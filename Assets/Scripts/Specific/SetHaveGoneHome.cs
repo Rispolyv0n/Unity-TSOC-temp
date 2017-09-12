@@ -15,9 +15,11 @@ public class SetHaveGoneHome : MonoBehaviour {
 
     public void setHasGoneHome() {
         PlayerInfo.firstGoHome = false;
+        /*
         if (PlayerInfo.firstGoHome == false && PlayerInfo.firstGoStreet == false) {
             PlayerInfo.firstLogIn = false;
         }
+        */
     }
 
 	// Update is called once per frame

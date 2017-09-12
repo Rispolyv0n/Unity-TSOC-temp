@@ -32,6 +32,9 @@ TagManager:
   - fav
   - furniParent
   - furniObj
+  - charStoryPanel
+  - text_story
+  - img_char
   layers:
   - Default
   - TransparentFX
