@@ -25,6 +25,7 @@ public class PlayerInfo : MonoBehaviour {
 
     // the currentCharInfo
     static public int currentCharacterID;
+    static public string currentCharacterName;
     static public float value_strength;
     static public float value_intelligence;
     static public float value_like;

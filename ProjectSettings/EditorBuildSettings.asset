@@ -63,3 +63,5 @@ EditorBuildSettings:
     path: Assets/Scenes/chatbot.unity
   - enabled: 1
     path: Assets/Scenes/ownerInstruction.unity
+  - enabled: 1
+    path: Assets/Scenes/finishChar.unity
