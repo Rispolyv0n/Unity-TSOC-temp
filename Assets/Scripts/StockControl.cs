@@ -2,6 +2,7 @@
 using System.Collections;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using System.Collections.Generic;
 
 // attach on the empty object in the home scene
 // when the three stock category buttons are clicked, call the correspond function
@@ -62,13 +63,26 @@ public class StockControl : MonoBehaviour {
 
     public void saveDecorationPos() {
         GameObject[] objs = GameObject.FindGameObjectsWithTag("furniObj");
+        PlayerInfo.decoration.RemoveRange(0,PlayerInfo.decoration.Count);
+
         foreach (GameObject obj in objs) {
-            PlayerInfo.decoInfo info = new PlayerInfo.decoInfo();
-            info.id = obj.GetComponent<DragAlong>().id;
-            info.numInUserList = obj.GetComponent<DragAlong>().numInUserList;
-            info.pos = obj.transform.position;
-            info.img = obj.GetComponent<Image>().sprite;
-            PlayerInfo.decoration.Add(info);
+            if (obj.GetComponent<DragAlong>().numInUserList < PlayerInfo.decoration.Count)
+            {
+                PlayerInfo.decoInfo info = new PlayerInfo.decoInfo();
+                info.id = obj.GetComponent<DragAlong>().id;
+                info.numInUserList = obj.GetComponent<DragAlong>().numInUserList;
+                info.pos = obj.transform.position;
+                PlayerInfo.decoration[obj.GetComponent<DragAlong>().numInUserList] = info;
+            }
+            else {
+                PlayerInfo.decoInfo info = new PlayerInfo.decoInfo();
+                info.id = obj.GetComponent<DragAlong>().id;
+                info.numInUserList = obj.GetComponent<DragAlong>().numInUserList;
+                info.pos = obj.transform.position;
+                PlayerInfo.decoration.Add(info);
+            }
+
+            
         }
     }
 
@@ -76,12 +90,13 @@ public class StockControl : MonoBehaviour {
         Debug.Log("now have:"+PlayerInfo.decoration.Count);
         foreach (PlayerInfo.decoInfo info in PlayerInfo.decoration) {
             GameObject obj = new GameObject();
-            obj.AddComponent<Image>().overrideSprite = info.img;
+            obj.AddComponent<Image>().overrideSprite = GamingInfo.furni_info[info.id].img;
             obj.transform.position = info.pos;
             obj.AddComponent<DragAlong>().id = info.id;
             obj.GetComponent<DragAlong>().numInUserList = info.numInUserList;
             obj.GetComponent<Image>().preserveAspect = true;
             Instantiate(obj);
+            obj.tag = "furniObj";
             obj.GetComponent<RectTransform>().sizeDelta = new Vector2(156, 110);
             obj.transform.SetParent(GameObject.FindGameObjectWithTag("furniParent").transform);
         }

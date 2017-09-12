@@ -42,7 +42,9 @@ public class DragAlong : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
             {
                 Debug.Log("destroy this");
                 PlayerInfo.furni_quant[numInUserList] = new PlayerInfo.stockItem(id, PlayerInfo.furni_quant[numInUserList].quant + 1);
-                GameObject.FindGameObjectWithTag("home_stockControl").GetComponent<StockControl>().setStockItem_furni();
+                if (GameObject.FindGameObjectWithTag("home_stock_furni") != null) {
+                    GameObject.FindGameObjectWithTag("home_stockControl").GetComponent<StockControl>().setStockItem_furni();
+                }
                 Destroy(gameObject);
             }
         }

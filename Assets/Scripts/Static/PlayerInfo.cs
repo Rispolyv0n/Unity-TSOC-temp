@@ -51,7 +51,6 @@ public class PlayerInfo : MonoBehaviour {
     public struct decoInfo {
         public int id;
         public int numInUserList;
-        public Sprite img;
         public Vector3 pos;
     }
     static public List<decoInfo> decoration;
