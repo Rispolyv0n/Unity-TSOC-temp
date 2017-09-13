@@ -15,44 +15,7 @@ public class SendLogIn : MonoBehaviour
     public InputField getID;
     public InputField getPW;
     public Text warningText;
-
-    private void Awake()
-    {
-        Application.logMessageReceived += handleUnityLog;
-    }
-
-    public void OnEnable()
-    {
-        Debug.Log("ExternalLoggerComponent -> OnEnable");
-
-        Application.logMessageReceivedThreaded += handleUnityLog;
-    }
-
-    public void OnDisable()
-    {
-        Debug.Log("ExternalLoggerComponent -> OnDisable");
-
-        Application.logMessageReceivedThreaded -= handleUnityLog;
-    }
-
-    void handleUnityLog(string logString, string stackTrace, LogType type)
-    {
-        if (type == LogType.Exception)
-        {
-            Debug.Log("exc:" + logString + " --- " + stackTrace);
-        }
-        else if (type == LogType.Log)
-        {
-            Debug.Log("lg:" + logString + " --- " + stackTrace);
-        }
-        else if (type == LogType.Error)
-        {
-            Debug.Log("err:" + logString + " --- " + stackTrace);
-        }
-        else {
-            Debug.Log("else:" + logString + " --- " + stackTrace);
-        }
-    }
+    
 
     // Use this for initialization
     void Start()

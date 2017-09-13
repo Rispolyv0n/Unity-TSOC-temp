@@ -178,7 +178,7 @@ public class TangoOwnerRecordingStart : MonoBehaviour, ITangoLifecycle
         else
         {
             Debug.Log("No Tango Manager found in scene.");
-        }
+        }        
     }
 
     /// <summary>

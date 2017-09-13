@@ -15,8 +15,8 @@ public class PlayTimeControl : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        float theTime = PlayerInfo.value_playTime_hr;
-        int theDay = PlayerInfo.value_playTime_day;
+        float theTime = PlayerInfo.totalPlayTime_hr;
+        int theDay = PlayerInfo.totalPlayTime_day;
         if (theDay == 0)
         {
             display_time = theTime + " Hr";

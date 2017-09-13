@@ -5,6 +5,8 @@ using UnityEngine.SceneManagement;
 
 public class Btn_StreetToShop : MonoBehaviour
 {
+    public bool fromHome;
+    public string sceneName;
 
     void Awake()
     {
@@ -18,7 +20,7 @@ public class Btn_StreetToShop : MonoBehaviour
     void OnMouseDown()
     {
         //SaveObjOnLoad.objState = 0;
-        GamingInfo.fromHomeStreet = false;
-        SceneManager.LoadScene("shop");
+        GamingInfo.fromHomeStreet = fromHome;
+        SceneManager.LoadScene(sceneName);
     }
 }

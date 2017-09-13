@@ -459,6 +459,45 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 639762136}
+--- !u!1 &660216148
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 660216150}
+  - 114: {fileID: 660216149}
+  m_Layer: 0
+  m_Name: empty_gamingDetect
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!114 &660216149
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 660216148}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73d5d72531d12fd4aa15e38acfa470b8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &660216150
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 660216148}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 203.88051, y: 348.01096, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 4
 --- !u!1 &1022274870
 GameObject:
   m_ObjectHideFlags: 0
@@ -1174,7 +1213,6 @@ GameObject:
   - 114: {fileID: 1497330000}
   - 114: {fileID: 1497329999}
   - 114: {fileID: 1497330003}
-  - 114: {fileID: 1497330002}
   m_Layer: 5
   m_Name: Button_logIn
   m_TagString: Untagged
@@ -1296,28 +1334,13 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1497329997}
---- !u!114 &1497330002
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1497329997}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7f5416e6cac64a34ba7f8b9150e7a822, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  SceneName: choose_path
-  addScene: 0
-  switchScene: 1
-  closeScene: 0
 --- !u!114 &1497330003
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1497329997}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 15d025d94a22b794085abfdf0d8be4b8, type: 3}
   m_Name: 

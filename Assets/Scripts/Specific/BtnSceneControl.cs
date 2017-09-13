@@ -19,7 +19,7 @@ public class BtnSceneControl : MonoBehaviour
 
         if (GamingInfo.fromHomeStreet == false)
         {
-            SceneManager.LoadScene("street");
+            SceneManager.LoadScene("TangoStreet");
         }
         else {
             SceneManager.LoadScene("home");
