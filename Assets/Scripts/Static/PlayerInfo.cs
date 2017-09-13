@@ -202,7 +202,7 @@ public class PlayerInfo : MonoBehaviour {
 
     private void setUserValueInfo() {
         // should get from http
-        currentCharacterID = 1;
+        currentCharacterID = 0;
         totalPlayTime_day = 0;
         totalPlayTime_hr = 0;
         value_strength = 0f;

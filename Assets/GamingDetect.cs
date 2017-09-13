@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 
 // active after successfully logging in
@@ -29,6 +30,10 @@ public class GamingDetect : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-	
+        // for testing
+        if (PlayerInfo.value_like > 5) {
+            PlayerInfo.value_like = 0;
+            SceneManager.LoadScene("finishChar");
+        }
 	}
 }
