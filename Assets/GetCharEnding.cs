@@ -94,8 +94,69 @@ public class GetCharEnding : MonoBehaviour {
         charItem.end_time = DateTime.Now;
         PlayerInfo.characterCollection.Add(charItem);
 
+        // check achievements (category:0 - characters collection)
+        // calculate how many characters of the kind the player had
+        int charNum = 0;
+        foreach (PlayerInfo.characterItem item in PlayerInfo.characterCollection) {
+            if (item.id == PlayerInfo.currentCharacterID) {
+                ++charNum;
+            }
+        }
+        // check if the player already had the kind of character achievement
+        int indexOfAc = -1; // index in player's achievement list
+        foreach (PlayerInfo.achievementItem ac in PlayerInfo.achievementCollection)
+        {
+            if (GamingInfo.achievements[ac.id].category == 0 && GamingInfo.achievements[ac.id].relative_id == PlayerInfo.currentCharacterID)
+            {
+                indexOfAc = PlayerInfo.achievementCollection.IndexOf(ac);
+                break;
+            }
+        }
+        if (indexOfAc > -1)
+        {
+            switch (PlayerInfo.achievementCollection[indexOfAc].level) {
+                case 1:
+                    if (charNum >= GamingInfo.achievements[PlayerInfo.currentCharacterID].condition_2) {
+                        PlayerInfo.achievementItem new_ac = new PlayerInfo.achievementItem();
+                        new_ac.id = PlayerInfo.achievementCollection[indexOfAc].id;
+                        new_ac.level = 2;
+                        PlayerInfo.achievementCollection[indexOfAc] = new_ac;
+                    }
+                    break;
+                case 2:
+                    if (charNum >= GamingInfo.achievements[PlayerInfo.currentCharacterID].condition_3)
+                    {
+                        PlayerInfo.achievementItem new_ac = new PlayerInfo.achievementItem();
+                        new_ac.id = PlayerInfo.achievementCollection[indexOfAc].id;
+                        new_ac.level = 3;
+                        PlayerInfo.achievementCollection[indexOfAc] = new_ac;
+                    }
+                    break;
+                case 3:
+                    break;
+            }
+            
+        }
+        else {
+            // find the corresponding id of the char and the achievement
+            int theID = -1;
+            foreach (GamingInfo.achievementInfo item in GamingInfo.achievements) {
+                if (item.category == 0 && item.relative_id == PlayerInfo.currentCharacterID) {
+                    theID = item.id;
+                    break;
+                }
+            }
+            // add new ac to the player's ac list
+            PlayerInfo.achievementItem new_ac = new PlayerInfo.achievementItem();
+            new_ac.id = theID;
+            new_ac.level = 1;
+            PlayerInfo.achievementCollection.Add(new_ac);
+        }
+
         // reset char info in playerInfo (will be reset again in choosing char scene)
         GameObject.FindGameObjectWithTag("playerInfo").GetComponent<PlayerInfo>().resetCurrentCharacter(-1);
+
+        
     }
 	
 	// Update is called once per frame

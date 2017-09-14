@@ -48,6 +48,36 @@ public class GamingDetect : MonoBehaviour {
             PlayerInfo.value_like = -1;
             SceneManager.LoadScene("finishChar");
         }
-        // for testing : achievement
+
+
+        // for testing : achievement - category 2 (others) e.g. addicted(gaming hours)(id:4)
+        bool found = false;
+        for (int i=0; i < PlayerInfo.achievementCollection.Count; ++i) {
+            // check ac : addicted
+            if (PlayerInfo.achievementCollection[i].id == 4 && PlayerInfo.achievementCollection[i].level < 3) {
+                found = true;
+                if (PlayerInfo.achievementCollection[i].level == 1 && PlayerInfo.totalPlayTime_day >= GamingInfo.achievements[4].condition_2) {
+                    PlayerInfo.achievementItem new_ac = new PlayerInfo.achievementItem();
+                    new_ac.id = 4;
+                    new_ac.level = 2;
+                    PlayerInfo.achievementCollection[i] = new_ac;
+                } else if (PlayerInfo.achievementCollection[i].level == 2 && PlayerInfo.totalPlayTime_day >= GamingInfo.achievements[4].condition_3) {
+                    PlayerInfo.achievementItem new_ac = new PlayerInfo.achievementItem();
+                    new_ac.id = 4;
+                    new_ac.level = 3;
+                    PlayerInfo.achievementCollection[i] = new_ac;
+                }
+                break; // found & done checking
+            }
+        }
+
+        // add lv1 ac
+        if (!found && PlayerInfo.totalPlayTime_day >= GamingInfo.achievements[4].condition_1) {
+            PlayerInfo.achievementItem new_ac = new PlayerInfo.achievementItem();
+            new_ac.id = 4;
+            new_ac.level = 1;
+            PlayerInfo.achievementCollection.Add(new_ac);
+        }
+
 	}
 }

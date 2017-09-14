@@ -62,7 +62,7 @@ public class PlayerInfo : MonoBehaviour {
 
     // event collection list
     public struct eventItem {
-        public int num;
+        public int num; // the same with corresponding character id
         public int time;
         public eventItem(int num, int time) {
             this.num = num;
@@ -101,7 +101,11 @@ public class PlayerInfo : MonoBehaviour {
     // achievement
     public struct achievementItem {
         public int id;
-        public int level;
+        public int level; // 1~3
+        public achievementItem(int id, int level) {
+            this.id = id;
+            this.level = level;
+        }
     }
     static public List<achievementItem> achievementCollection;
 
@@ -205,13 +209,13 @@ public class PlayerInfo : MonoBehaviour {
     private void setUserValueInfo() {
         // should get from http
         currentCharacterID = 1;
-        totalPlayTime_day = 0;
+        totalPlayTime_day = 12;
         totalPlayTime_hr = 0;
-        value_strength = 100f;
-        value_intelligence = 90f;
+        value_strength = 250f;
+        value_intelligence = 240f;
         value_like = 200f;
         value_money = 600;
-        value_level = 2;
+        value_level = 3;
         char_startTime = new DateTime(2017, 9, 13, 0, 0, 0);
 
         // should get from http----------up
@@ -234,10 +238,10 @@ public class PlayerInfo : MonoBehaviour {
         achievementItem ac_item2 = new achievementItem();
         ac_item2.id = 2;
         ac_item2.level = 3;
-
+        /*
         achievementCollection.Add(ac_item);
         achievementCollection.Add(ac_item2);
-
+        */
         fav_shopID_list.RemoveRange(0, fav_shopID_list.Count);
         fav_shopID_list.Add("001");
         fav_shopID_list.Add("002");
