@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using System;
 
 // attach on the empty object in the finishChar scene
 // decide the ending of the char, get the ending info and display
@@ -14,16 +15,19 @@ public class GetCharEnding : MonoBehaviour {
     public Button btn_chooseNextChar;
     public Button btn_toStreet;
 
+    private float value_like;
     private int whichEnding;
 
 	// Use this for initialization
 	void Start () {
+        value_like = GamingDetect.temp_value_like;
+
         // decide the ending
-        Random.seed = System.Guid.NewGuid().GetHashCode();
+        UnityEngine.Random.seed = System.Guid.NewGuid().GetHashCode();
         
-        if (PlayerInfo.value_like < GamingInfo.likePoints_lowerBoundary)
+        if (value_like < GamingInfo.likePoints_lowerBoundary)
         {
-            float getEnding = Random.Range(0f, 1f);
+            float getEnding = UnityEngine.Random.Range(0f, 1f);
             if (getEnding < GamingInfo.ratio_low_strange)
             {
                 whichEnding = PlayerInfo.ENDING_STR;
@@ -32,9 +36,9 @@ public class GetCharEnding : MonoBehaviour {
                 whichEnding = PlayerInfo.ENDING_BAD;
             }
         }
-        else if (PlayerInfo.value_like >= GamingInfo.likePoints_lowerBoundary && PlayerInfo.value_like < GamingInfo.likePoints_higherBoundary)
+        else if (value_like >= GamingInfo.likePoints_lowerBoundary && value_like < GamingInfo.likePoints_higherBoundary)
         {
-            float getEnding = Random.Range(0f, 1f);
+            float getEnding = UnityEngine.Random.Range(0f, 1f);
             if (getEnding < GamingInfo.ratio_mid_bad)
             {
                 whichEnding = PlayerInfo.ENDING_BAD;
@@ -48,7 +52,7 @@ public class GetCharEnding : MonoBehaviour {
             }
         }
         else {
-            float getEnding = Random.Range(0f, 1f);
+            float getEnding = UnityEngine.Random.Range(0f, 1f);
             if (getEnding < GamingInfo.ratio_high_strange)
             {
                 whichEnding = PlayerInfo.ENDING_STR;
@@ -77,7 +81,22 @@ public class GetCharEnding : MonoBehaviour {
                 endingContent.text = GamingInfo.characters[PlayerInfo.currentCharacterID].endingContent_str;
                 break;
         }
-	}
+
+        // save finished char info
+        PlayerInfo.characterItem charItem = new PlayerInfo.characterItem();
+        charItem.id = PlayerInfo.currentCharacterID;
+        charItem.name = PlayerInfo.currentCharacterName;
+        charItem.value_strength = PlayerInfo.value_strength;
+        charItem.value_intelligence = PlayerInfo.value_intelligence;
+        charItem.value_like = value_like;
+        charItem.ending = whichEnding;
+        charItem.start_time = PlayerInfo.char_startTime;
+        charItem.end_time = DateTime.Now;
+        PlayerInfo.characterCollection.Add(charItem);
+
+        // reset char info in playerInfo (will be reset again in choosing char scene)
+        GameObject.FindGameObjectWithTag("playerInfo").GetComponent<PlayerInfo>().resetCurrentCharacter(-1);
+    }
 	
 	// Update is called once per frame
 	void Update () {

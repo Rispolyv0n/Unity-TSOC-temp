@@ -9,13 +9,36 @@ public class LikeValueControl : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        maxValue = 100.0f;
+        switch (PlayerInfo.value_level)
+        {
+            case 1:
+                maxValue = GamingInfo.maxValue_lv1;
+                break;
+            case 2:
+                maxValue = GamingInfo.maxValue_lv2;
+                break;
+            case 3:
+                maxValue = GamingInfo.maxValue_lv3;
+                break;
+        }
         value = PlayerInfo.value_like;
     }
 
     // Update is called once per frame
     void Update()
     {
+        switch (PlayerInfo.value_level)
+        {
+            case 1:
+                maxValue = GamingInfo.maxValue_lv1;
+                break;
+            case 2:
+                maxValue = GamingInfo.maxValue_lv2;
+                break;
+            case 3:
+                maxValue = GamingInfo.maxValue_lv3;
+                break;
+        }
         if (SceneManager.GetActiveScene().name == "street")
         {
             value = PlayerInfo.value_like;

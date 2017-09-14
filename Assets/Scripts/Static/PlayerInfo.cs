@@ -144,10 +144,10 @@ public class PlayerInfo : MonoBehaviour {
         characterCollection = new List<characterItem>();
         achievementCollection = new List<achievementItem>();
 
-        //resetCurrentCharacter(-1); // modify!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        //resetCurrentCharacter(); // modify!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         setUserValueInfo();
 
-        InvokeRepeating("decreaseLikeValue",0,5);
+        //InvokeRepeating("decreaseLikeValue",0,5);
         InvokeRepeating("calculatePlayTime",360,360);
 
         setFirstLogIn();
@@ -196,21 +196,23 @@ public class PlayerInfo : MonoBehaviour {
 
     }
 
+    /*
     private void decreaseLikeValue() {
         value_like -= 3;
     }
+    */
 
     private void setUserValueInfo() {
         // should get from http
-        currentCharacterID = 0;
+        currentCharacterID = 1;
         totalPlayTime_day = 0;
         totalPlayTime_hr = 0;
-        value_strength = 0f;
-        value_intelligence = 0f;
-        value_like = 80.0f;
+        value_strength = 100f;
+        value_intelligence = 90f;
+        value_like = 200f;
         value_money = 600;
-        value_level = 1;
-        char_startTime = new DateTime();
+        value_level = 2;
+        char_startTime = new DateTime(2017, 9, 13, 0, 0, 0);
 
         // should get from http----------up
         /*
@@ -280,11 +282,12 @@ public class PlayerInfo : MonoBehaviour {
         char_item4.start_time = new DateTime(2017, 9, 13, 2, 3, 4);
         char_item4.end_time = new DateTime(2017, 9, 15, 5, 7, 9);
 
+        /*
         characterCollection.Add(char_item);
         characterCollection.Add(char_item2);
         characterCollection.Add(char_item3);
         characterCollection.Add(char_item4);
-
+        */
         // should get from http----------down
 
     }

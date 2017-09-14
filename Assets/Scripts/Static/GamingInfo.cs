@@ -133,6 +133,11 @@ public class GamingInfo : MonoBehaviour {
     static public achievementInfo[] achievements;
     static public int achievementNum;
 
+    // level up maxValue of three values
+    static public float maxValue_lv1;
+    static public float maxValue_lv2;
+    static public float maxValue_lv3;
+
     // level up threshold
     static public int totalPoints_toLv2;
     static public int totalPoints_toLv3;
@@ -172,14 +177,19 @@ public class GamingInfo : MonoBehaviour {
         characterNum = 2;
         achievementNum = 5;
 
+        // level up maxValue
+        maxValue_lv1 = 100;
+        maxValue_lv2 = 200;
+        maxValue_lv3 = 300;
+
         // level up theshold
         totalPoints_toLv2 = 200;
         totalPoints_toLv3 = 400;
         totalPoints_toDone = 700;
 
         // ratio of different endings
-        likePoints_lowerBoundary = 300;
-        likePoints_higherBoundary = 500;
+        likePoints_lowerBoundary = 120;
+        likePoints_higherBoundary = 220;
         ratio_low_bad = 0.7f;
         ratio_low_strange = 0.3f;
         ratio_mid_bad = 0.2f;
