@@ -5,10 +5,10 @@ using UnityEngine.UI;
 public class GetShopInfo_simple : MonoBehaviour {
 
     private Button thisBtn;
-    public Image open; // not yet
+    public Image open;
     public Text shopName;
     public Text category; // not yet
-    public Button fav; // not yet
+    public Button fav;
     public string shopID;
 
 	// Use this for initialization
