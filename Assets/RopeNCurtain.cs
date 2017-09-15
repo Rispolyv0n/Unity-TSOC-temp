@@ -31,7 +31,7 @@ public class RopeNCurtain : MonoBehaviour, IBeginDragHandler, IEndDragHandler, I
         dragging = false;
         dragNrelease = false;
         //openCurtain = false;
-        draggingSpeed = 500;
+        draggingSpeed = 100;
         risingSpeed = 2000;
         curtainSpeed = 500;
         buffDistance = 0;

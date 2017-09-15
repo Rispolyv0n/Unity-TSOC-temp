@@ -2,7 +2,7 @@
 using System.Collections;
 
 public class MouseDragCamera : MonoBehaviour {
-    public float speed;
+    private float speed;
     public bool dir_x;
     public bool dir_y;
     public bool dir_z;
@@ -12,7 +12,7 @@ public class MouseDragCamera : MonoBehaviour {
     public bool mouseDir_y;
     // Use this for initialization
     void Start () {
-        speed = 30;
+        speed = 1;
         //bound = -16;
         //dir_x = false;
         //dir_y = false;

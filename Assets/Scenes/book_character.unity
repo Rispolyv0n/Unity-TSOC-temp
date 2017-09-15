@@ -241,7 +241,7 @@ MonoBehaviour:
     m_Top: 5
     m_Bottom: 0
   m_ChildAlignment: 0
-  m_Spacing: 4
+  m_Spacing: 10
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 1
 --- !u!1 &305499735
@@ -3362,7 +3362,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 938dc3e02d4ad9d40866ebcfe362e765, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 30
   dir_x: 0
   dir_y: 0
   dir_z: 1

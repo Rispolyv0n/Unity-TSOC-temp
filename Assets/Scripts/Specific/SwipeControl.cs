@@ -59,7 +59,7 @@ public class SwipeControl : MonoBehaviour {
         hasIt = new bool[ac_num];
 
         distance_cameraNobj = 15;
-        movingSpeed = 6;
+        movingSpeed = 4;
         timeCounter = 0;
         circleWidth = ac_num/3*5;
         frontObjPos = new Vector3(0,0,-circleWidth);

@@ -286,12 +286,12 @@ public class PlayerInfo : MonoBehaviour {
         char_item4.start_time = new DateTime(2017, 9, 13, 2, 3, 4);
         char_item4.end_time = new DateTime(2017, 9, 15, 5, 7, 9);
 
-        /*
+        
         characterCollection.Add(char_item);
         characterCollection.Add(char_item2);
         characterCollection.Add(char_item3);
         characterCollection.Add(char_item4);
-        */
+        
         // should get from http----------down
 
     }
@@ -299,6 +299,14 @@ public class PlayerInfo : MonoBehaviour {
     // called when done choosing char (send btn in the scene choose_char)
     public void resetCurrentCharacter(int id) {
         currentCharacterID=id;
+        if (id > -1)
+        {
+            currentCharacterName = GamingInfo.characters[id].name;
+        }
+        else {
+            currentCharacterName = "角色名稱";
+        }
+        
         value_strength=0;
         value_intelligence=0;
         value_like=0;
