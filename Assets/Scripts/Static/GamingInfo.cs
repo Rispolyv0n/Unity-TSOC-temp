@@ -101,6 +101,12 @@ public class GamingInfo : MonoBehaviour {
         public Sprite imgForHome;
         public Sprite imgForStreet;
         public Sprite imgForCollect;
+        public string endingContent_good;
+        public string endingContent_bad;
+        public string endingContent_str;
+        public Sprite endingImg_good;
+        public Sprite endingImg_bad;
+        public Sprite endingImg_str;
     }
     static public characterInfo[] characters;
     static public int characterNum;
@@ -126,6 +132,11 @@ public class GamingInfo : MonoBehaviour {
     }
     static public achievementInfo[] achievements;
     static public int achievementNum;
+
+    // level up maxValue of three values
+    static public float maxValue_lv1;
+    static public float maxValue_lv2;
+    static public float maxValue_lv3;
 
     // level up threshold
     static public int totalPoints_toLv2;
@@ -166,14 +177,19 @@ public class GamingInfo : MonoBehaviour {
         characterNum = 2;
         achievementNum = 5;
 
+        // level up maxValue
+        maxValue_lv1 = 100;
+        maxValue_lv2 = 200;
+        maxValue_lv3 = 300;
+
         // level up theshold
         totalPoints_toLv2 = 200;
         totalPoints_toLv3 = 400;
         totalPoints_toDone = 700;
 
         // ratio of different endings
-        likePoints_lowerBoundary = 300;
-        likePoints_higherBoundary = 500;
+        likePoints_lowerBoundary = 120;
+        likePoints_higherBoundary = 220;
         ratio_low_bad = 0.7f;
         ratio_low_strange = 0.3f;
         ratio_mid_bad = 0.2f;
@@ -385,6 +401,12 @@ public class GamingInfo : MonoBehaviour {
         characters[0].imgForHome = Resources.Load<Sprite>("ImageSource/CharacterImg/TWBlackBear/Img_char_bear0");
         characters[0].imgForStreet = Resources.Load<Sprite>("ImageSource/CharacterImg/TWBlackBear/Img_char_bear1");
         characters[0].imgForCollect = Resources.Load<Sprite>("ImageSource/CharacterImg/TWBlackBear/mask");
+        characters[0].endingContent_good = "成功美白! 雖然這種程度真的是面膜敷得出來的嗎...根本已經是北極熊了吧... 總之他看起來很滿意呢";
+        characters[0].endingContent_bad = "在街上到處走來走去找面膜結果曬得更黑了啊... 居然比鼻子的顏色還要黑了... 不要沮喪啊ˊ__ˋ";
+        characters[0].endingContent_str = "啊啊，不要誤會，我不是你們的吉祥物... 等等...等等啊!! 啊...要發完傳單才能走嗎... 請問可以站在有陰影的地方嗎...";
+        characters[0].endingImg_good = Resources.Load<Sprite>("ImageSource/CharacterImg/TWBlackBear/img_goodEnding");
+        characters[0].endingImg_bad = Resources.Load<Sprite>("ImageSource/CharacterImg/TWBlackBear/img_badEnding");
+        characters[0].endingImg_str = Resources.Load<Sprite>("ImageSource/CharacterImg/TWBlackBear/img_strEnding");
 
         characters[1].id = 1;
         characters[1].name = "蝦仁";
@@ -393,6 +415,12 @@ public class GamingInfo : MonoBehaviour {
         characters[1].imgForHome = Resources.Load<Sprite>("ImageSource/CharacterImg/Shrimp/shrimp_home");
         characters[1].imgForStreet = Resources.Load<Sprite>("ImageSource/CharacterImg/Shrimp/shrimp_street");
         characters[1].imgForCollect = Resources.Load<Sprite>("ImageSource/CharacterImg/Shrimp/pineapple");
+        characters[1].endingContent_good = "高級料理! 總算找到鳳梨了，我們就是該被做成一盤鳳梨蝦仁啊!";
+        characters[1].endingContent_bad = "奇...奇怪... 被丟到水裡了?? ...被勾起來了!!??? 不要把我放進釣蝦場啊!!!!";
+        characters[1].endingContent_str = "今日特餐是義大利料理，那麼就為您獻上一份夏威夷披薩佐蝦仁!";
+        characters[1].endingImg_good = Resources.Load<Sprite>("ImageSource/CharacterImg/Shrimp/img_goodEnding");
+        characters[1].endingImg_bad = Resources.Load<Sprite>("ImageSource/CharacterImg/Shrimp/img_badEnding");
+        characters[1].endingImg_str = Resources.Load<Sprite>("ImageSource/CharacterImg/Shrimp/img_strEnding");
     }
 
     private void setAchievementsInfo() {

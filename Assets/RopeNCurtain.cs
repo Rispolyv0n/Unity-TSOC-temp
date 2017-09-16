@@ -31,14 +31,14 @@ public class RopeNCurtain : MonoBehaviour, IBeginDragHandler, IEndDragHandler, I
         dragging = false;
         dragNrelease = false;
         //openCurtain = false;
-        draggingSpeed = 500;
+        draggingSpeed = 100;
         risingSpeed = 2000;
         curtainSpeed = 500;
         buffDistance = 0;
         movingDistance = transform.GetChild(0).GetComponent<RectTransform>().sizeDelta.y + buffDistance;
         destinationPoint = new Vector3(transform.position.x, transform.position.y + movingDistance, transform.position.z);
-        leftCurtainDestinationPoint = new Vector3(leftCurtain.transform.position.x-leftCurtain.GetComponent<RectTransform>().sizeDelta.x-buffDistance, leftCurtain.transform.position.y, leftCurtain.transform.position.z);
-        rightCurtainDestinationPoint = new Vector3(rightCurtain.transform.position.x + rightCurtain.GetComponent<RectTransform>().sizeDelta.x + buffDistance, rightCurtain.transform.position.y, rightCurtain.transform.position.z);
+        leftCurtainDestinationPoint = new Vector3(leftCurtain.transform.position.x-Screen.width-buffDistance, leftCurtain.transform.position.y, leftCurtain.transform.position.z);
+        rightCurtainDestinationPoint = new Vector3(rightCurtain.transform.position.x + Screen.width + buffDistance, rightCurtain.transform.position.y, rightCurtain.transform.position.z);
     }
 
     

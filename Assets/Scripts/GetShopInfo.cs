@@ -19,10 +19,6 @@ public class GetShopInfo : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-    }
-
-    public void OnEnable()
-    {
         shop_id = PlayerInfo.currentCheckingShopID;
 
         // should get from http request
@@ -40,13 +36,15 @@ public class GetShopInfo : MonoBehaviour {
 
         // display new content
         GamingInfo.storeInfoItem info = new GamingInfo.storeInfoItem();
-        foreach (GamingInfo.storeInfoWithID item in GamingInfo.storeInfo) {
-            if (shop_id.Equals(item.id)) {
+        foreach (GamingInfo.storeInfoWithID item in GamingInfo.storeInfo)
+        {
+            if (shop_id.Equals(item.id))
+            {
                 info = item.info;
                 break;
             }
         }
-        
+
         shop_title.text = info.shopName;
         shop_address.text = info.shopAddress;
         titlePrefab = Resources.Load<Text>("Prefabs/Text_title");
@@ -63,8 +61,10 @@ public class GetShopInfo : MonoBehaviour {
 
         // check if fav and set img
         bool found = false;
-        foreach (string shopID in PlayerInfo.fav_shopID_list) {
-            if (shopID.Equals(PlayerInfo.currentCheckingShopID)) {
+        foreach (string shopID in PlayerInfo.fav_shopID_list)
+        {
+            if (shopID.Equals(PlayerInfo.currentCheckingShopID))
+            {
                 found = true;
                 break;
             }
@@ -74,10 +74,16 @@ public class GetShopInfo : MonoBehaviour {
             btn_fav.GetComponent<AddFavShop>().isFav = true;
             btn_fav.GetComponent<Image>().overrideSprite = Resources.Load<Sprite>("ImageSource/BackgroundImage/Street/btn_favoriteList");
         }
-        else {
+        else
+        {
             btn_fav.GetComponent<AddFavShop>().isFav = false;
             btn_fav.GetComponent<Image>().overrideSprite = Resources.Load<Sprite>("ImageSource/BackgroundImage/ShopInfo/btn_favorite");
         }
+    }
+
+    public void OnEnable()
+    {
+        
     }
 
     // Update is called once per frame

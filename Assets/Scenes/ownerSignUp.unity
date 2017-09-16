@@ -3705,6 +3705,59 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 583912746}
+--- !u!1 &601940141
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 601940143}
+  - 114: {fileID: 601940142}
+  m_Layer: 0
+  m_Name: empty_inputConfirm
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &601940142
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 601940141}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 476e7f6a2daa7504c94645057f732553, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  userID: {fileID: 544341497}
+  userEmail: {fileID: 1374321296}
+  password: {fileID: 321888670}
+  passwordConfirm: {fileID: 426655696}
+  shopName: {fileID: 1546767852}
+  shopAddress: {fileID: 1515683344}
+  shopContact: {fileID: 1434332904}
+  category_a: {fileID: 329461536}
+  ownerName: {fileID: 1544114808}
+  ownerGender: {fileID: 1562496383}
+  ownerContact: {fileID: 108574033}
+  ownerEmail: {fileID: 1473955821}
+  warningText: {fileID: 1650291602}
+  signUpBtn: {fileID: 689209296}
+--- !u!4 &601940143
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 601940141}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 213.80583, y: 351.79108, z: 2.0625}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 2
 --- !u!1 &607125302
 GameObject:
   m_ObjectHideFlags: 0

@@ -19,10 +19,10 @@ public class PlayTimeControl : MonoBehaviour {
         int theDay = PlayerInfo.totalPlayTime_day;
         if (theDay == 0)
         {
-            display_time = theTime + " Hr";
+            display_time = theTime + " hr";
         }
         else {
-            display_time = theDay + " D " + theTime + " Hr";
+            display_time = theDay + " d " + theTime + " hr";
         }
         textObj.text = display_time;
 	}

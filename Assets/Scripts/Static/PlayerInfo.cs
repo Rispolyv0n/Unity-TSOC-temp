@@ -62,7 +62,7 @@ public class PlayerInfo : MonoBehaviour {
 
     // event collection list
     public struct eventItem {
-        public int num;
+        public int num; // the same with corresponding character id
         public int time;
         public eventItem(int num, int time) {
             this.num = num;
@@ -101,7 +101,11 @@ public class PlayerInfo : MonoBehaviour {
     // achievement
     public struct achievementItem {
         public int id;
-        public int level;
+        public int level; // 1~3
+        public achievementItem(int id, int level) {
+            this.id = id;
+            this.level = level;
+        }
     }
     static public List<achievementItem> achievementCollection;
 
@@ -130,6 +134,8 @@ public class PlayerInfo : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
+        Screen.SetResolution(433, 693, false);
+
         port = ":4000";
 
         fav_shopID_list = new List<string>();
@@ -144,10 +150,10 @@ public class PlayerInfo : MonoBehaviour {
         characterCollection = new List<characterItem>();
         achievementCollection = new List<achievementItem>();
 
-        //resetCurrentCharacter(-1); // modify!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        //resetCurrentCharacter(); // modify!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         setUserValueInfo();
 
-        InvokeRepeating("decreaseLikeValue",0,5);
+        //InvokeRepeating("decreaseLikeValue",0,5);
         InvokeRepeating("calculatePlayTime",360,360);
 
         setFirstLogIn();
@@ -196,21 +202,23 @@ public class PlayerInfo : MonoBehaviour {
 
     }
 
+    /*
     private void decreaseLikeValue() {
         value_like -= 3;
     }
+    */
 
     private void setUserValueInfo() {
         // should get from http
         currentCharacterID = 1;
-        totalPlayTime_day = 0;
+        totalPlayTime_day = 12;
         totalPlayTime_hr = 0;
-        value_strength = 0f;
-        value_intelligence = 0f;
-        value_like = 80.0f;
+        value_strength = 250f;
+        value_intelligence = 240f;
+        value_like = 200f;
         value_money = 600;
-        value_level = 1;
-        char_startTime = new DateTime();
+        value_level = 3;
+        char_startTime = new DateTime(2017, 9, 13, 0, 0, 0);
 
         // should get from http----------up
         /*
@@ -232,10 +240,10 @@ public class PlayerInfo : MonoBehaviour {
         achievementItem ac_item2 = new achievementItem();
         ac_item2.id = 2;
         ac_item2.level = 3;
-
+        /*
         achievementCollection.Add(ac_item);
         achievementCollection.Add(ac_item2);
-
+        */
         fav_shopID_list.RemoveRange(0, fav_shopID_list.Count);
         fav_shopID_list.Add("001");
         fav_shopID_list.Add("002");
@@ -280,11 +288,12 @@ public class PlayerInfo : MonoBehaviour {
         char_item4.start_time = new DateTime(2017, 9, 13, 2, 3, 4);
         char_item4.end_time = new DateTime(2017, 9, 15, 5, 7, 9);
 
+        
         characterCollection.Add(char_item);
         characterCollection.Add(char_item2);
         characterCollection.Add(char_item3);
         characterCollection.Add(char_item4);
-
+        
         // should get from http----------down
 
     }
@@ -292,6 +301,14 @@ public class PlayerInfo : MonoBehaviour {
     // called when done choosing char (send btn in the scene choose_char)
     public void resetCurrentCharacter(int id) {
         currentCharacterID=id;
+        if (id > -1)
+        {
+            currentCharacterName = GamingInfo.characters[id].name;
+        }
+        else {
+            currentCharacterName = "角色名稱";
+        }
+        
         value_strength=0;
         value_intelligence=0;
         value_like=0;
