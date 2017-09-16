@@ -7,6 +7,8 @@ public class OwnerInfo : MonoBehaviour {
 
     static OwnerInfo ownerInfo;
 
+    static public string ownerID;
+
     static public bool hasADF;
 
     // openTime structures
