@@ -1993,7 +1993,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb90090b5810b994ea9b2b8248119974, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  charBtnPrefab: {fileID: 11415632, guid: 8b23f0b9837f7634a91179685240bee5, type: 2}
+  charBtnPrefab: {fileID: 11455428, guid: ba24f34df94013644ae5be074c8bd85c, type: 2}
   btnParent: {fileID: 269457546}
 --- !u!4 &1258428097
 Transform:

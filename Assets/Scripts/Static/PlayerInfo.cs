@@ -3,6 +3,8 @@ using System.Collections;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using System;
+using UnityEngine.Experimental.Networking;
+using UnityEngine.SceneManagement;
 
 public class PlayerInfo : MonoBehaviour {
 
@@ -22,6 +24,7 @@ public class PlayerInfo : MonoBehaviour {
     static public bool firstLogIn;
     static public bool firstGoHome;
     static public bool firstGoStreet;
+    static public bool justLogOut;
 
     // the currentCharInfo
     static public int currentCharacterID;
@@ -135,8 +138,8 @@ public class PlayerInfo : MonoBehaviour {
     // Use this for initialization
     void Start () {
         Screen.SetResolution(433, 693, false);
-
         port = ":4000";
+        justLogOut = false;
 
         fav_shopID_list = new List<string>();
         decoration = new List<decoInfo>();
@@ -150,8 +153,8 @@ public class PlayerInfo : MonoBehaviour {
         characterCollection = new List<characterItem>();
         achievementCollection = new List<achievementItem>();
 
-        resetCurrentCharacter(-1); // modify!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        //setUserValueInfo();
+        //resetCurrentCharacter(-1); // modify!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        setUserValueInfo();
 
         //InvokeRepeating("decreaseLikeValue",0,5);
         InvokeRepeating("calculatePlayTime",360,360);
@@ -162,6 +165,8 @@ public class PlayerInfo : MonoBehaviour {
 
         setStreetMode();
         currentCheckingShopID = "000"; // modify!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+        
 
         Debug.Log("PlayerInfo.Start() done");
     }
@@ -207,6 +212,7 @@ public class PlayerInfo : MonoBehaviour {
         }
 
     }
+    
 
     /*
     private void decreaseLikeValue() {
@@ -331,7 +337,6 @@ public class PlayerInfo : MonoBehaviour {
     }
 
     public void setStreetMode() {
-        
         if (firstLogIn)
         {
             streetMode.gameMode = true;
@@ -408,6 +413,25 @@ public class PlayerInfo : MonoBehaviour {
         PlayerPrefs.SetString("firstGoStreet", firstGoStreet.ToString());
     }
 
-}
+    public bool loadUserAccountSuccess() {
+        if (PlayerPrefs.HasKey("UserID"))
+        {
+            user_id = PlayerPrefs.GetString("UserID");
+            user_pw = PlayerPrefs.GetString("UserPW");
+            return true;
+        }else
+        {
+            return false;
+        }
+    }
+
+    public void saveUserAccount() {
+        PlayerPrefs.SetString("UserID", user_id);
+        PlayerPrefs.SetString("UserPW", user_pw);
+    }
+
+    
+
+    }
 
 

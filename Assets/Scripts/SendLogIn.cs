@@ -23,22 +23,35 @@ public class SendLogIn : MonoBehaviour
         toUrl = "https://kevin.imslab.org"+PlayerInfo.port+"/login";
         // Btn event
         thisBtn = GetComponent<Button>();
-        thisBtn.onClick.AddListener(sendRequest);
-        
+        thisBtn.onClick.AddListener(delegate { warningText.text = "登入中..."; StartCoroutine(toLogIn(getID.text, getPW.text)); });
+
+        if (!PlayerInfo.justLogOut && loadUserAccountSuccess())
+        {
+            warningText.text = "自動登入中...";
+            StartCoroutine(toLogIn(PlayerInfo.user_id, PlayerInfo.user_pw));
+        }
+
     }
 
-    void sendRequest()
+    public bool loadUserAccountSuccess()
     {
-        warningText.text = "正在嘗試登入中...";
-        StartCoroutine(toLogIn());
-        //SceneManager.LoadScene("choose_path");
+        if (PlayerPrefs.HasKey("UserID"))
+        {
+            PlayerInfo.user_id = PlayerPrefs.GetString("UserID");
+            PlayerInfo.user_pw = PlayerPrefs.GetString("UserPW");
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
-    IEnumerator toLogIn()
+    IEnumerator toLogIn(string id, string pw)
     {
         WWWForm formdata = new WWWForm();
-        formdata.AddField("username", getID.text);
-        formdata.AddField("password", getPW.text);
+        formdata.AddField("username", id);
+        formdata.AddField("password", pw);
 
         UnityWebRequest sending = UnityWebRequest.Post(toUrl, formdata);
         yield return sending.Send();
@@ -54,8 +67,10 @@ public class SendLogIn : MonoBehaviour
             {
                 warningText.text = "登入成功，畫面切換中...";
                 Debug.Log(sending.downloadHandler.text);
-                PlayerInfo.user_id = getID.text;
-                PlayerInfo.user_pw = getPW.text;
+                PlayerInfo.user_id = id;
+                PlayerInfo.user_pw = pw;
+                PlayerInfo.justLogOut = true;
+                GameObject.FindGameObjectWithTag("playerInfo").GetComponent<PlayerInfo>().saveUserAccount();
                 //PlayerInfo.user_email = ;
                 SceneManager.LoadScene("choose_path");
             }

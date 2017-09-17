@@ -35,6 +35,7 @@ TagManager:
   - charStoryPanel
   - text_story
   - img_char
+  - loadingPanel
   layers:
   - Default
   - TransparentFX
