@@ -26,42 +26,6 @@ public class SignUpBtn : MonoBehaviour {
     void clickToSend() {
         StartCoroutine(Register());
     }
-    /*
-    IEnumerator checkEmail() {
-        // check if email has been registered
-        string checkMailUrl = "https://kevin.imslab.org:4000/checkmail?email=";
-        Debug.Log("checking:" + getUserID.text + "," + getMail.text + "," + getPw.text);
-        using (UnityWebRequest sending = UnityWebRequest.Get(checkMailUrl + getMail.text))
-        {
-            yield return sending.Send();
-            if (sending.error != null)
-            {
-                resultDisplay.text = "註冊錯誤，請再次嘗試";
-                Debug.Log("error below:");
-                Debug.Log(sending.error);
-
-            }
-            else
-            {
-                Debug.Log("correct below:");
-
-                if (sending.downloadHandler.text == "existed")
-                {
-                    resultDisplay.text = "此信箱已被註冊過，請輸入其他信箱";
-                    Debug.Log(sending.downloadHandler.text);
-                }
-                else if (sending.downloadHandler.text == "not found")
-                {
-                    resultDisplay.text = "";
-                    Debug.Log(sending.downloadHandler.text);
-                    StartCoroutine(Register());
-                }
-
-            }
-        }
-        
-    }
-    */
 
     IEnumerator Register()
     {

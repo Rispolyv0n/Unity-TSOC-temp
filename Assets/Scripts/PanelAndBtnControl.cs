@@ -22,7 +22,6 @@ public class PanelAndBtnControl : MonoBehaviour {
     void Start () {
         if (PlayerInfo.firstGoHome)
         {
-            Debug.Log("in shop:"+PlayerInfo.firstGoHome);
             SceneManager.LoadScene("instruction_home");
         }else if (PlayerInfo.currentCharacterID < 0)
         {

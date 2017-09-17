@@ -12,7 +12,7 @@ public class MouseDragCamera : MonoBehaviour {
     public bool mouseDir_y;
     // Use this for initialization
     void Start () {
-        speed = 1f;
+        speed = 10f;
         //bound = -16;
         //dir_x = false;
         //dir_y = false;

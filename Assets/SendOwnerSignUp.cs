@@ -14,7 +14,7 @@ public class SendOwnerSignUp : MonoBehaviour {
     public InputField shopAddress;
     public InputField shopContact;
     public Dropdown category_1;
-    public Dropdown category_2;
+    private Dropdown category_2;
 
     public InputField ownerName;
     public InputField ownerPhone;
@@ -28,6 +28,7 @@ public class SendOwnerSignUp : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+        
         toUrl = "https://kevin.imslab.org" + PlayerInfo.port + "/register_shop";
         btn_signUp = GetComponent<Button>();
         btn_signUp.onClick.AddListener(delegate { warningText.text = "傳送註冊資料中..."; StartCoroutine(sendSignUp()); } );
@@ -35,6 +36,8 @@ public class SendOwnerSignUp : MonoBehaviour {
     }
 
     IEnumerator sendSignUp() {
+        category_2 = GameObject.FindGameObjectWithTag("dropdowns").GetComponent<Dropdown>();
+
         WWWForm formdata = new WWWForm();
         formdata.AddField("shopID", ownerID.text);
         formdata.AddField("password", password.text);

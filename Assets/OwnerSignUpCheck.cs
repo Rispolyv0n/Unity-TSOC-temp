@@ -5,6 +5,8 @@ using UnityEngine.Events;
 using System.Text.RegularExpressions;
 using System;
 using System.Globalization;
+using UnityEngine.Experimental.Networking;
+using UnityEngine.SceneManagement;
 
 public class OwnerSignUpCheck : MonoBehaviour {
 
@@ -30,8 +32,11 @@ public class OwnerSignUpCheck : MonoBehaviour {
 
     private bool emailInvalid;
 
+    private string toUrl;
+
     // Use this for initialization
     void Start () {
+        toUrl = "https://kevin.imslab.org" + PlayerInfo.port + "/register_shop";
         category_b = GameObject.FindGameObjectWithTag("dropdowns").GetComponent<Dropdown>();
         signUpBtn.onClick.AddListener(sendSignUpInfo);
 
@@ -95,7 +100,8 @@ public class OwnerSignUpCheck : MonoBehaviour {
         }
 
         // send info to http request
-        warningText.text = "送出";
+        warningText.text = "傳送註冊資料中...";
+        StartCoroutine(sendSignUp());
     }
 
     bool isBlank(string str) {
@@ -149,6 +155,66 @@ public class OwnerSignUpCheck : MonoBehaviour {
             emailInvalid = true;
         }
         return match.Groups[1].Value + domainName;
+    }
+
+    IEnumerator sendSignUp()
+    {
+        category_b = GameObject.FindGameObjectWithTag("dropdowns").GetComponent<Dropdown>();
+
+        WWWForm formdata = new WWWForm();
+        formdata.AddField("shopID", userID.text);
+        formdata.AddField("password", password.text);
+        formdata.AddField("email", userEmail.text);
+        formdata.AddField("phone", shopContact.text);
+        formdata.AddField("shopName", shopName.text);
+        formdata.AddField("shopAddress", shopAddress.text);
+        formdata.AddField("category_1", category_a.value);
+        formdata.AddField("category_2", category_b.value);
+        formdata.AddField("shop_principal", ownerName.text);
+        formdata.AddField("shop_principal_gender", ownerGender.value);
+        formdata.AddField("shop_principal_phone", ownerContact.text);
+        formdata.AddField("shop_principal_email", ownerEmail.text);
+
+        UnityWebRequest sending = UnityWebRequest.Post(toUrl, formdata);
+        yield return sending.Send();
+        if (sending.error != null)
+        {
+            if (sending.error == "duplicated shopID")
+            {
+                warningText.text = "註冊錯誤，店家帳號已被使用";
+            }
+            else if (sending.error == "duplicated shopName")
+            {
+                warningText.text = "註冊錯誤，店名已被使用";
+            }
+            else if (sending.error == "internal error")
+            {
+                warningText.text = "連線錯誤，請再次嘗試";
+            }
+            else {
+                warningText.text = "連線錯誤，請再次嘗試";
+            }
+
+            Debug.Log("error below:");
+            Debug.Log(sending.error);
+        }
+        else
+        {
+            Debug.Log("correct below:");
+            if (sending.downloadHandler.text == "success")
+            {
+                warningText.text = "註冊成功，畫面切換中...";
+                Debug.Log(sending.downloadHandler.text);
+                OwnerInfo.ownerID = userID.text;
+                SceneManager.LoadScene("ownerMenu");
+            }
+            else
+            {
+                warningText.text = "註冊失敗，請再次確認";
+                Debug.Log(sending.downloadHandler.text);
+            }
+        }
+
     }
 
     // Update is called once per frame

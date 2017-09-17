@@ -150,13 +150,16 @@ public class PlayerInfo : MonoBehaviour {
         characterCollection = new List<characterItem>();
         achievementCollection = new List<achievementItem>();
 
-        //resetCurrentCharacter(); // modify!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        setUserValueInfo();
+        resetCurrentCharacter(-1); // modify!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        //setUserValueInfo();
 
         //InvokeRepeating("decreaseLikeValue",0,5);
         InvokeRepeating("calculatePlayTime",360,360);
 
-        setFirstLogIn();
+        //setFirstLogIn();
+        loadUserPace();
+
+
         setStreetMode();
         currentCheckingShopID = "000"; // modify!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
@@ -191,7 +194,7 @@ public class PlayerInfo : MonoBehaviour {
     }
 
     private void setFirstLogIn() {
-        firstLogIn = false; // get from http
+        firstLogIn = true; // get from http
         if (firstLogIn)
         {
             firstGoHome = true;// get from http
@@ -344,7 +347,67 @@ public class PlayerInfo : MonoBehaviour {
     public void setCharStartTime() {
         char_startTime = DateTime.Now;
     }
-    
+
+    //------------------------------------------------------
+    // value control functions
+
+    public void increaseValue_money(int value) {
+        value_money += value;
+    }
+
+    public void increaseValue_strength(int value) {
+        value_strength += value;
+    }
+
+    public void increaseValue_intelligence(int value)
+    {
+        value_intelligence += value;
+    }
+
+    public void increaseValue_like(int value)
+    {
+        value_like += value;
+    }
+
+    public void setCheckingShopID(string id) {
+        currentCheckingShopID = id;
+    }
+
+    public void loadUserPace() {
+        if (PlayerPrefs.HasKey("firstLogIn") == false)
+        {
+            firstLogIn = true;
+        }
+        else {
+            firstLogIn = Convert.ToBoolean(PlayerPrefs.GetString("firstLogIn", firstLogIn.ToString()));
+        }
+
+        if (PlayerPrefs.HasKey("firstGoHome") == false)
+        {
+            firstGoHome = true;
+        }
+        else {
+            firstGoHome = Convert.ToBoolean(PlayerPrefs.GetString("firstGoHome", firstGoHome.ToString()));
+        }
+
+        if (PlayerPrefs.HasKey("firstGoStreet") == false)
+        {
+            firstGoStreet = true;
+        }
+        else {
+            firstGoStreet = Convert.ToBoolean(PlayerPrefs.GetString("firstGoStreet", firstGoStreet.ToString()));
+        }
+        
+        
+        
+    }
+
+    public void saveUserPace() {
+        PlayerPrefs.SetString("firstLogIn", firstLogIn.ToString());
+        PlayerPrefs.SetString("firstGoHome", firstGoHome.ToString());
+        PlayerPrefs.SetString("firstGoStreet", firstGoStreet.ToString());
+    }
+
 }
 
 

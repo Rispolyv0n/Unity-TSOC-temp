@@ -121,13 +121,16 @@ public class SwipeControl : MonoBehaviour {
             if (ac_obj[i].transform.position.z > camera_obj.transform.position.z + distance_cameraNobj + 1)
             {
                 //ac_obj[i].GetComponent<SpriteRenderer>().material = forBackObj;
+                ac_obj[i].GetComponent<Image>().color = new Color(29 / 255f, 29 / 255f, 29 / 255f);
             }
             else if (hasIt[i])
             {
                 //ac_obj[i].GetComponent<SpriteRenderer>().material = defaultMaterial;
+                ac_obj[i].GetComponent<Image>().color = new Color(1f, 1f, 1f);
             }
             else {
                 //ac_obj[i].GetComponent<SpriteRenderer>().material = forBackObj;
+                ac_obj[i].GetComponent<Image>().color = new Color(29 / 255f, 29 / 255f, 29 / 255f);
             }
         }
 
