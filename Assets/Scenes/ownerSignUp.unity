@@ -3705,6 +3705,59 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 583912746}
+--- !u!1 &601940141
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 601940143}
+  - 114: {fileID: 601940142}
+  m_Layer: 0
+  m_Name: empty_inputConfirm
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &601940142
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 601940141}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 476e7f6a2daa7504c94645057f732553, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  userID: {fileID: 544341497}
+  userEmail: {fileID: 1374321296}
+  password: {fileID: 321888670}
+  passwordConfirm: {fileID: 426655696}
+  shopName: {fileID: 1546767852}
+  shopAddress: {fileID: 1515683344}
+  shopContact: {fileID: 1434332904}
+  category_a: {fileID: 329461536}
+  ownerName: {fileID: 1544114808}
+  ownerGender: {fileID: 1562496383}
+  ownerContact: {fileID: 108574033}
+  ownerEmail: {fileID: 1473955821}
+  warningText: {fileID: 1650291602}
+  signUpBtn: {fileID: 689209296}
+--- !u!4 &601940143
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 601940141}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 213.80583, y: 351.79108, z: 2.0625}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 2
 --- !u!1 &607125302
 GameObject:
   m_ObjectHideFlags: 0
@@ -4211,6 +4264,7 @@ GameObject:
   - 222: {fileID: 689209298}
   - 114: {fileID: 689209297}
   - 114: {fileID: 689209296}
+  - 114: {fileID: 689209299}
   m_Layer: 5
   m_Name: Button_signUp
   m_TagString: Untagged
@@ -4274,18 +4328,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 689209297}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1650291602}
-        m_MethodName: set_text
-        m_Mode: 5
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: "\u9001\u51FA\u8A3B\u518A\u8CC7\u6599!"
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &689209297
@@ -4321,6 +4364,29 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 689209294}
+--- !u!114 &689209299
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 689209294}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b34b56838232a624293e118ea7fdd6ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ownerID: {fileID: 544341497}
+  password: {fileID: 321888670}
+  signUpEmail: {fileID: 1374321296}
+  shopName: {fileID: 1546767852}
+  shopAddress: {fileID: 1515683344}
+  shopContact: {fileID: 1434332904}
+  category_1: {fileID: 329461536}
+  ownerName: {fileID: 1544114808}
+  ownerPhone: {fileID: 108574033}
+  ownerEmail: {fileID: 1473955821}
+  ownerGender: {fileID: 1562496383}
+  warningText: {fileID: 1650291602}
 --- !u!1 &699603520
 GameObject:
   m_ObjectHideFlags: 0
@@ -10444,7 +10510,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1902075020
 RectTransform:
   m_ObjectHideFlags: 0
@@ -10599,7 +10665,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1947887384
 RectTransform:
   m_ObjectHideFlags: 0
@@ -10829,6 +10895,51 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1953614253}
+--- !u!1 &1963165380
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 1963165382}
+  - 114: {fileID: 1963165381}
+  m_Layer: 0
+  m_Name: empty_categoryDropdownControl
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1963165381
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1963165380}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d7770f3ea4c0414f827f9e8a5a00b7a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  category_1: {fileID: 329461536}
+  d_no: {fileID: 1902075021}
+  d_entertainment: {fileID: 1947887385}
+  d_restaurant: {fileID: 120414917}
+  d_shopping: {fileID: 1289862026}
+  d_transportation: {fileID: 161646229}
+--- !u!4 &1963165382
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1963165380}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 201.1561, y: 329.73273, z: 65.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 3
 --- !u!1 &1969981953
 GameObject:
   m_ObjectHideFlags: 0

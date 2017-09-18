@@ -131,7 +131,7 @@ public class TangoOwnerRecordingStart : MonoBehaviour, ITangoLifecycle
     {
         if (permissionsGranted)
         {
-            //_PopulateList();
+            //StartGame();
         }
         else
         {
@@ -178,7 +178,8 @@ public class TangoOwnerRecordingStart : MonoBehaviour, ITangoLifecycle
         else
         {
             Debug.Log("No Tango Manager found in scene.");
-        }        
+        }
+        
     }
 
     /// <summary>
@@ -196,57 +197,13 @@ public class TangoOwnerRecordingStart : MonoBehaviour, ITangoLifecycle
             AndroidHelper.AndroidQuit();
         }
     }
-    /*
-    /// <summary>
-    /// Refresh the scrolling list's content for both list.
-    /// 
-    /// This function will query from the Tango API for the Tango space Area Description. Also, when it populates 
-    /// the scrolling list content, it will connect the delegate for each button in the list. The delegate is
-    /// responsible for the actual import/export  through the Tango API.
-    /// </summary>
-    private void _PopulateList()
+
+    public void giveUpCurRecording()
     {
-        foreach (Transform t in m_listContentParent.transform)
-        {
-            Destroy(t.gameObject);
-        }
-
-        // Update Tango space Area Description list.
-        AreaDescription[] areaDescriptionList = AreaDescription.GetList();
-
-        if (areaDescriptionList == null)
-        {
-            return;
-        }
-
-        foreach (AreaDescription areaDescription in areaDescriptionList)
-        {
-            GameObject newElement = Instantiate(m_listElement) as GameObject;
-            AreaDescriptionListElement listElement = newElement.GetComponent<AreaDescriptionListElement>();
-            listElement.m_toggle.group = m_toggleGroup;
-            listElement.m_areaDescriptionName.text = areaDescription.GetMetadata().m_name;
-            listElement.m_areaDescriptionUUID.text = areaDescription.m_uuid;
-
-            // Ensure the lambda makes a copy of areaDescription.
-            AreaDescription lambdaParam = areaDescription;
-            listElement.m_toggle.onValueChanged.AddListener((value) => _OnToggleChanged(lambdaParam, value));
-            newElement.transform.SetParent(m_listContentParent.transform, false);
-        }
+        //m_tangoApplication.Shutdown();
+#pragma warning disable 618
+        Application.LoadLevel(Application.loadedLevel);
+#pragma warning restore 618
     }
-    */
-    /*
-    /// <summary>
-    /// Callback function when toggle button is selected.
-    /// </summary>
-    /// <param name="item">Caller item object.</param>
-    /// <param name="value">Selected value of the toggle button.</param>
-    private void _OnToggleChanged(AreaDescription item, bool value)
-    {
-        if (value)
-        {
-            m_curAreaDescriptionUUID = item.m_uuid;
-        }
-    }
-    */
 }
 

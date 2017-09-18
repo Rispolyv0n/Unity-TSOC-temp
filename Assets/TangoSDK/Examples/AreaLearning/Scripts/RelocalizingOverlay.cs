@@ -29,7 +29,8 @@ public class RelocalizingOverlay : MonoBehaviour, ITangoPose, ITangoLifecycle
     /// <summary>
     /// The overlay image of the relocalization process.
     /// </summary>
-    public GameObject m_relocalizationOverlay;
+    //public GameObject m_relocalizationOverlay;
+    public GameObject panelLoading;
 
     /// <summary>
     /// The TangoApplication being listened to.
@@ -73,11 +74,13 @@ public class RelocalizingOverlay : MonoBehaviour, ITangoPose, ITangoLifecycle
         {
             if (pose.status_code == TangoEnums.TangoPoseStatusType.TANGO_POSE_VALID)
             {
-                m_relocalizationOverlay.SetActive(false);
+                //m_relocalizationOverlay.SetActive(false);
+                panelLoading.SetActive(false);
             }
             else
             {
-                m_relocalizationOverlay.SetActive(true);
+                //m_relocalizationOverlay.SetActive(true);
+                panelLoading.SetActive(true);
             }
         }
     }
@@ -95,7 +98,8 @@ public class RelocalizingOverlay : MonoBehaviour, ITangoPose, ITangoLifecycle
     /// </summary>
     public void OnTangoServiceConnected()
     {
-        m_relocalizationOverlay.SetActive(true);
+        //m_relocalizationOverlay.SetActive(true);
+        panelLoading.SetActive(true);
     }
     
     /// <summary>

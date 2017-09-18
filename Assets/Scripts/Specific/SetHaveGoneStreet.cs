@@ -17,6 +17,7 @@ public class SetHaveGoneStreet : MonoBehaviour {
     public void setHasGoneStreet()
     {
         PlayerInfo.firstGoStreet = false;
+        GameObject.FindGameObjectWithTag("playerInfo").GetComponent<PlayerInfo>().saveUserPace();
         /*
         if (PlayerInfo.firstGoHome == false && PlayerInfo.firstGoStreet == false)
         {

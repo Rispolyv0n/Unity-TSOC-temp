@@ -6,6 +6,8 @@ using UnityEngine.SceneManagement;
 
 public class StreetModeControl : MonoBehaviour {
 
+    public TangoStreet TangoStreetController;
+
     public GameObject upperGameInfo;
     public GameObject GamePanel;
     public GameObject InfoPanel;
@@ -22,7 +24,9 @@ public class StreetModeControl : MonoBehaviour {
         if (PlayerInfo.firstGoStreet) {
             SceneManager.LoadScene("instruction_street");
         }
-        
+
+        TangoStreetController = FindObjectOfType<TangoStreet>();
+
         setGameMode(PlayerInfo.streetMode.gameMode);
         gameMode.isOn = PlayerInfo.streetMode.gameMode;
 
@@ -42,6 +46,14 @@ public class StreetModeControl : MonoBehaviour {
     {
         if (arg0)
         {
+            foreach (GameObject obj in TangoStreetController.m_storeList)
+            {
+                obj.SetActive(false);
+            }
+            foreach (GameObject obj in TangoStreetController.m_objList)
+            {
+                obj.SetActive(true);
+            }
             PlayerInfo.streetMode.gameMode = true;
             upperGameInfo.SetActive(true);
             CharImg.SetActive(true);
@@ -50,6 +62,14 @@ public class StreetModeControl : MonoBehaviour {
             map.transform.localPosition = new Vector3(290, 332, 0);
         }
         else {
+            foreach (GameObject obj in TangoStreetController.m_storeList)
+            {
+                obj.SetActive(true);
+            }
+            foreach (GameObject obj in TangoStreetController.m_objList)
+            {
+                obj.SetActive(false);
+            }
             PlayerInfo.streetMode.gameMode = false;
             upperGameInfo.SetActive(false);
             CharImg.SetActive(false);
@@ -63,11 +83,22 @@ public class StreetModeControl : MonoBehaviour {
     {
         if (arg0)
         {
-            InfoPanel.SetActive(true);
+            foreach (GameObject obj in TangoStreetController.m_storeList)
+            {
+                obj.SetActive(true);
+            }
+
+            //InfoPanel.SetActive(true);
             PlayerInfo.streetMode.infoObj = true;
         }
         else {
-            InfoPanel.SetActive(false);
+
+            foreach (GameObject obj in TangoStreetController.m_storeList)
+            {
+                obj.SetActive(false);
+            }
+
+            //InfoPanel.SetActive(false);
             PlayerInfo.streetMode.infoObj = false;
         }
     }
@@ -76,12 +107,22 @@ public class StreetModeControl : MonoBehaviour {
     {
         if (arg0)
         {
-            GamePanel.SetActive(true);
+            foreach(GameObject obj in TangoStreetController.m_objList)
+            {
+                obj.SetActive(true);
+            }
+
+            //GamePanel.SetActive(true);
             PlayerInfo.streetMode.gameObj = true;
         }
         else
         {
-            GamePanel.SetActive(false);
+            foreach (GameObject obj in TangoStreetController.m_objList)
+            {
+                obj.SetActive(false);
+            }
+
+            //GamePanel.SetActive(false);
             PlayerInfo.streetMode.gameObj = false;
         }
     }

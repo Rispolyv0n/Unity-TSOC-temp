@@ -24,13 +24,13 @@ public class rotateMarker : MonoBehaviour {
             {
                 offsetValue = Input.mousePosition - previousPosition;
                 previousPosition = Input.mousePosition;
-                if (offsetValue.y > 0)
+                if (offsetValue.x > 0)
                 {
-                    transform.Rotate(Vector3.forward, offsetValue.magnitude, Space.Self);
+                    transform.Rotate(Vector3.down, offsetValue.magnitude, Space.Self);
                 }
-                if (offsetValue.y < 0)
+                if (offsetValue.x < 0)
                 {
-                    transform.Rotate(Vector3.back, offsetValue.magnitude, Space.Self);
+                    transform.Rotate(Vector3.up, offsetValue.magnitude, Space.Self);
                 }
             }
         }

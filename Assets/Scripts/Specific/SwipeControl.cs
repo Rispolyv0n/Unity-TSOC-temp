@@ -58,8 +58,8 @@ public class SwipeControl : MonoBehaviour {
 
         hasIt = new bool[ac_num];
 
-        distance_cameraNobj = 15;
-        movingSpeed = 6;
+        distance_cameraNobj = 17; // original 15
+        movingSpeed = 4;
         timeCounter = 0;
         circleWidth = ac_num/3*5;
         frontObjPos = new Vector3(0,0,-circleWidth);
@@ -85,20 +85,26 @@ public class SwipeControl : MonoBehaviour {
                     switch (item.level)
                     {
                         case 1:
-                            ac_obj[i].GetComponent<SpriteRenderer>().sprite = GamingInfo.achievements[i].img_1;
+                            ac_obj[i].GetComponent<Image>().overrideSprite = GamingInfo.achievements[i].img_1;
+                            //ac_obj[i].GetComponent<SpriteRenderer>().sprite = GamingInfo.achievements[i].img_1;
                             break;
                         case 2:
-                            ac_obj[i].GetComponent<SpriteRenderer>().sprite = GamingInfo.achievements[i].img_2;
+                            ac_obj[i].GetComponent<Image>().overrideSprite = GamingInfo.achievements[i].img_2;
+                            //ac_obj[i].GetComponent<SpriteRenderer>().sprite = GamingInfo.achievements[i].img_2;
                             break;
                         case 3:
-                            ac_obj[i].GetComponent<SpriteRenderer>().sprite = GamingInfo.achievements[i].img_3;
+                            ac_obj[i].GetComponent<Image>().overrideSprite = GamingInfo.achievements[i].img_3;
+                            //ac_obj[i].GetComponent<SpriteRenderer>().sprite = GamingInfo.achievements[i].img_3;
                             break;
                     }
                     hasIt[i] = true;
                     break;
                 }
             }
-            if(!hasIt[i]) ac_obj[i].GetComponent<SpriteRenderer>().sprite = GamingInfo.achievements[i].img_1;
+            if (!hasIt[i]) {
+                ac_obj[i].GetComponent<Image>().overrideSprite = GamingInfo.achievements[i].img_1;
+                //ac_obj[i].GetComponent<SpriteRenderer>().sprite = GamingInfo.achievements[i].img_1;
+            } 
         }
         adjustPosition(0);
 
@@ -114,14 +120,17 @@ public class SwipeControl : MonoBehaviour {
         for (int i=0;i<ac_num;++i) {
             if (ac_obj[i].transform.position.z > camera_obj.transform.position.z + distance_cameraNobj + 1)
             {
-                ac_obj[i].GetComponent<SpriteRenderer>().material = forBackObj;
+                //ac_obj[i].GetComponent<SpriteRenderer>().material = forBackObj;
+                ac_obj[i].GetComponent<Image>().color = new Color(29 / 255f, 29 / 255f, 29 / 255f);
             }
             else if (hasIt[i])
             {
-                ac_obj[i].GetComponent<SpriteRenderer>().material = defaultMaterial;
+                //ac_obj[i].GetComponent<SpriteRenderer>().material = defaultMaterial;
+                ac_obj[i].GetComponent<Image>().color = new Color(1f, 1f, 1f);
             }
             else {
-                ac_obj[i].GetComponent<SpriteRenderer>().material = forBackObj;
+                //ac_obj[i].GetComponent<SpriteRenderer>().material = forBackObj;
+                ac_obj[i].GetComponent<Image>().color = new Color(29 / 255f, 29 / 255f, 29 / 255f);
             }
         }
 

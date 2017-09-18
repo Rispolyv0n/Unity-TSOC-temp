@@ -2,7 +2,7 @@
 using System.Collections;
 
 public class MouseDragCamera : MonoBehaviour {
-    public float speed;
+    private float speed;
     public bool dir_x;
     public bool dir_y;
     public bool dir_z;
@@ -12,7 +12,7 @@ public class MouseDragCamera : MonoBehaviour {
     public bool mouseDir_y;
     // Use this for initialization
     void Start () {
-        speed = 30;
+        speed = 10f;
         //bound = -16;
         //dir_x = false;
         //dir_y = false;
@@ -20,7 +20,7 @@ public class MouseDragCamera : MonoBehaviour {
     }
 	
 	// Update is called once per frame
-	void Update () {
+	void FixedUpdate () {
         if (dir_x == true)
         {
             if (mouseDir_x == true)

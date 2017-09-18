@@ -13,7 +13,7 @@ public class PanelEventInfoControl : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        gameObject.GetComponent<SpriteRenderer>().sprite = GamingInfo.events[eventNum].img;
+        gameObject.GetComponent<Image>().sprite = GamingInfo.events[eventNum].img;
         gameObject.AddComponent<PolygonCollider2D>();
 	}
 	

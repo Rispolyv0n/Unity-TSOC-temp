@@ -33,8 +33,6 @@ using UnityEngine.UI;
 /// </summary>
 public class AreaDescriptionPicker : MonoBehaviour, ITangoLifecycle
 {
-    public Canvas canvas_street;
-
     /// <summary>
     /// The prefab of a standard button in the scrolling list.
     /// </summary>
@@ -98,20 +96,45 @@ public class AreaDescriptionPicker : MonoBehaviour, ITangoLifecycle
     /// </summary>
     /// <param name="isNewAreaDescription">If set to <c>true</c> game with start to learn a new Area 
     /// Description.</param>
-    public void StartGame()//bool isNewAreaDescription)
+    public void StartGame(bool isNewAreaDescription)
     {
+        // The game has to be started with an Area Description.
+        if (!isNewAreaDescription)
+        {
+            if (string.IsNullOrEmpty(m_curAreaDescriptionUUID))
+            {
+                AndroidHelper.ShowAndroidToastMessage("Please choose an Area Description.");
+                return;
+            }
+        }
+        else
+        {
+            m_curAreaDescriptionUUID = null;
+        }
+
+        // Dismiss Area Description list, footer and header UI panel.
         gameObject.SetActive(false);
 
-        m_curAreaDescriptionUUID = "f2953b36-b477-2fb9-81c5-1682a435250e";//204
-        AreaDescription areaDescription = AreaDescription.ForUUID(m_curAreaDescriptionUUID);
-        m_guiController.m_curAreaDescription = areaDescription;
-        m_tangoApplication.m_areaDescriptionLearningMode = m_enableLearningToggle.isOn;        
+        if (isNewAreaDescription)
+        {
+            // Completely new area description.
+            m_guiController.m_curAreaDescription = null;
+            m_tangoApplication.m_areaDescriptionLearningMode = true;
+        }
+        else
+        {
+            // Load up an existing Area Description.
+            AreaDescription areaDescription = AreaDescription.ForUUID(m_curAreaDescriptionUUID);
+            m_guiController.m_curAreaDescription = areaDescription;
+            m_tangoApplication.m_areaDescriptionLearningMode = m_enableLearningToggle.isOn;
+        }
+
         m_tangoApplication.Startup(m_guiController.m_curAreaDescription);
 
+        // Enable GUI controller to allow user tap and interactive with the environment.
         m_poseController.gameObject.SetActive(true);
         m_guiController.enabled = true;
-        canvas_street.gameObject.SetActive(true);
-        //m_gameControlPanel.SetActive(true);
+        m_gameControlPanel.SetActive(true);
     }
 
     /// <summary>
@@ -122,7 +145,7 @@ public class AreaDescriptionPicker : MonoBehaviour, ITangoLifecycle
     {
         if (permissionsGranted)
         {
-            //_PopulateList();
+            _PopulateList();
         }
         else
         {
@@ -161,18 +184,15 @@ public class AreaDescriptionPicker : MonoBehaviour, ITangoLifecycle
         if (m_tangoApplication != null)
         {
             m_tangoApplication.Register(this);
-            m_tangoApplication.RequestPermissions();
-            /*if (AndroidHelper.IsTangoCorePresent())
+            if (AndroidHelper.IsTangoCorePresent())
             {
                 m_tangoApplication.RequestPermissions();
-            }*/
+            }
         }
         else
         {
             Debug.Log("No Tango Manager found in scene.");
         }
-
-        Invoke("StartGame", 0.1f);
     }
 
     /// <summary>
@@ -191,7 +211,6 @@ public class AreaDescriptionPicker : MonoBehaviour, ITangoLifecycle
         }
     }
 
-    /*
     /// <summary>
     /// Refresh the scrolling list's content for both list.
     /// 
@@ -228,8 +247,7 @@ public class AreaDescriptionPicker : MonoBehaviour, ITangoLifecycle
             newElement.transform.SetParent(m_listContentParent.transform, false);
         }
     }
-    */
-    /*
+
     /// <summary>
     /// Callback function when toggle button is selected.
     /// </summary>
@@ -242,5 +260,4 @@ public class AreaDescriptionPicker : MonoBehaviour, ITangoLifecycle
             m_curAreaDescriptionUUID = item.m_uuid;
         }
     }
-    */
 }

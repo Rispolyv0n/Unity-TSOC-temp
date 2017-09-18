@@ -39,22 +39,22 @@ public class TangoOwnerRecording : MonoBehaviour, ITangoPose, ITangoEvent, ITang
     /// <summary>
     /// Prefabs of different colored markers.
     /// </summary>
-    public GameObject[] m_markPrefabs;
+    //public GameObject[] m_markPrefabs;
 
     /// <summary>
     /// The point cloud object in the scene.
     /// </summary>
-    public TangoPointCloud m_pointCloud;
+    //public TangoPointCloud m_pointCloud;
 
     /// <summary>
     /// The canvas to place 2D game objects under.
     /// </summary>
-    public Canvas m_canvas;
+    //public Canvas m_canvas;
 
     /// <summary>
     /// The touch effect to place on taps.
     /// </summary>
-    public RectTransform m_prefabTouchEffect;
+    //public RectTransform m_prefabTouchEffect;
 
     /// <summary>
     /// Saving progress UI text.
@@ -68,6 +68,8 @@ public class TangoOwnerRecording : MonoBehaviour, ITangoPose, ITangoEvent, ITang
     public AreaDescription m_curAreaDescription;
 
     public GameObject panelConfirm;
+
+    public GameObject panelsaved;
 
 #if UNITY_EDITOR
     /// <summary>
@@ -105,22 +107,22 @@ public class TangoOwnerRecording : MonoBehaviour, ITangoPose, ITangoEvent, ITang
     /// <summary>
     /// List of markers placed in the scene.
     /// </summary>
-    private List<GameObject> m_markerList = new List<GameObject>();
+    //private List<GameObject> m_markerList = new List<GameObject>();
 
     /// <summary>
     /// Reference to the newly placed marker.
     /// </summary>
-    private GameObject newMarkObject = null;
+    //private GameObject newMarkObject = null;
 
     /// <summary>
     /// Current marker type.
     /// </summary>
-    private int m_currentMarkType = 0;
+    //private int m_currentMarkType = 0;
 
     /// <summary>
     /// If set, this is the selected marker.
     /// </summary>
-    private ARMarker m_selectedMarker;
+    //private ARMarker m_selectedMarker;
 
     /// <summary>
     /// If set, this is the rectangle bounding the selected marker.
@@ -168,10 +170,16 @@ public class TangoOwnerRecording : MonoBehaviour, ITangoPose, ITangoEvent, ITang
         
         if (m_saveThread != null && m_saveThread.ThreadState != ThreadState.Running)
         {
+
+            panelsaved.SetActive(true);
+
+            //m_poseController.gameObject.SetActive(false);
+            //Destroy(m_poseController);
+            //Camera.main.enabled = false;
             // After saving an Area Description or mark data, hgo back to the menu
-            SceneManager.LoadScene("ownerMenu");
+            //SceneManager.LoadScene("ownerMenu",LoadSceneMode.Single);
         }
-        /*
+        
         if (Input.GetKey(KeyCode.Escape))
         {
             #pragma warning disable 618
@@ -183,7 +191,7 @@ public class TangoOwnerRecording : MonoBehaviour, ITangoPose, ITangoEvent, ITang
         {
             return;
         }
-        */
+        
         if (EventSystem.current.IsPointerOverGameObject(0) || GUIUtility.hotControl != 0)
         {
             return;
@@ -195,16 +203,15 @@ public class TangoOwnerRecording : MonoBehaviour, ITangoPose, ITangoEvent, ITang
     /// </summary>
     /// <param name="pauseStatus"><c>true</c> if the application about to pause, otherwise <c>false</c>.</param>
     public void OnApplicationPause(bool pauseStatus)
-    {/*
+    {        
         if (pauseStatus && m_initialized)
         {
             // When application is backgrounded, we reload the level because the Tango Service is disconected. All
             // learned area and placed marker should be discarded as they are not saved.
-            #pragma warning disable 618
+#pragma warning disable 618
             Application.LoadLevel(Application.loadedLevel);
-            #pragma warning restore 618
-        }
-        */
+#pragma warning restore 618
+        }        
     }
 
     /// <summary>
@@ -251,7 +258,7 @@ public class TangoOwnerRecording : MonoBehaviour, ITangoPose, ITangoEvent, ITang
         }
 #endif
     }
-
+    /*
     /// <summary>
     /// Set the marker type.
     /// </summary>
@@ -263,7 +270,7 @@ public class TangoOwnerRecording : MonoBehaviour, ITangoPose, ITangoEvent, ITang
             m_currentMarkType = type;
         }
     }
-
+    */
     /// <summary>
     /// Save the game.
     /// 
@@ -394,6 +401,7 @@ public class TangoOwnerRecording : MonoBehaviour, ITangoPose, ITangoEvent, ITang
         {
             // Disable interaction before saving.
             m_initialized = false;
+            m_savingText.text = "Saving...";
             m_savingText.gameObject.SetActive(true);
             if (m_tangoApplication.m_areaDescriptionLearningMode)
             {
@@ -412,6 +420,7 @@ public class TangoOwnerRecording : MonoBehaviour, ITangoPose, ITangoEvent, ITang
                     AreaDescription.Metadata metadata = m_curAreaDescription.GetMetadata();
                     metadata.m_name = name;
                     m_curAreaDescription.SaveMetadata(metadata);
+                    OwnerInfo.curUUID = m_curAreaDescription.m_uuid;
                 });
                 m_saveThread.Start();
             }

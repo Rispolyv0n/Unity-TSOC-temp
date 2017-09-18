@@ -7,7 +7,6 @@ public class IfFirstLogIn : MonoBehaviour {
 
     public GameObject panel_firstLogIn;
     public GameObject panel_chooseMode;
-    private bool firstLogIn;
     
     public Button goHome;
     public Button goStreet;
@@ -19,6 +18,8 @@ public class IfFirstLogIn : MonoBehaviour {
         // get http request: if first time log in
         if (PlayerInfo.firstLogIn)
         {
+            PlayerInfo.firstLogIn = false;
+            GameObject.FindGameObjectWithTag("playerInfo").GetComponent<PlayerInfo>().saveUserPace();
             panel_firstLogIn.SetActive(true);
         }
         else {

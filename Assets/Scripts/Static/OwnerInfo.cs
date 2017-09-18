@@ -7,7 +7,11 @@ public class OwnerInfo : MonoBehaviour {
 
     static OwnerInfo ownerInfo;
 
+    static public string ownerID;
+
     static public bool hasADF;
+
+    static public string curUUID;
 
     // openTime structures
     public struct period {

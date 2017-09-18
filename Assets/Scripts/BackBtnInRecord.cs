@@ -20,7 +20,7 @@ public class BackBtnInRecord : MonoBehaviour {
     void checkIfSaved() {
         if (control.GetComponent<RecordControl>().hasSaved)
         {
-            SceneManager.LoadScene("ownerMenu");
+            SceneManager.LoadScene("ownerMenu", LoadSceneMode.Single);
         }
         
     }

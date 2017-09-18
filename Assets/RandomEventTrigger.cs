@@ -42,19 +42,19 @@ public class RandomEventTrigger : MonoBehaviour {
         eventPanel.transform.Find("Text_event").GetComponent<Text>().text = GamingInfo.events[PlayerInfo.currentCharacterID].title;
         eventPanel.transform.Find("Image").GetComponent<Image>().overrideSprite = GamingInfo.events[PlayerInfo.currentCharacterID].img;
         eventPanel.SetActive(true);
-        //do the event collecting
+        // do the event collecting
         bool hasEvent = false;
-        int eventNum = -1;
+        int eventIndex = -1; // index in player's event collection list
         for (int i = 0; i < PlayerInfo.eventCollection.Count; ++i) {
             if (PlayerInfo.eventCollection[i].num == PlayerInfo.currentCharacterID) {
                 hasEvent = true;
-                eventNum = i;
+                eventIndex = i;
                 break;
             }
         }
         if (hasEvent)
         {
-            PlayerInfo.eventCollection[eventNum] = new PlayerInfo.eventItem(PlayerInfo.eventCollection[eventNum].num, PlayerInfo.eventCollection[eventNum].num+1);
+            PlayerInfo.eventCollection[eventIndex] = new PlayerInfo.eventItem(PlayerInfo.eventCollection[eventIndex].num, PlayerInfo.eventCollection[eventIndex].num + 1);
         }
         else {
             PlayerInfo.eventItem item = new PlayerInfo.eventItem();
@@ -62,7 +62,71 @@ public class RandomEventTrigger : MonoBehaviour {
             item.time = 1;
             PlayerInfo.eventCollection.Add(item);
         }
-        
+
+        // check achievements (category:1 - events collection)
+        // find the number of the event
+        int eventNum = 0;
+        foreach (PlayerInfo.eventItem item in PlayerInfo.eventCollection)
+        {
+            if (item.num == PlayerInfo.currentCharacterID)
+            {
+                eventNum = item.time;
+                break;
+            }
+        }
+        // check if the player already had the kind of achievement
+        int indexOfAc = -1;
+        foreach (PlayerInfo.achievementItem ac in PlayerInfo.achievementCollection) {
+            if (GamingInfo.achievements[ac.id].category == 1 && GamingInfo.achievements[ac.id].relative_id == PlayerInfo.currentCharacterID) {
+                indexOfAc = PlayerInfo.achievementCollection.IndexOf(ac);
+                break;
+            }
+        }
+        if (indexOfAc > -1)
+        {
+            // level up the ac
+            switch (PlayerInfo.achievementCollection[indexOfAc].level)
+            {
+                case 1:
+                    if (eventNum >= GamingInfo.achievements[PlayerInfo.currentCharacterID].condition_2)
+                    {
+                        PlayerInfo.achievementItem new_ac = new PlayerInfo.achievementItem();
+                        new_ac.id = PlayerInfo.achievementCollection[indexOfAc].id;
+                        new_ac.level = 2;
+                        PlayerInfo.achievementCollection[indexOfAc] = new_ac;
+                    }
+                    break;
+                case 2:
+                    if (eventNum >= GamingInfo.achievements[PlayerInfo.currentCharacterID].condition_3)
+                    {
+                        PlayerInfo.achievementItem new_ac = new PlayerInfo.achievementItem();
+                        new_ac.id = PlayerInfo.achievementCollection[indexOfAc].id;
+                        new_ac.level = 3;
+                        PlayerInfo.achievementCollection[indexOfAc] = new_ac;
+                    }
+                    break;
+                case 3:
+                    break;
+            }
+        }
+        else {
+            // find the corresponding id of the char and the achievement
+            int theID = -1;
+            foreach (GamingInfo.achievementInfo item in GamingInfo.achievements)
+            {
+                if (item.category == 1 && item.relative_id == PlayerInfo.currentCharacterID)
+                {
+                    theID = item.id;
+                    break;
+                }
+            }
+            // add a new ac
+            PlayerInfo.achievementItem new_ac = new PlayerInfo.achievementItem();
+            new_ac.id = theID;
+            new_ac.level = 1;
+            PlayerInfo.achievementCollection.Add(new_ac);
+        }
+
     }
 	
 	// Update is called once per frame
