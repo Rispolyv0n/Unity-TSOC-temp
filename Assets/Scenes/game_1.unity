@@ -194,10 +194,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f5416e6cac64a34ba7f8b9150e7a822, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SceneName: street
+  SceneName: game_1
   addScene: 0
-  switchScene: 1
-  closeScene: 0
+  switchScene: 0
+  closeScene: 1
 --- !u!114 &302566769
 MonoBehaviour:
   m_ObjectHideFlags: 0

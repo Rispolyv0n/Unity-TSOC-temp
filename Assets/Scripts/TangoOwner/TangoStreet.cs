@@ -8,6 +8,7 @@ using System.Xml.Serialization;
 using Tango;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 
 public class TangoStreet : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDepth
 {
@@ -157,9 +158,6 @@ public class TangoStreet : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDepth
 
         //m_curObjType = PlayerInfo.currentCharacterID + 2;
 
-        sprinkleObjects(0, 10);//coins
-        sprinkleObjects(1, 5);//gameDiamonds
-        sprinkleObjects(PlayerInfo.currentCharacterID + 2, 15);
     }
 
     public void sprinkleObjects(int sprinkleType, int nums)//(List<Vector2> touchPoseList)
@@ -291,19 +289,32 @@ public class TangoStreet : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDepth
     {
         if (m_selectedObj != null)
         {
-            m_objList.Remove(m_selectedObj.gameObject);
+            if(m_selectedObj.m_type == 0)
+            {
+                GameObject.FindGameObjectWithTag("playerInfo").GetComponent<PlayerInfo>().increaseValue_money((int)UnityEngine.Random.Range(20, 50));
+            }
+            else if(m_selectedObj.m_type == 1)
+            {
+                SceneManager.LoadScene("game_1", LoadSceneMode.Additive);
+            }
+            else 
+            {
+                GameObject.FindGameObjectWithTag("playerInfo").GetComponent<PlayerInfo>().increaseValue_like((int)UnityEngine.Random.Range(20, 50));
+                //GameObject.FindGameObjectWithTag("playerInfo").GetComponent<PlayerInfo>().increa
+            }
+            m_objList.Remove(m_selectedObj.gameObject);            
             m_selectedObj.SendMessage("Hide");
             m_selectedObj = null;
         }
         else if(m_selectedStore != null)
         {
-            m_storeList.Remove(m_selectedStore.gameObject);
-            m_selectedStore.SendMessage("Hude");
+            SceneManager.LoadScene("shopInfo", LoadSceneMode.Additive);
+
             m_selectedStore = null;
         }
         else
         {
-            m_selectedRect = new Rect();
+                       
         }
     }
     /*
@@ -376,6 +387,9 @@ public class TangoStreet : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDepth
                     return;
                 }
 
+                sprinkleObjects(0, 10);//coins
+                sprinkleObjects(1, 10);//gameDiamonds
+                sprinkleObjects(PlayerInfo.currentCharacterID + 2, 15);
                 _LoadMarkerFromDisk();
             }
         }
