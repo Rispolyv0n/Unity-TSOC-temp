@@ -24,10 +24,20 @@ public class ARStoreObject : MonoBehaviour
     public float m_timestamp = -1.0f;
 
     /// <summary>
+    /// the store name
+    /// </summary>
+    public string m_storeName;
+
+    /// <summary>
+    /// the introduce
+    /// </summary>
+    public string m_storeIntro;
+
+    /// <summary>
     /// The marker's transformation with respect to the device frame.
     /// </summary>
     public Matrix4x4 m_deviceTObj = new Matrix4x4();
-
+        
     /// <summary>
     /// The animation playing.
     /// </summary>

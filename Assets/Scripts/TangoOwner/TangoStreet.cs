@@ -9,6 +9,7 @@ using Tango;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class TangoStreet : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDepth
 {
@@ -248,10 +249,11 @@ public class TangoStreet : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDepth
             else if (Physics.Raycast(cam.ScreenPointToRay(t.position), out hitInfo))
             {
                 // Found a marker, select it (so long as it isn't disappearing)!
-                GameObject tapped = hitInfo.collider.gameObject;                
-                m_selectedObj = tapped.GetComponent<ARObjects>();
+                GameObject tapped = hitInfo.collider.gameObject;
                 m_selectedStore = tapped.GetComponent<ARStoreObject>();
+                m_selectedObj = tapped.GetComponent<ARObjects>();
             }
+            //else if(Physics2DRaycaster.)            
             else
             {                
                 RectTransform touchEffectRectTransform = Instantiate(m_prefabTouchEffect) as RectTransform;
@@ -309,7 +311,7 @@ public class TangoStreet : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDepth
         else if(m_selectedStore != null)
         {
             SceneManager.LoadScene("shopInfo", LoadSceneMode.Additive);
-
+            
             m_selectedStore = null;
         }
         else
@@ -476,6 +478,22 @@ public class TangoStreet : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDepth
                                           store.m_orientation) as GameObject;
             temp.transform.localScale = store.m_scale;
 
+            temp.transform.GetComponent<ARStoreObject>().m_storeName = store.m_name;
+            temp.transform.GetComponent<ARStoreObject>().m_storeIntro = store.m_introduce;
+            
+            /*
+            temp.transform.GetChild(1).gameObject.GetComponent<Text>().text = store.m_name;
+            temp.transform.GetChild(2).gameObject.GetComponent<Text>().text = store.m_introduce;
+
+            Text introText = temp.transform.GetChild(2).gameObject.GetComponent<Text>();
+            for (int i = 0; i < OwnerInfo.storeInfo.infoList.Count; i++)
+            {
+                if (OwnerInfo.storeInfo.infoList[i].title == "©±®a¤¶²Ð")
+                {
+                    introText.text = OwnerInfo.storeInfo.infoList[i].content;
+                }
+            }
+            */
             m_storeList.Add(temp);
         }
     }
@@ -577,5 +595,17 @@ public class TangoStreet : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDepth
         /// </summary>
         [XmlElement("scale")]
         public Vector3 m_scale;
+
+        /// <summary>
+        /// name text
+        /// </summary>
+        [XmlElement("name")]
+        public string m_name;
+
+        /// <summary>
+        /// introduce text
+        /// </summary>
+        [XmlElement("introduce")]
+        public string m_introduce;
     }
 }

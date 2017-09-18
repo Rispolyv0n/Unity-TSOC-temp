@@ -1,23 +1,4 @@
-﻿//-----------------------------------------------------------------------
-// <copyright file="AreaLearningInGameController.cs" company="Google">
-//
-// Copyright 2016 Google Inc. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-//
-// </copyright>
-//-----------------------------------------------------------------------
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -27,6 +8,7 @@ using System.Xml.Serialization;
 using Tango;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 using Lean.Touch;
 
 /// <summary>
@@ -158,10 +140,11 @@ public class TangoOwnerAddObj : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDe
         if (m_tangoApplication != null)
         {
             m_tangoApplication.Register(this);
-        }
-
-        //Invoke("createObj", 0.1f);
+        }                
     }
+    
+    
+
     /// <summary>
     /// add an obj in markerList, and upload into the world with the upload function
     /// </summary>
@@ -176,13 +159,22 @@ public class TangoOwnerAddObj : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDe
             newObj = Instantiate(m_objPrefabs[m_currentObjType],
                                         objPose,
                                         //Camera.main.transform.rotation * Vector3.forward) as GameObject;
-                                        Quaternion.identity) as GameObject;            
+                                        Quaternion.identity) as GameObject;
 
+            newObj.transform.GetChild(1);
             ARStoreObject objScript = newObj.GetComponent<ARStoreObject>();
 
             objScript.m_type = m_currentObjType;
             objScript.m_timestamp = (float)m_poseController.LastPoseTimestamp;
-
+            objScript.m_storeName = OwnerInfo.storeInfo.shopName;
+            for (int i = 0; i < OwnerInfo.storeInfo.infoList.Count; i++)
+            {
+                if (OwnerInfo.storeInfo.infoList[i].title == "店家介紹")
+                {
+                    objScript.m_storeIntro = OwnerInfo.storeInfo.infoList[i].content;
+                }
+            }
+            
             Matrix4x4 uwTDevice = Matrix4x4.TRS(m_poseController.transform.position,
                                                 m_poseController.transform.rotation,
                                                 Vector3.one);
@@ -620,6 +612,12 @@ public class TangoOwnerAddObj : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDe
             temp.m_position = obj.transform.position;
             temp.m_orientation = obj.transform.rotation;
             temp.m_scale = obj.transform.localScale;
+
+            Text nameText = obj.transform.GetChild(1).gameObject.GetComponent<Text>();
+            temp.m_name = nameText.text;
+            Text introText = obj.transform.GetChild(2).gameObject.GetComponent<Text>();
+            temp.m_introduce = introText.text;            
+
             xmlDataList.Add(temp);
         }
 
@@ -785,5 +783,17 @@ public class TangoOwnerAddObj : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDe
         /// </summary>
         [XmlElement("scale")]
         public Vector3 m_scale;
+
+        /// <summary>
+        /// name text
+        /// </summary>
+        [XmlElement("name")]
+        public string m_name;
+
+        /// <summary>
+        /// introduce text
+        /// </summary>
+        [XmlElement("introduce")]
+        public string m_introduce;
     }
 }

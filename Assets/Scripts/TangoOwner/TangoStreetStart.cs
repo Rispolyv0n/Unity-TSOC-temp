@@ -68,9 +68,9 @@ public class TangoStreetStart : MonoBehaviour, ITangoLifecycle
     {
         gameObject.SetActive(false);
 
-        m_curAreaDescriptionUUID = "f2953b36-b477-2fb9-81c5-1682a435250e";//204
-        m_curAreaDescriptionUUID = "e12e5a3c-5a09-29b9-98c6-7b3d6fd42737";//d24test6
-        //m_curAreaDescriptionUUID = "ff8c341e-ced8-28f7-9898-6ef42a5060b6";//d24test5
+        //m_curAreaDescriptionUUID = "f2953b36-b477-2fb9-81c5-1682a435250e";//204
+        //m_curAreaDescriptionUUID = "e12e5a3c-5a09-29b9-98c6-7b3d6fd42737";//d24test6
+        m_curAreaDescriptionUUID = "ff8c341e-ced8-28f7-9898-6ef42a5060b6";//d24test5
         AreaDescription areaDescription = AreaDescription.ForUUID(m_curAreaDescriptionUUID);
         m_guiController.m_curAreaDescription = areaDescription;
         m_tangoApplication.m_areaDescriptionLearningMode = false;//m_enableLearningToggle.isOn;        

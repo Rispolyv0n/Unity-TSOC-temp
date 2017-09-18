@@ -1,23 +1,4 @@
-﻿//-----------------------------------------------------------------------
-// <copyright file="AreaDescriptionPicker.cs" company="Google">
-//
-// Copyright 2016 Google Inc. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-//
-// </copyright>
-//-----------------------------------------------------------------------
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using Tango;
@@ -102,9 +83,9 @@ public class TangoOwnerAddObjStart : MonoBehaviour, ITangoLifecycle
     {
         gameObject.SetActive(false);
 
-        m_curAreaDescriptionUUID = "f2953b36-b477-2fb9-81c5-1682a435250e";//204
+        //m_curAreaDescriptionUUID = "f2953b36-b477-2fb9-81c5-1682a435250e";//204
         //m_curAreaDescriptionUUID = "ff8c3413-ced8-28f7-9801-38627ec90271";//d24test4
-        //m_curAreaDescriptionUUID = "ff8c341e-ced8-28f7-9898-6ef42a5060b6";//d24test5
+        m_curAreaDescriptionUUID = "ff8c341e-ced8-28f7-9898-6ef42a5060b6";//d24test5
         //m_curAreaDescriptionUUID = OwnerInfo.curUUID;
         AreaDescription areaDescription = AreaDescription.ForUUID(m_curAreaDescriptionUUID);
         m_guiController.m_curAreaDescription = areaDescription;
