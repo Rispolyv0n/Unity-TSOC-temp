@@ -3418,7 +3418,7 @@ MonoBehaviour:
   - {fileID: 147858, guid: 50de659d906188844ba37b12bf2e3351, type: 2}
   - {fileID: 190374, guid: d5172e2e55df81149a738d7b60fb3ecf, type: 2}
   m_storeInfoPrefabs:
-  - {fileID: 191190, guid: 2f51d2ce3aa40584398ad1de91312b3a, type: 2}
+  - {fileID: 160848, guid: cb173c3223516cf4ea722d98bb71b82b, type: 2}
   m_objList: []
   m_storeList: []
   m_pointCloud: {fileID: 264882624}

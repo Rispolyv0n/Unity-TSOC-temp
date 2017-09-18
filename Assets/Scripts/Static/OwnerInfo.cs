@@ -84,7 +84,7 @@ public class OwnerInfo : MonoBehaviour {
 
     IEnumerator loadShopContent()
     {
-        string toUrl = "https://kevin.imslab.org" + PlayerInfo.port + "/get_shopInfo?shopID=" + OwnerInfo.ownerID;
+        string toUrl = "http://kevin.imslab.org" + PlayerInfo.port + "/get_shopInfo?shopID=" + OwnerInfo.ownerID;
         UnityWebRequest sending = UnityWebRequest.Get(toUrl);
         yield return sending.Send();
         Debug.Log("load the shopInfo data---");

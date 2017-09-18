@@ -20,7 +20,7 @@ public class SendLogIn : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        toUrl = "https://kevin.imslab.org" + PlayerInfo.port + "/login";
+        toUrl = "http://kevin.imslab.org" + ":4001" + "/login";
         // Btn event
         thisBtn = GetComponent<Button>();
         thisBtn.onClick.AddListener(delegate { warningText.text = "登入中..."; StartCoroutine(toLogIn(getID.text, getPW.text)); });

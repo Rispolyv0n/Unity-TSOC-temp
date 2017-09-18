@@ -250,7 +250,7 @@ public class TangoStreet : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDepth
             {
                 // Found a marker, select it (so long as it isn't disappearing)!
                 GameObject tapped = hitInfo.collider.gameObject;
-                m_selectedStore = tapped.GetComponent<ARStoreObject>();
+                m_selectedStore = tapped.transform.parent.GetComponent<ARStoreObject>();
                 m_selectedObj = tapped.GetComponent<ARObjects>();
             }
             //else if(Physics2DRaycaster.)            
@@ -310,6 +310,7 @@ public class TangoStreet : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDepth
         }
         else if(m_selectedStore != null)
         {
+            GameObject.FindGameObjectWithTag("playerInfo").GetComponent<PlayerInfo>().setCheckingShopName(m_selectedStore.m_storeName);
             SceneManager.LoadScene("shopInfo", LoadSceneMode.Additive);
             
             m_selectedStore = null;
@@ -392,7 +393,7 @@ public class TangoStreet : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDepth
                 sprinkleObjects(0, 10);//coins
                 sprinkleObjects(1, 10);//gameDiamonds
                 sprinkleObjects(PlayerInfo.currentCharacterID + 2, 15);
-                _LoadMarkerFromDisk();
+                _LoadStoreObjFromDisk();
             }
         }
     }
@@ -452,7 +453,7 @@ public class TangoStreet : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDepth
     /// <summary>
     /// Load marker list xml from application storage.
     /// </summary>
-    private void _LoadMarkerFromDisk()
+    private void _LoadStoreObjFromDisk()
     {
         // Attempt to load the exsiting markers from storage.
         string path = Application.persistentDataPath + "/" + m_curAreaDescription.m_uuid + ".xml";
@@ -520,47 +521,8 @@ public class TangoStreet : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDepth
         screenBounds.Encapsulate(cam.WorldToScreenPoint(center + new Vector3(-extents.x, -extents.y, +extents.z)));
         screenBounds.Encapsulate(cam.WorldToScreenPoint(center + new Vector3(-extents.x, -extents.y, -extents.z)));
         return Rect.MinMaxRect(screenBounds.min.x, screenBounds.min.y, screenBounds.max.x, screenBounds.max.y);
-    }
-    
-    
-    /*
+    }   
 
-    /// <summary>
-    /// Data container for marker.
-    /// 
-    /// Used for serializing/deserializing marker to xml.
-    /// </summary>
-    [System.Serializable]
-    public class MarkerData
-    {
-        /// <summary>
-        /// Marker's type.
-        /// 
-        /// Red, green or blue markers. In a real game scenario, this could be different game objects
-        /// (e.g. banana, apple, watermelon, persimmons).
-        /// </summary>
-        [XmlElement("type")]
-        public int m_type;
-        
-        /// <summary>
-        /// Position of the this mark, with respect to the origin of the game world.
-        /// </summary>
-        [XmlElement("position")]
-        public Vector3 m_position;
-        
-        /// <summary>
-        /// Rotation of the this mark.
-        /// </summary>
-        [XmlElement("orientation")]
-        public Quaternion m_orientation;
-        
-        /// <summary>
-        /// Scale if this mark.
-        /// </summary>
-        [XmlElement("scale")]
-        public Vector3 m_scale;
-    }
-    */
     /// <summary>
     /// Data container for marker.
     /// 

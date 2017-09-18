@@ -1,23 +1,4 @@
-﻿//-----------------------------------------------------------------------
-// <copyright file="AreaDescriptionPicker.cs" company="Google">
-//
-// Copyright 2016 Google Inc. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-//
-// </copyright>
-//-----------------------------------------------------------------------
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using Tango;
@@ -101,7 +82,8 @@ public class TangoOwnerViewStart : MonoBehaviour, ITangoLifecycle
     {
         gameObject.SetActive(false);
 
-        m_curAreaDescriptionUUID = "f2953b36-b477-2fb9-81c5-1682a435250e";//204
+        //m_curAreaDescriptionUUID = "f2953b36-b477-2fb9-81c5-1682a435250e";//204
+        m_curAreaDescriptionUUID = "ff8c341e-ced8-28f7-9898-6ef42a5060b6";//d24test5
         AreaDescription areaDescription = AreaDescription.ForUUID(m_curAreaDescriptionUUID);
         m_guiController.m_curAreaDescription = areaDescription;
         m_tangoApplication.m_areaDescriptionLearningMode = m_enableLearningToggle.isOn;
@@ -120,7 +102,7 @@ public class TangoOwnerViewStart : MonoBehaviour, ITangoLifecycle
     {
         if (permissionsGranted)
         {
-            //_PopulateList();
+            StartGame();
         }
         else
         {
@@ -170,7 +152,7 @@ public class TangoOwnerViewStart : MonoBehaviour, ITangoLifecycle
             Debug.Log("No Tango Manager found in scene.");
         }
 
-        Invoke("StartGame", 0.1f);
+        //Invoke("StartGame", 0.1f);
     }
 
     /// <summary>
@@ -188,57 +170,5 @@ public class TangoOwnerViewStart : MonoBehaviour, ITangoLifecycle
             AndroidHelper.AndroidQuit();
         }
     }
-
-    /*
-    /// <summary>
-    /// Refresh the scrolling list's content for both list.
-    /// 
-    /// This function will query from the Tango API for the Tango space Area Description. Also, when it populates 
-    /// the scrolling list content, it will connect the delegate for each button in the list. The delegate is
-    /// responsible for the actual import/export  through the Tango API.
-    /// </summary>
-    private void _PopulateList()
-    {
-        foreach (Transform t in m_listContentParent.transform)
-        {
-            Destroy(t.gameObject);
-        }
-
-        // Update Tango space Area Description list.
-        AreaDescription[] areaDescriptionList = AreaDescription.GetList();
-
-        if (areaDescriptionList == null)
-        {
-            return;
-        }
-
-        foreach (AreaDescription areaDescription in areaDescriptionList)
-        {
-            GameObject newElement = Instantiate(m_listElement) as GameObject;
-            AreaDescriptionListElement listElement = newElement.GetComponent<AreaDescriptionListElement>();
-            listElement.m_toggle.group = m_toggleGroup;
-            listElement.m_areaDescriptionName.text = areaDescription.GetMetadata().m_name;
-            listElement.m_areaDescriptionUUID.text = areaDescription.m_uuid;
-
-            // Ensure the lambda makes a copy of areaDescription.
-            AreaDescription lambdaParam = areaDescription;
-            listElement.m_toggle.onValueChanged.AddListener((value) => _OnToggleChanged(lambdaParam, value));
-            newElement.transform.SetParent(m_listContentParent.transform, false);
-        }
-    }
-    */
-    /*
-    /// <summary>
-    /// Callback function when toggle button is selected.
-    /// </summary>
-    /// <param name="item">Caller item object.</param>
-    /// <param name="value">Selected value of the toggle button.</param>
-    private void _OnToggleChanged(AreaDescription item, bool value)
-    {
-        if (value)
-        {
-            m_curAreaDescriptionUUID = item.m_uuid;
-        }
-    }
-    */
+    
 }

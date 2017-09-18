@@ -106,6 +106,8 @@ public class PlayerInfo : MonoBehaviour
 
     static public string currentCheckingShopID;
 
+    static public string currentCheckingShopName;
+
     // achievement
     public struct achievementItem
     {
@@ -146,7 +148,7 @@ public class PlayerInfo : MonoBehaviour
     void Start()
     {
         Screen.SetResolution(433, 693, false);
-        port = ":4000";
+        port = ":4001";
         justLogOut = false;
 
         fav_shopID_list = new List<string>();
@@ -400,6 +402,11 @@ public class PlayerInfo : MonoBehaviour
     public void setCheckingShopID(string id)
     {
         currentCheckingShopID = id;
+    }
+
+    public void setCheckingShopName(string name)
+    {
+        currentCharacterName = name;
     }
 
     public void loadUserPace()
