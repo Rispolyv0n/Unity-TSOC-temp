@@ -11,6 +11,8 @@ public class OwnerInfo : MonoBehaviour {
 
     static public bool hasADF;
 
+    static public string curUUID;
+
     // openTime structures
     public struct period {
         public string begin_hr;

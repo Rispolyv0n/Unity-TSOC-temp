@@ -18,6 +18,11 @@ public class RecordControl : MonoBehaviour {
         hasSaved = value;
     }
 
+    public void setIsRecording(bool value)
+    {
+        isRecording = value;
+    }
+
 	// Update is called once per frame
 	void Update () {
 	
