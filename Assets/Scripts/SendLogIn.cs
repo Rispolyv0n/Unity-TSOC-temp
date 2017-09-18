@@ -15,12 +15,12 @@ public class SendLogIn : MonoBehaviour
     public InputField getID;
     public InputField getPW;
     public Text warningText;
-    
+
 
     // Use this for initialization
     void Start()
     {
-        toUrl = "https://kevin.imslab.org"+PlayerInfo.port+"/login";
+        toUrl = "https://kevin.imslab.org" + PlayerInfo.port + "/login";
         // Btn event
         thisBtn = GetComponent<Button>();
         thisBtn.onClick.AddListener(delegate { warningText.text = "登入中..."; StartCoroutine(toLogIn(getID.text, getPW.text)); });
@@ -37,6 +37,8 @@ public class SendLogIn : MonoBehaviour
     {
         if (PlayerPrefs.HasKey("UserID"))
         {
+            Debug.Log("pref id:" + PlayerPrefs.GetString("UserID"));
+            Debug.Log("pref pw:" + PlayerPrefs.GetString("UserPW"));
             PlayerInfo.user_id = PlayerPrefs.GetString("UserID");
             PlayerInfo.user_pw = PlayerPrefs.GetString("UserPW");
             return true;
@@ -61,7 +63,8 @@ public class SendLogIn : MonoBehaviour
             Debug.Log("error below:");
             Debug.Log(sending.error);
         }
-        else {
+        else
+        {
             Debug.Log("correct below:");
             if (sending.downloadHandler.text == "success")
             {
@@ -74,17 +77,18 @@ public class SendLogIn : MonoBehaviour
                 //PlayerInfo.user_email = ;
                 SceneManager.LoadScene("choose_path");
             }
-            else {
+            else
+            {
                 warningText.text = "登入失敗，請再次確認您輸入的使用者名稱與密碼";
                 Debug.Log(sending.downloadHandler.text);
-            }     
+            }
         }
-        
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 }

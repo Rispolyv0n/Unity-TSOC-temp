@@ -630,6 +630,7 @@ GameObject:
   - 224: {fileID: 713654179}
   - 222: {fileID: 713654181}
   - 114: {fileID: 713654180}
+  - 114: {fileID: 713654182}
   m_Layer: 5
   m_Name: InputField_password
   m_TagString: Untagged
@@ -694,13 +695,13 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 0}
   m_TextComponent: {fileID: 1152914758}
   m_Placeholder: {fileID: 1419549456}
-  m_ContentType: 6
-  m_InputType: 0
+  m_ContentType: 7
+  m_InputType: 2
   m_AsteriskChar: 42
-  m_KeyboardType: 7
+  m_KeyboardType: 0
   m_LineType: 0
   m_HideMobileInput: 0
-  m_CharacterValidation: 5
+  m_CharacterValidation: 0
   m_CharacterLimit: 0
   m_OnEndEdit:
     m_PersistentCalls:
@@ -725,6 +726,17 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 713654178}
+--- !u!114 &713654182
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 713654178}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b15fb6f02c84c648a3b3f9033043afd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &719805055
 GameObject:
   m_ObjectHideFlags: 0
@@ -1819,6 +1831,7 @@ GameObject:
   - 224: {fileID: 1824671019}
   - 222: {fileID: 1824671021}
   - 114: {fileID: 1824671020}
+  - 114: {fileID: 1824671022}
   m_Layer: 5
   m_Name: InputField_pwconfirm
   m_TagString: Untagged
@@ -1914,6 +1927,17 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1824671018}
+--- !u!114 &1824671022
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1824671018}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b15fb6f02c84c648a3b3f9033043afd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1907508036
 GameObject:
   m_ObjectHideFlags: 0

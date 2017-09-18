@@ -2,33 +2,32 @@
 using System.Collections;
 using UnityEngine.UI;
 
-public class GetTimeTextByShopID : MonoBehaviour {
+public class GetTimeTextByShopID : MonoBehaviour
+{
 
     private Text thisText;
 
-    public string shop_id;
     public GameObject control;
+
+    private GamingInfo.oneInfo info;
 
 
     // Use this for initialization
     void Start()
     {
         thisText = GetComponent<Text>();
-        shop_id = control.GetComponent<GetShopInfo>().shop_id;
+        info = new GamingInfo.oneInfo();
+        info.openTime = new GamingInfo.day[7];
+        for (int i = 0; i < 7; ++i)
+        {
+            info.openTime[i] = new GamingInfo.day();
+        }
+        info = control.GetComponent<GetShopInfo>().theInfo;
         thisText.text = parseOpenTimeStruct();
     }
 
     public string parseOpenTimeStruct()
     {
-        GamingInfo.storeInfoItem info = new GamingInfo.storeInfoItem();
-        foreach (GamingInfo.storeInfoWithID item in GamingInfo.storeInfo)
-        {
-            if (shop_id == item.id)
-            {
-                info = item.info;
-                break;
-            }
-        }
 
         string result = "";
         for (int i = 0; i < 7; ++i)
@@ -58,8 +57,8 @@ public class GetTimeTextByShopID : MonoBehaviour {
                     result += "周日 ";
                     break;
             }
-
-            if (info.openTime[i].open == true)
+            Debug.Log(i + "print if open:" + info.openTime[i].open);
+            if (info.openTime[i].open)
             {
                 for (int j = 0; j < info.openTime[i].timePeriod.Count; ++j)
                 {

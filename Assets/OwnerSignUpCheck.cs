@@ -8,7 +8,8 @@ using System.Globalization;
 using UnityEngine.Experimental.Networking;
 using UnityEngine.SceneManagement;
 
-public class OwnerSignUpCheck : MonoBehaviour {
+public class OwnerSignUpCheck : MonoBehaviour
+{
 
     public InputField userID;
     public InputField userEmail;
@@ -35,14 +36,16 @@ public class OwnerSignUpCheck : MonoBehaviour {
     private string toUrl;
 
     // Use this for initialization
-    void Start () {
+    void Start()
+    {
         toUrl = "https://kevin.imslab.org" + PlayerInfo.port + "/register_shop";
         category_b = GameObject.FindGameObjectWithTag("dropdowns").GetComponent<Dropdown>();
         signUpBtn.onClick.AddListener(sendSignUpInfo);
 
     }
 
-    void sendSignUpInfo() {
+    void sendSignUpInfo()
+    {
         if (isBlank(userID.text))
         {
             warningText.text = "帳號欄位空白，請再次確認";
@@ -54,26 +57,30 @@ public class OwnerSignUpCheck : MonoBehaviour {
             return;
         }
 
-        if (!emailFormIsCorrect(userEmail.text)) {
+        if (!emailFormIsCorrect(userEmail.text))
+        {
             warningText.text = "註冊信箱欄位輸入錯誤，請再次確認";
             return;
-        } 
+        }
         if (!emailFormIsCorrect(ownerEmail.text))
         {
             warningText.text = "店家聯絡人信箱欄位輸入錯誤，請再次確認";
             return;
         }
 
-        if (isBlank(password.text) || isBlank(passwordConfirm.text)) {
+        if (isBlank(password.text) || isBlank(passwordConfirm.text))
+        {
             warningText.text = "密碼欄位空白，請再次確認";
             return;
         }
-        if (!password.text.Equals(passwordConfirm.text)) {
+        if (!password.text.Equals(passwordConfirm.text))
+        {
             warningText.text = "請確認兩次密碼輸入為相同內容";
             return;
         }
 
-        if (isBlank(shopName.text)) {
+        if (isBlank(shopName.text))
+        {
             warningText.text = "店名欄位空白，請再次確認";
             return;
         }
@@ -104,12 +111,14 @@ public class OwnerSignUpCheck : MonoBehaviour {
         StartCoroutine(sendSignUp());
     }
 
-    bool isBlank(string str) {
+    bool isBlank(string str)
+    {
         if (str == null || str == "")
         {
             return true;
         }
-        else {
+        else
+        {
             return false;
         }
     }
@@ -191,7 +200,8 @@ public class OwnerSignUpCheck : MonoBehaviour {
             {
                 warningText.text = "連線錯誤，請再次嘗試";
             }
-            else {
+            else
+            {
                 warningText.text = "連線錯誤，請再次嘗試";
             }
 
@@ -204,21 +214,29 @@ public class OwnerSignUpCheck : MonoBehaviour {
             if (sending.downloadHandler.text == "success")
             {
                 warningText.text = "註冊成功，畫面切換中...";
-                Debug.Log(sending.downloadHandler.text);
                 OwnerInfo.ownerID = userID.text;
                 SceneManager.LoadScene("ownerMenu");
+            }
+            else if (sending.downloadHandler.text == "duplicated shopID")
+            {
+                warningText.text = "註冊錯誤，店家帳號已被使用";
+            }
+            else if (sending.downloadHandler.text == "duplicated shopName")
+            {
+                warningText.text = "註冊錯誤，店名已被使用";
             }
             else
             {
                 warningText.text = "註冊失敗，請再次確認";
-                Debug.Log(sending.downloadHandler.text);
             }
+            Debug.Log(sending.downloadHandler.text);
         }
 
     }
 
     // Update is called once per frame
-    void Update () {
-	
-	}
+    void Update()
+    {
+
+    }
 }

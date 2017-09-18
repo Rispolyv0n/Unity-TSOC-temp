@@ -3,10 +3,10 @@ using System.Collections;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using System;
-using UnityEngine.Experimental.Networking;
-using UnityEngine.SceneManagement;
 
-public class PlayerInfo : MonoBehaviour {
+
+public class PlayerInfo : MonoBehaviour
+{
 
     static PlayerInfo playerInfo;
 
@@ -36,38 +36,42 @@ public class PlayerInfo : MonoBehaviour {
     static public int value_level;
 
     // player stock structure
-    public struct stockItem {
+    public struct stockItem
+    {
         public int id;
         public int quant;
         public stockItem(int id, int quant)
         {
             this.id = id;
-            this.quant= quant;
+            this.quant = quant;
         }
     }
-    
+
     // stock
     static public List<stockItem> props_quant;
     static public List<stockItem> clothes_quant;
     static public List<stockItem> furni_quant;
 
     // furni decoration
-    public struct decoInfo {
+    public struct decoInfo
+    {
         public int id;
         public int numInUserList;
         public Vector3 pos;
     }
     static public List<decoInfo> decoration;
     //static public List<GameObject> decoration;
-    
+
     // favorite shop list
     static public List<string> fav_shopID_list;
 
     // event collection list
-    public struct eventItem {
+    public struct eventItem
+    {
         public int num; // the same with corresponding character id
         public int time;
-        public eventItem(int num, int time) {
+        public eventItem(int num, int time)
+        {
             this.num = num;
             this.time = time;
         }
@@ -75,7 +79,8 @@ public class PlayerInfo : MonoBehaviour {
     static public List<eventItem> eventCollection;
 
     // player character collection structure <modify!!!!!!!>
-    public struct characterItem {
+    public struct characterItem
+    {
         public int id;
         public string name;
         public float value_strength;
@@ -102,10 +107,12 @@ public class PlayerInfo : MonoBehaviour {
     static public string currentCheckingShopID;
 
     // achievement
-    public struct achievementItem {
+    public struct achievementItem
+    {
         public int id;
         public int level; // 1~3
-        public achievementItem(int id, int level) {
+        public achievementItem(int id, int level)
+        {
             this.id = id;
             this.level = level;
         }
@@ -136,15 +143,16 @@ public class PlayerInfo : MonoBehaviour {
 
 
     // Use this for initialization
-    void Start () {
+    void Start()
+    {
         Screen.SetResolution(433, 693, false);
         port = ":4000";
         justLogOut = false;
 
         fav_shopID_list = new List<string>();
         decoration = new List<decoInfo>();
-        
-        
+
+
         props_quant = new List<stockItem>();
         clothes_quant = new List<stockItem>();
         furni_quant = new List<stockItem>();
@@ -157,7 +165,7 @@ public class PlayerInfo : MonoBehaviour {
         setUserValueInfo();
 
         //InvokeRepeating("decreaseLikeValue",0,5);
-        InvokeRepeating("calculatePlayTime",360,360);
+        InvokeRepeating("calculatePlayTime", 360, 360);
 
         //setFirstLogIn();
         loadUserPace();
@@ -166,13 +174,14 @@ public class PlayerInfo : MonoBehaviour {
         setStreetMode();
         currentCheckingShopID = "000"; // modify!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-        
+
 
         Debug.Log("PlayerInfo.Start() done");
     }
-	
-	// Update is called once per frame
-	void Update () {
+
+    // Update is called once per frame
+    void Update()
+    {
         if (Input.GetKey(KeyCode.Escape))
         {
             Application.Quit();
@@ -183,36 +192,41 @@ public class PlayerInfo : MonoBehaviour {
 
 
 
-    public void setUserId(InputField id) {
+    public void setUserId(InputField id)
+    {
         user_id = id.text;
         Debug.Log("user id get:" + user_id);
     }
 
-    public void setUserAccount(InputField email) {
+    public void setUserAccount(InputField email)
+    {
         user_email = email.text;
-        Debug.Log("user mail get: "+user_email);
+        Debug.Log("user mail get: " + user_email);
     }
 
-    public void setUserPw(InputField pw) {
+    public void setUserPw(InputField pw)
+    {
         user_pw = pw.text;
         Debug.Log("user pw get: " + user_pw);
     }
 
-    private void setFirstLogIn() {
+    private void setFirstLogIn()
+    {
         firstLogIn = true; // get from http
         if (firstLogIn)
         {
             firstGoHome = true;// get from http
             firstGoStreet = true;
         }
-        else {
+        else
+        {
             firstGoHome = false;
             firstGoStreet = false;
             // get from http
         }
 
     }
-    
+
 
     /*
     private void decreaseLikeValue() {
@@ -220,7 +234,8 @@ public class PlayerInfo : MonoBehaviour {
     }
     */
 
-    private void setUserValueInfo() {
+    private void setUserValueInfo()
+    {
         // should get from http
         currentCharacterID = 1;
         totalPlayTime_day = 12;
@@ -257,8 +272,7 @@ public class PlayerInfo : MonoBehaviour {
         achievementCollection.Add(ac_item2);
         */
         fav_shopID_list.RemoveRange(0, fav_shopID_list.Count);
-        fav_shopID_list.Add("001");
-        fav_shopID_list.Add("002");
+        fav_shopID_list.Add("Ris_shop"); // remove!!!!!!!!!!!
 
         characterItem char_item = new characterItem();
         char_item.id = 0;
@@ -300,67 +314,76 @@ public class PlayerInfo : MonoBehaviour {
         char_item4.start_time = new DateTime(2017, 9, 13, 2, 3, 4);
         char_item4.end_time = new DateTime(2017, 9, 15, 5, 7, 9);
 
-        
+
         characterCollection.Add(char_item);
         characterCollection.Add(char_item2);
         characterCollection.Add(char_item3);
         characterCollection.Add(char_item4);
-        
+
         // should get from http----------down
 
     }
 
     // called when done choosing char (send btn in the scene choose_char)
-    public void resetCurrentCharacter(int id) {
-        currentCharacterID=id;
+    public void resetCurrentCharacter(int id)
+    {
+        currentCharacterID = id;
         if (id > -1)
         {
             currentCharacterName = GamingInfo.characters[id].name;
         }
-        else {
+        else
+        {
             currentCharacterName = "角色名稱";
         }
-        
-        value_strength=0;
-        value_intelligence=0;
-        value_like=0;
-        value_level=1;
+
+        value_strength = 0;
+        value_intelligence = 0;
+        value_like = 0;
+        value_level = 1;
         char_startTime = new DateTime(); // set when done choosing char (in the scene choose_char)
     }
 
-    private void calculatePlayTime() {
+    private void calculatePlayTime()
+    {
         totalPlayTime_hr += 0.1f;
-        if (totalPlayTime_hr >= 24) {
+        if (totalPlayTime_hr >= 24)
+        {
             totalPlayTime_day++;
             totalPlayTime_hr -= 24;
         }
     }
 
-    public void setStreetMode() {
+    public void setStreetMode()
+    {
         if (firstLogIn)
         {
             streetMode.gameMode = true;
             streetMode.gameObj = true;
             streetMode.infoObj = true;
         }
-        else {
+        else
+        {
             // get from http request
         }
     }
 
     // called when done choosing char (send btn in the scene choose_char)
-    public void setCharStartTime() {
+    public void setCharStartTime()
+    {
         char_startTime = DateTime.Now;
     }
 
     //------------------------------------------------------
     // value control functions
 
-    public void increaseValue_money(int value) {
+    public void increaseValue_money(int value)
+    {
         value_money += value;
     }
 
-    public void increaseValue_strength(int value) {
+    public void increaseValue_strength(int value)
+    {
         value_strength += value;
     }
 
@@ -374,16 +397,19 @@ public class PlayerInfo : MonoBehaviour {
         value_like += value;
     }
 
-    public void setCheckingShopID(string id) {
+    public void setCheckingShopID(string id)
+    {
         currentCheckingShopID = id;
     }
 
-    public void loadUserPace() {
+    public void loadUserPace()
+    {
         if (PlayerPrefs.HasKey("firstLogIn") == false)
         {
             firstLogIn = true;
         }
-        else {
+        else
+        {
             firstLogIn = Convert.ToBoolean(PlayerPrefs.GetString("firstLogIn", firstLogIn.ToString()));
         }
 
@@ -391,7 +417,8 @@ public class PlayerInfo : MonoBehaviour {
         {
             firstGoHome = true;
         }
-        else {
+        else
+        {
             firstGoHome = Convert.ToBoolean(PlayerPrefs.GetString("firstGoHome", firstGoHome.ToString()));
         }
 
@@ -399,39 +426,43 @@ public class PlayerInfo : MonoBehaviour {
         {
             firstGoStreet = true;
         }
-        else {
+        else
+        {
             firstGoStreet = Convert.ToBoolean(PlayerPrefs.GetString("firstGoStreet", firstGoStreet.ToString()));
         }
-        
-        
-        
+
+
+
     }
 
-    public void saveUserPace() {
+    public void saveUserPace()
+    {
         PlayerPrefs.SetString("firstLogIn", firstLogIn.ToString());
         PlayerPrefs.SetString("firstGoHome", firstGoHome.ToString());
         PlayerPrefs.SetString("firstGoStreet", firstGoStreet.ToString());
     }
 
-    public bool loadUserAccountSuccess() {
+    public bool loadUserAccountSuccess()
+    {
         if (PlayerPrefs.HasKey("UserID"))
         {
             user_id = PlayerPrefs.GetString("UserID");
             user_pw = PlayerPrefs.GetString("UserPW");
             return true;
-        }else
+        }
+        else
         {
             return false;
         }
     }
 
-    public void saveUserAccount() {
+    public void saveUserAccount()
+    {
         PlayerPrefs.SetString("UserID", user_id);
         PlayerPrefs.SetString("UserPW", user_pw);
     }
 
-    
 
-    }
+}
 
 

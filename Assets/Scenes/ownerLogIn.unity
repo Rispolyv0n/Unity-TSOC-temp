@@ -194,8 +194,9 @@ RectTransform:
   - {fileID: 1229528246}
   - {fileID: 1937009642}
   - {fileID: 1402182869}
+  - {fileID: 568079551}
   m_Father: {fileID: 1599000584}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
@@ -301,8 +302,8 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 1599000584}
-  m_RootOrder: 0
+  m_Father: {fileID: 357711626}
+  m_RootOrder: 10
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -0.0012512207, y: -175}
@@ -714,29 +715,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1054505488}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 0}
-        m_MethodName: setUserId
-        m_Mode: 2
-        m_Arguments:
-          m_ObjectArgument: {fileID: 1120507770}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.UI.InputField, UnityEngine.UI
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 0}
-        m_MethodName: setUserPw
-        m_Mode: 2
-        m_Arguments:
-          m_ObjectArgument: {fileID: 1174948185}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.UI.InputField, UnityEngine.UI
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &1054505488
@@ -780,13 +759,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1054505485}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7f5416e6cac64a34ba7f8b9150e7a822, type: 3}
+  m_Script: {fileID: 11500000, guid: 79c272f40d3254d4ba005698e6e1d377, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SceneName: ownerMenu
-  addScene: 0
-  switchScene: 1
-  closeScene: 0
+  getID: {fileID: 1120507770}
+  getPW: {fileID: 1174948185}
+  warningText: {fileID: 568079552}
 --- !u!1 &1120507769
 GameObject:
   m_ObjectHideFlags: 0
@@ -1618,7 +1596,6 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_Children:
-  - {fileID: 568079551}
   - {fileID: 357711626}
   m_Father: {fileID: 0}
   m_RootOrder: 0

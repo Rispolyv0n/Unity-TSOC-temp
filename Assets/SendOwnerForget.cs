@@ -4,7 +4,7 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using UnityEngine.Experimental.Networking;
 
-public class BtnFuncChanging : MonoBehaviour
+public class SendOwnerForget : MonoBehaviour
 {
 
     private Button thisObj;
@@ -18,7 +18,7 @@ public class BtnFuncChanging : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        getPwUrl = "https://kevin.imslab.org" + PlayerInfo.port + "/forget_pass?username=";
+        getPwUrl = "https://kevin.imslab.org" + PlayerInfo.port + "/forget_pass_shop?shopID=";
 
         thisObj = GetComponent<Button>();
         thisBtnText = GetComponentInChildren<Text>();
@@ -35,7 +35,7 @@ public class BtnFuncChanging : MonoBehaviour
     {
         if (thisBtnText.text == "Back")
         {
-            SceneManager.LoadScene("logIn");
+            SceneManager.LoadScene("ownerLogIn");
         }
         else
         {
@@ -60,14 +60,13 @@ public class BtnFuncChanging : MonoBehaviour
             else
             {
                 Debug.Log("correct below:");
-                if (sending.downloadHandler.text == "Check your mail")
-                {
+                if (sending.downloadHandler.text == "Check your mail") {
                     resultDisplay.text = "密碼尋回方式(password recovery rules)及密鑰(code for recovery)兩封信件已寄至您的註冊信箱，請檢查您的信箱並遵照信件中的指示尋回密碼。請注意信件可能被分類到垃圾信件匣。";
 
                     deBtn.SetActive(false);
                     thisBtnText.text = "Back";
                 }
-                else if (sending.downloadHandler.text == "wrong account")
+                else if (sending.downloadHandler.text == "wrong shopID")
                 {
                     resultDisplay.text = "無效的使用者名稱，請再次嘗試";
                 }

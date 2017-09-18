@@ -3,7 +3,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-public class GamingInfo : MonoBehaviour {
+public class GamingInfo : MonoBehaviour
+{
 
     static GamingInfo gameInfoScript;
 
@@ -39,51 +40,86 @@ public class GamingInfo : MonoBehaviour {
 
     // shop info------------
 
-    // openTime structures
-    public struct period
+
+    /*
+// openTime structures
+public struct period
+{
+    public string begin_hr;
+    public string begin_min;
+    public string end_hr;
+    public string end_min;
+}
+public struct day
+{
+    public bool open;
+    public List<period> timePeriod;
+}
+
+// storeInfo structures
+public struct ColumnItem
+{
+    public string title;
+    public string content;
+}
+public struct storeInfoItem
+{
+    public string shopName;
+    public day[] openTime;
+    public string shopAddress;
+    public List<ColumnItem> infoList;
+}
+public struct storeInfoWithID {
+    public string id;
+    public storeInfoItem info;
+}
+static public List<storeInfoWithID> storeInfo; // the whole storeInfo
+*/
+
+    public class period
     {
         public string begin_hr;
         public string begin_min;
         public string end_hr;
         public string end_min;
     }
-    public struct day
+
+    public class day
     {
-        public bool open;
-        public List<period> timePeriod;
+        public bool open = new bool();
+        public List<period> timePeriod = new List<period>();
     }
 
-    // storeInfo structures
-    public struct ColumnItem
+    public class column
     {
         public string title;
         public string content;
     }
-    public struct storeInfoItem
+
+    public class oneInfo
     {
+        public string _id;
         public string shopName;
-        public day[] openTime;
         public string shopAddress;
-        public List<ColumnItem> infoList;
+        public List<column> infoList = new List<column>();
+        public day[] openTime = new day[7];
     }
-    public struct storeInfoWithID {
-        public string id;
-        public storeInfoItem info;
-    }
-    static public List<storeInfoWithID> storeInfo; // the whole storeInfo
+
 
     // shop comments structure
-    public struct shopComments {
+    public struct shopComments
+    {
         // speaker info structure
         public DateTime time;
         public string content;
         // picture
         // like & hate rate
     }
-    
+
 
     // event structure, size, array
-    public struct eventInfo {
+    public struct eventInfo
+    {
         public int num;
         public string title;
         public string content;
@@ -93,7 +129,8 @@ public class GamingInfo : MonoBehaviour {
     static public eventInfo[] events;
 
     // choosing character
-    public struct characterInfo {
+    public struct characterInfo
+    {
         public int id;
         public string name;
         public string info;
@@ -112,7 +149,8 @@ public class GamingInfo : MonoBehaviour {
     static public int characterNum;
 
     // achievements
-    public struct achievementInfo {
+    public struct achievementInfo
+    {
         public int id;
         public int category; // 0 for char, 1 for event, 2 for others
         public int relative_id;
@@ -197,13 +235,14 @@ public class GamingInfo : MonoBehaviour {
         ratio_mid_good = 0.4f;
         ratio_high_strange = 0.2f;
         ratio_high_good = 0.8f;
-}
+    }
 
     // Use this for initialization
-    void Start () {
+    void Start()
+    {
         fromHomeStreet = true; // false for shop, true for home
 
-        
+
 
         props_info = new goods[shop_props_size];
         furni_info = new goods[shop_furni_size];
@@ -221,18 +260,21 @@ public class GamingInfo : MonoBehaviour {
         setAchievementsInfo();
 
         // for example test
-        setShopInfo();
+        //setShopInfo();
 
 
     }
-	
-	// Update is called once per frame
-	void Update () {
-	    
-	}
 
-    public void setPropsInfo() {
-        for (int i = 0; i < shop_props_size; ++i) {
+    // Update is called once per frame
+    void Update()
+    {
+
+    }
+
+    public void setPropsInfo()
+    {
+        for (int i = 0; i < shop_props_size; ++i)
+        {
             props_info[i].id = i;
             props_info[i].category = shop_props_ctgrNum;
         }
@@ -257,7 +299,7 @@ public class GamingInfo : MonoBehaviour {
 
         //Debug.Log("setPropsInfo done");
     }
-   
+
     private void setFurniInfo()
     {
         for (int i = 0; i < shop_furni_size; ++i)
@@ -281,6 +323,7 @@ public class GamingInfo : MonoBehaviour {
         //Debug.Log("setFurniInfo done");
     }
 
+    /*
     // for testing example
     private void setShopInfo() {
         storeInfo = new List<storeInfoWithID>();
@@ -361,8 +404,10 @@ public class GamingInfo : MonoBehaviour {
         storeInfo.Add(info2);
 
     }
+    */
 
-    private void setEventsInfo() {
+    private void setEventsInfo()
+    {
         events[0].num = 0;
         events[0].title = "黑熊君踩到面膜跌倒";
         events[0].content = "啊啊，好想變白啊... 蒐集完面膜以後，要開始積極的每日敷臉、敷手、敷身體、敷腳... 得做好全身美白才行!! 面膜面膜...面膜在哪裡呢...?? !!!!!!??? !!!!!! (碰!!!!) ....... 哎呀不小心踩到面膜滑倒了... 腳底也會美白到呢...";
@@ -393,7 +438,8 @@ public class GamingInfo : MonoBehaviour {
         */
     }
 
-    private void setCharactersInfo() {
+    private void setCharactersInfo()
+    {
         characters[0].id = 0;
         characters[0].name = "台灣黑熊";
         characters[0].info = "總而言之是一隻想變白的台灣黑熊。他沮喪的臉清楚的寫著天生黑肉底的鬱悶。\"啊啊，為甚麼白的只有鼻子附近和胸前的V呢...? \"他總是這樣問天問大地。敷面膜前都會把鼻子附近剪一個圓形的洞。喜歡邊敷臉邊在自家二樓室外泳池泡澡。";
@@ -423,7 +469,8 @@ public class GamingInfo : MonoBehaviour {
         characters[1].endingImg_str = Resources.Load<Sprite>("ImageSource/CharacterImg/Shrimp/img_strEnding");
     }
 
-    private void setAchievementsInfo() {
+    private void setAchievementsInfo()
+    {
         achievements[0].id = 0;
         achievements[0].category = 0;
         achievements[0].relative_id = 0;
