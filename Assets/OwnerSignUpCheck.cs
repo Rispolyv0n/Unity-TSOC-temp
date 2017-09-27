@@ -38,7 +38,7 @@ public class OwnerSignUpCheck : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        toUrl = "https://kevin.imslab.org" + PlayerInfo.port + "/register_shop";
+        toUrl = PlayerInfo.whichHttp + "://kevin.imslab.org" + PlayerInfo.port + "/register_shop";
         category_b = GameObject.FindGameObjectWithTag("dropdowns").GetComponent<Dropdown>();
         signUpBtn.onClick.AddListener(sendSignUpInfo);
 

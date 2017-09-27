@@ -51,7 +51,7 @@ public class GetShopInfo : MonoBehaviour
 
     IEnumerator loadShopContent()
     {
-        string toUrl = "https://kevin.imslab.org" + PlayerInfo.port + "/get_shopInfo?shopID=" + shop_id;
+        string toUrl = PlayerInfo.whichHttp + "://kevin.imslab.org" + PlayerInfo.port + "/get_shopInfo?shopID=" + shop_id;
         UnityWebRequest sending = UnityWebRequest.Get(toUrl);
         yield return sending.Send();
         Debug.Log("load the shopInfo data---");
@@ -86,9 +86,9 @@ public class GetShopInfo : MonoBehaviour
 
             // check if fav and set img
             bool found = false;
-            foreach (string shopID in PlayerInfo.fav_shopID_list)
+            foreach (PlayerInfo.favShop shopID in PlayerInfo.fav_shopID_list)
             {
-                if (shopID.Equals(PlayerInfo.currentCheckingShopID))
+                if (shopID.shopID.Equals(PlayerInfo.currentCheckingShopID))
                 {
                     found = true;
                     break;

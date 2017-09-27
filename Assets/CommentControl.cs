@@ -63,7 +63,7 @@ public class CommentControl : MonoBehaviour
 
     IEnumerator uploadComment()
     {
-        string toUrl = "https://kevin.imslab.org" + PlayerInfo.port + "/upload_comment";
+        string toUrl = PlayerInfo.whichHttp + "://kevin.imslab.org" + PlayerInfo.port + "/upload_comment";
 
         WWWForm formdata = new WWWForm();
         formdata.AddField("userID", PlayerInfo.user_id);

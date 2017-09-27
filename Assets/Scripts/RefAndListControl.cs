@@ -325,7 +325,7 @@ public class RefAndListControl : MonoBehaviour
 
     IEnumerator printOwnerData()
     {
-        string toUrl = "https://kevin.imslab.org" + PlayerInfo.port + "/get_shopOwnerInfo?shopID=" + OwnerInfo.ownerID;
+        string toUrl = PlayerInfo.whichHttp + "://kevin.imslab.org" + PlayerInfo.port + "/get_shopOwnerInfo?shopID=" + OwnerInfo.ownerID;
         UnityWebRequest sending = UnityWebRequest.Get(toUrl);
         yield return sending.Send();
         Debug.Log("get the owner data---");
@@ -346,7 +346,7 @@ public class RefAndListControl : MonoBehaviour
 
     IEnumerator sendData()
     {
-        string toUrl = "https://kevin.imslab.org" + PlayerInfo.port + "/set_shopInfo";
+        string toUrl = PlayerInfo.whichHttp + "://kevin.imslab.org" + PlayerInfo.port + "/set_shopInfo";
 
         WWWForm formdata = new WWWForm();
         formdata.AddField("shopID", OwnerInfo.ownerID);

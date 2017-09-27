@@ -4,7 +4,8 @@ using UnityEngine.UI;
 using System;
 using UnityEngine.SceneManagement;
 
-public class StreetModeControl : MonoBehaviour {
+public class StreetModeControl : MonoBehaviour
+{
 
     public TangoStreet TangoStreetController;
 
@@ -19,9 +20,11 @@ public class StreetModeControl : MonoBehaviour {
     public Toggle infoObj;
 
     // Use this for initialization
-    void Start () {
+    void Start()
+    {
 
-        if (PlayerInfo.firstGoStreet) {
+        if (PlayerInfo.firstGoStreet)
+        {
             SceneManager.LoadScene("instruction_street");
         }
 
@@ -40,7 +43,7 @@ public class StreetModeControl : MonoBehaviour {
         gameMode.onValueChanged.AddListener(setGameMode);
         gameObj.onValueChanged.AddListener(setGameObj);
         infoObj.onValueChanged.AddListener(setInfoObj);
-	}
+    }
 
     private void setGameMode(bool arg0)
     {
@@ -61,7 +64,8 @@ public class StreetModeControl : MonoBehaviour {
             infoObj.isOn = false;
             map.transform.localPosition = new Vector3(290, 332, 0);
         }
-        else {
+        else
+        {
             foreach (GameObject obj in TangoStreetController.m_storeList)
             {
                 obj.SetActive(true);
@@ -77,6 +81,8 @@ public class StreetModeControl : MonoBehaviour {
             infoObj.isOn = true;
             map.transform.localPosition = new Vector3(290, 492, 0);
         }
+
+        StartCoroutine(PlayerInfo.uploadStreetMode());
     }
 
     private void setInfoObj(bool arg0)
@@ -91,7 +97,8 @@ public class StreetModeControl : MonoBehaviour {
             //InfoPanel.SetActive(true);
             PlayerInfo.streetMode.infoObj = true;
         }
-        else {
+        else
+        {
 
             foreach (GameObject obj in TangoStreetController.m_storeList)
             {
@@ -101,17 +108,18 @@ public class StreetModeControl : MonoBehaviour {
             //InfoPanel.SetActive(false);
             PlayerInfo.streetMode.infoObj = false;
         }
+        StartCoroutine(PlayerInfo.uploadStreetMode());
     }
 
     private void setGameObj(bool arg0)
     {
         if (arg0)
         {
-            foreach(GameObject obj in TangoStreetController.m_objList)
+            foreach (GameObject obj in TangoStreetController.m_objList)
             {
                 obj.SetActive(true);
             }
-            //Debug.Log("set game obj true");
+
             //GamePanel.SetActive(true);
             PlayerInfo.streetMode.gameObj = true;
         }
@@ -121,20 +129,22 @@ public class StreetModeControl : MonoBehaviour {
             {
                 obj.SetActive(false);
             }
-            //Debug.Log("set game obj false");
+
             //GamePanel.SetActive(false);
             PlayerInfo.streetMode.gameObj = false;
         }
+        StartCoroutine(PlayerInfo.uploadStreetMode());
     }
 
-    
 
-  
 
-    
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
+
+
+
+
+    // Update is called once per frame
+    void Update()
+    {
+
+    }
 }

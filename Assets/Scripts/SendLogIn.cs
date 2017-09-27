@@ -20,7 +20,7 @@ public class SendLogIn : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        toUrl = "https://kevin.imslab.org" + ":4000" + "/login";
+        toUrl = PlayerInfo.whichHttp + "://kevin.imslab.org" + PlayerInfo.port + "/login";
         // Btn event
         thisBtn = GetComponent<Button>();
         thisBtn.onClick.AddListener(delegate { warningText.text = "登入中..."; StartCoroutine(toLogIn(getID.text, getPW.text)); });
@@ -73,9 +73,10 @@ public class SendLogIn : MonoBehaviour
                 PlayerInfo.user_id = id;
                 PlayerInfo.user_pw = pw;
                 PlayerInfo.justLogOut = true;
-                GameObject.FindGameObjectWithTag("playerInfo").GetComponent<PlayerInfo>().saveUserAccount();
-                //PlayerInfo.user_email = ;
+                PlayerInfo.saveUserAccount();
                 SceneManager.LoadScene("choose_path");
+
+
             }
             else
             {

@@ -40,7 +40,7 @@ public class GetShopInfo_simple : MonoBehaviour
 
     IEnumerator loadShopContent()
     {
-        string toUrl = "https://kevin.imslab.org" + PlayerInfo.port + "/get_shopInfo?shopID=" + shopID;
+        string toUrl = PlayerInfo.whichHttp + "://kevin.imslab.org" + PlayerInfo.port + "/get_shopInfo?shopID=" + shopID;
         UnityWebRequest sending = UnityWebRequest.Get(toUrl);
         yield return sending.Send();
         Debug.Log("load the shopInfo data---");

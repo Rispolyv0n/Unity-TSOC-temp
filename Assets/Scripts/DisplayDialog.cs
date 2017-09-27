@@ -8,7 +8,8 @@ using System.Text.RegularExpressions;
 // to get the user input and display it in the scrollView
 // send the user input to http request, get the chatbot reply message and display it
 
-public class DisplayDialog : MonoBehaviour{
+public class DisplayDialog : MonoBehaviour
+{
 
     private Button btn_send;
 
@@ -24,19 +25,21 @@ public class DisplayDialog : MonoBehaviour{
     private string url;
     private string stringFromUser;
     private string stringFromChatbot;
-    
+
 
     // Use this for initialization
-    void Start () {
+    void Start()
+    {
         btn_send = GetComponent<Button>();
         dialog_user_prefab = Resources.Load<GameObject>("Prefabs/Image_userDialog");
         chatbotMessagePrefab = Resources.Load<GameObject>("Prefabs/Image_chatbotDialog");
-        url = "https://kevin.imslab.org" + PlayerInfo.port + "/chatbot?str=";
+        url = PlayerInfo.whichHttp + "://kevin.imslab.org" + PlayerInfo.port + "/chatbot?str=";
 
         btn_send.onClick.AddListener(delegate { StartCoroutine(getInputAndDisplay()); });
-	}
+    }
 
-    IEnumerator getInputAndDisplay() {
+    IEnumerator getInputAndDisplay()
+    {
         obj_u = Instantiate(dialog_user_prefab);
         obj_u.transform.GetChild(0).GetComponent<Text>().text = user_input.text;
         obj_u.transform.SetParent(dialogParent.transform);
@@ -73,12 +76,13 @@ public class DisplayDialog : MonoBehaviour{
             }
 
         }
-        if (hasReceivedMessage) {
+        if (hasReceivedMessage)
+        {
             yield return new WaitForEndOfFrame(); // don't know why waitforendofframe should appear twice, wait until next end of frame?
             StartCoroutine(adjusting_c());
         }
 
-        
+
     }
 
     IEnumerator adjusting_c()
@@ -88,9 +92,10 @@ public class DisplayDialog : MonoBehaviour{
         scrollView.GetComponent<ScrollRect>().verticalNormalizedPosition = 0;
     }
     // Update is called once per frame
-    void Update () {
-	
-	}
+    void Update()
+    {
 
-    
+    }
+
+
 }

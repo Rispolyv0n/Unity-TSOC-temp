@@ -10,7 +10,8 @@ using System.Collections.Generic;
 
 
 
-public class StockControl : MonoBehaviour {
+public class StockControl : MonoBehaviour
+{
 
     private int stock_props_size;
     private int stock_clothes_size;
@@ -25,14 +26,19 @@ public class StockControl : MonoBehaviour {
 
     public GameObject loadingPanel;
 
+    public GameObject propsStockParent;
+    public GameObject furniStockParent;
+
     // Use this for initialization
-    void Start () {
+    void Start()
+    {
         decorateMode = false;
 
         if (PlayerInfo.firstGoHome)
         {
             SceneManager.LoadScene("instruction_home");
-        }else if (PlayerInfo.currentCharacterID < 0)
+        }
+        else if (PlayerInfo.currentCharacterID < 0)
         {
             SceneManager.LoadScene("choose_char");
         }
@@ -45,27 +51,32 @@ public class StockControl : MonoBehaviour {
         obj_prefab = Resources.Load("Prefabs/Button_stockItem") as GameObject;
 
         setDecorationPos();
-        Invoke("setLoadingOff",0.5f);
+        Invoke("setLoadingOff", 0.5f);
     }
 
-    void setLoadingOff() {
+    void setLoadingOff()
+    {
         loadingPanel.SetActive(false);
     }
-	
-	// Update is called once per frame
-	void Update () {
-        
+
+    // Update is called once per frame
+    void Update()
+    {
+
     }
 
-    public void setDecorateMode(bool on) {
+    public void setDecorateMode(bool on)
+    {
         decorateMode = on;
     }
 
-    public void saveDecorationPos() {
+    public void saveDecorationPos()
+    {
         GameObject[] objs = GameObject.FindGameObjectsWithTag("furniObj");
-        PlayerInfo.decoration.RemoveRange(0,PlayerInfo.decoration.Count);
+        PlayerInfo.decoration.RemoveRange(0, PlayerInfo.decoration.Count);
 
-        foreach (GameObject obj in objs) {
+        foreach (GameObject obj in objs)
+        {
             if (obj.GetComponent<DragAlong>().numInUserList < PlayerInfo.decoration.Count)
             {
                 PlayerInfo.decoInfo info = new PlayerInfo.decoInfo();
@@ -74,7 +85,8 @@ public class StockControl : MonoBehaviour {
                 info.pos = obj.transform.position;
                 PlayerInfo.decoration[obj.GetComponent<DragAlong>().numInUserList] = info;
             }
-            else {
+            else
+            {
                 PlayerInfo.decoInfo info = new PlayerInfo.decoInfo();
                 info.id = obj.GetComponent<DragAlong>().id;
                 info.numInUserList = obj.GetComponent<DragAlong>().numInUserList;
@@ -82,13 +94,17 @@ public class StockControl : MonoBehaviour {
                 PlayerInfo.decoration.Add(info);
             }
 
-            
+
         }
+
+        StartCoroutine(PlayerInfo.uploadDecoration());
     }
 
-    public void setDecorationPos() {
-        Debug.Log("now have:"+PlayerInfo.decoration.Count);
-        foreach (PlayerInfo.decoInfo info in PlayerInfo.decoration) {
+    public void setDecorationPos()
+    {
+        Debug.Log("now have:" + PlayerInfo.decoration.Count);
+        foreach (PlayerInfo.decoInfo info in PlayerInfo.decoration)
+        {
             GameObject obj = new GameObject();
             obj.AddComponent<Image>().overrideSprite = GamingInfo.furni_info[info.id].img;
             obj.transform.position = info.pos;
@@ -102,20 +118,24 @@ public class StockControl : MonoBehaviour {
         }
     }
 
-    public void setStockItem_props() {
+    public void setStockItem_props()
+    {
         GameObject[] stockItemList = GameObject.FindGameObjectsWithTag("home_stock_items");
-        foreach (GameObject itemBtn in stockItemList) {
+        foreach (GameObject itemBtn in stockItemList)
+        {
             Destroy(itemBtn);
         }
 
         // instantaite, scale, set info
         for (int i = 0; i < stock_props_size; ++i)
         {
-            if (PlayerInfo.props_quant[i].quant > 0) {
+            if (PlayerInfo.props_quant[i].quant > 0)
+            {
                 GameObject obj = Instantiate(obj_prefab);
                 obj.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 0.5f);
                 obj.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 0.5f);
-                obj.transform.SetParent(GameObject.FindGameObjectWithTag("home_stock_props").transform);
+                //obj.transform.SetParent(GameObject.FindGameObjectWithTag("home_stock_props").transform);
+                obj.transform.SetParent(propsStockParent.transform);
 
                 obj.GetComponent<StockItemGetInfo>().itemNum = PlayerInfo.props_quant[i].id;
                 obj.GetComponent<StockItemGetInfo>().categoryNum = GamingInfo.shop_props_ctgrNum;
@@ -125,7 +145,8 @@ public class StockControl : MonoBehaviour {
         }
     }
 
-    public void setStockItem_clothes() {
+    public void setStockItem_clothes()
+    {
         GameObject[] stockItemList = GameObject.FindGameObjectsWithTag("home_stock_items");
         foreach (GameObject itemBtn in stockItemList)
         {
@@ -146,7 +167,8 @@ public class StockControl : MonoBehaviour {
         }
     }
 
-    public void setStockItem_furni() {
+    public void setStockItem_furni()
+    {
         GameObject[] stockItemList = GameObject.FindGameObjectsWithTag("home_stock_items");
         foreach (GameObject itemBtn in stockItemList)
         {
@@ -155,11 +177,13 @@ public class StockControl : MonoBehaviour {
 
         for (int i = 0; i < stock_furni_size; ++i)
         {
-            if (PlayerInfo.furni_quant[i].quant >= 0) {
+            if (PlayerInfo.furni_quant[i].quant >= 0)
+            {
                 GameObject obj = Instantiate(obj_prefab);
                 obj.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 0.5f);
                 obj.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 0.5f);
-                obj.transform.SetParent(GameObject.FindGameObjectWithTag("home_stock_furni").transform);
+                //obj.transform.SetParent(GameObject.FindGameObjectWithTag("home_stock_furni").transform);
+                obj.transform.SetParent(furniStockParent.transform);
 
                 obj.GetComponent<StockItemGetInfo>().itemNum = PlayerInfo.furni_quant[i].id;
                 obj.GetComponent<StockItemGetInfo>().categoryNum = GamingInfo.shop_furni_ctgrNum;

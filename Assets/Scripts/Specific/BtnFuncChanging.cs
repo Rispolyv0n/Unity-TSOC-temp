@@ -18,7 +18,7 @@ public class BtnFuncChanging : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        getPwUrl = "https://kevin.imslab.org" + PlayerInfo.port + "/forget_pass?username=";
+        getPwUrl = PlayerInfo.whichHttp + "://kevin.imslab.org" + PlayerInfo.port + "/forget_pass?username=";
 
         thisObj = GetComponent<Button>();
         thisBtnText = GetComponentInChildren<Text>();

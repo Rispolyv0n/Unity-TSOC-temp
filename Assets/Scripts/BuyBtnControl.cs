@@ -1,11 +1,16 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using UnityEngine.Experimental.Networking;
+using System.Web.Script.Serialization;
+using System;
+using System.Collections.Generic;
 
 // attach on each buy button in the shop scene
 // when clicking the button, check if the money is sufficient, then do the transaction, info displaying and ownNum control
 
-public class BuyBtnControl : MonoBehaviour {
+public class BuyBtnControl : MonoBehaviour
+{
 
     public Text itemInfoText;
     public int itemNum;
@@ -13,29 +18,34 @@ public class BuyBtnControl : MonoBehaviour {
     public Text ownNumText;
 
     // Use this for initialization
-    void Start () {
+    void Start()
+    {
         Button btn = GetComponent<Button>();
         if (btn != null)
         {
             btn.onClick.AddListener(OnMouseDown);
         }
-        
+
     }
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
+
+    // Update is called once per frame
+    void Update()
+    {
+
+    }
 
     private void OnMouseDown()
     {
-        switch (categoryNum) {
+        switch (categoryNum)
+        {
             case GamingInfo.shop_props_ctgrNum:
                 if (PlayerInfo.value_money >= GamingInfo.props_info[itemNum].price)
                 {
                     bool hasItem = false;
-                    for (int i=0;i<PlayerInfo.props_quant.Count;++i) {
-                        if (PlayerInfo.props_quant[i].id == itemNum) {
+                    for (int i = 0; i < PlayerInfo.props_quant.Count; ++i)
+                    {
+                        if (PlayerInfo.props_quant[i].id == itemNum)
+                        {
                             int originNum = PlayerInfo.props_quant[i].quant;
                             originNum++;
                             PlayerInfo.props_quant[i] = new PlayerInfo.stockItem(PlayerInfo.props_quant[i].id, originNum);
@@ -43,13 +53,15 @@ public class BuyBtnControl : MonoBehaviour {
                             break;
                         }
                     }
-                    if (!hasItem) {
-                        PlayerInfo.props_quant.Add(new PlayerInfo.stockItem(itemNum,1));
+                    if (!hasItem)
+                    {
+                        PlayerInfo.props_quant.Add(new PlayerInfo.stockItem(itemNum, 1));
                     }
 
-                    PlayerInfo.value_money -= GamingInfo.props_info[itemNum].price;
+                    GameObject.FindGameObjectWithTag("playerInfo").GetComponent<PlayerInfo>().increaseValue_money(-GamingInfo.props_info[itemNum].price);
                     ownNumSetting();
                     itemInfoText.text = "購買成功!";
+                    StartCoroutine(PlayerInfo.insertPropsInfo(itemNum));
                 }
                 else
                 {
@@ -75,7 +87,7 @@ public class BuyBtnControl : MonoBehaviour {
                     {
                         PlayerInfo.clothes_quant.Add(new PlayerInfo.stockItem(itemNum, 1));
                     }
-                    PlayerInfo.value_money -= GamingInfo.clothes_info[itemNum].price;
+                    GameObject.FindGameObjectWithTag("playerInfo").GetComponent<PlayerInfo>().increaseValue_money(-GamingInfo.clothes_info[itemNum].price);
                     ownNumSetting();
                     itemInfoText.text = "購買成功!";
                 }
@@ -103,9 +115,11 @@ public class BuyBtnControl : MonoBehaviour {
                     {
                         PlayerInfo.furni_quant.Add(new PlayerInfo.stockItem(itemNum, 1));
                     }
-                    PlayerInfo.value_money -= GamingInfo.furni_info[itemNum].price;
+
+                    GameObject.FindGameObjectWithTag("playerInfo").GetComponent<PlayerInfo>().increaseValue_money(-GamingInfo.furni_info[itemNum].price);
                     ownNumSetting();
                     itemInfoText.text = "購買成功!";
+                    StartCoroutine(PlayerInfo.insertFurniInfo(itemNum));
                 }
                 else
                 {
@@ -117,7 +131,8 @@ public class BuyBtnControl : MonoBehaviour {
         }
     }
 
-    void ownNumSetting() {
+    void ownNumSetting()
+    {
         // setting ownNum
         bool hasItem = false;
         switch (categoryNum)
@@ -166,5 +181,7 @@ public class BuyBtnControl : MonoBehaviour {
         }
     }
 
-    
+
+
+
 }

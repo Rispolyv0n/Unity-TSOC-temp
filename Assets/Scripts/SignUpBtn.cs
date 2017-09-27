@@ -5,7 +5,8 @@ using UnityEngine.Experimental.Networking;
 using UnityEngine.SceneManagement;
 
 
-public class SignUpBtn : MonoBehaviour {
+public class SignUpBtn : MonoBehaviour
+{
 
     private Button thisBtn;
     //private bool invalid;
@@ -17,25 +18,27 @@ public class SignUpBtn : MonoBehaviour {
     public Text resultDisplay;
 
     public GameObject panel_succeed;
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start()
+    {
         thisBtn = GetComponent<Button>();
         thisBtn.onClick.AddListener(clickToSend);
-	}
-    
-    void clickToSend() {
+    }
+
+    void clickToSend()
+    {
         StartCoroutine(Register());
     }
 
     IEnumerator Register()
     {
-        string registerUrl = "https://kevin.imslab.org"+PlayerInfo.port+"/register";
+        string registerUrl = PlayerInfo.whichHttp + "://kevin.imslab.org" + PlayerInfo.port + "/register";
         WWWForm formdata = new WWWForm();
         formdata.AddField("username", getUserID.text);
         formdata.AddField("email", getMail.text);
         formdata.AddField("password", getPw.text);
 
-        Debug.Log("register:"+getUserID.text+","+getMail.text+","+getPw.text);
+        Debug.Log("register:" + getUserID.text + "," + getMail.text + "," + getPw.text);
 
         using (UnityWebRequest sending = UnityWebRequest.Post(registerUrl, formdata))
         {
@@ -48,11 +51,12 @@ public class SignUpBtn : MonoBehaviour {
                     resultDisplay.text = "使用者名稱已被使用";
                     Debug.Log(sending.error);
                 }
-                else {
+                else
+                {
                     resultDisplay.text = "註冊錯誤，請再次嘗試";
                     Debug.Log(sending.error);
                 }
-                
+
             }
             else
             {
@@ -63,9 +67,9 @@ public class SignUpBtn : MonoBehaviour {
                     resultDisplay.text = "註冊成功，返回登入畫面中...";
                     Debug.Log(sending.downloadHandler.text);
                     panel_succeed.SetActive(true);
-                    Invoke("switchTheScene",3);
+                    Invoke("switchTheScene", 3);
                 }
-                else if(sending.downloadHandler.text == "duplicated")
+                else if (sending.downloadHandler.text == "duplicated")
                 {
                     resultDisplay.text = "使用者名稱已被使用";
                     Debug.Log(sending.downloadHandler.text);
@@ -80,12 +84,14 @@ public class SignUpBtn : MonoBehaviour {
         }
     }
 
-    void switchTheScene() {
+    void switchTheScene()
+    {
         SceneManager.LoadScene("logIn");
     }
 
-	// Update is called once per frame
-	void Update () {
-	
-	}
+    // Update is called once per frame
+    void Update()
+    {
+
+    }
 }

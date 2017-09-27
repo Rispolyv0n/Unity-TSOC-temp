@@ -542,9 +542,9 @@ static public List<storeInfoWithID> storeInfo; // the whole storeInfo
         achievements[4].id = 4;
         achievements[4].category = 2;
         achievements[4].relative_id = 0;
-        achievements[4].condition_1 = 1;
-        achievements[4].condition_2 = 7;
-        achievements[4].condition_3 = 14;
+        achievements[4].condition_1 = 24;
+        achievements[4].condition_2 = 168;
+        achievements[4].condition_3 = 336;
         achievements[4].title = "成癮者";
         achievements[4].content_1 = "遊戲時間滿24小時。";
         achievements[4].content_2 = "遊戲時間滿168小時。";

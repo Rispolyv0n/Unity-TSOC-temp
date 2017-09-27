@@ -5,7 +5,8 @@ using System;
 using UnityEngine.Experimental.Networking;
 using System.Web.Script.Serialization;
 
-public class OwnerInfo : MonoBehaviour {
+public class OwnerInfo : MonoBehaviour
+{
 
     static OwnerInfo ownerInfo;
 
@@ -78,14 +79,14 @@ public class OwnerInfo : MonoBehaviour {
 
         StartCoroutine(loadShopContent());
         hasADF = false;
-        hasUpdated = false; // should get from http request
+        hasUpdated = false; // should get from http request // can delete
         updateTime = new DateTime(); // should get from http request
         Debug.Log("OwnerInfo.cs start()");
     }
 
     IEnumerator loadShopContent()
     {
-        string toUrl = "https://kevin.imslab.org" + PlayerInfo.port + "/get_shopInfo?shopID=" + OwnerInfo.ownerID;
+        string toUrl = PlayerInfo.whichHttp + "://kevin.imslab.org" + PlayerInfo.port + "/get_shopInfo?shopID=" + OwnerInfo.ownerID;
         UnityWebRequest sending = UnityWebRequest.Get(toUrl);
         yield return sending.Send();
         Debug.Log("load the shopInfo data---");
@@ -100,9 +101,12 @@ public class OwnerInfo : MonoBehaviour {
             Debug.Log("correct below:");
             JavaScriptSerializer js = new JavaScriptSerializer();
             storeInfo = js.Deserialize<storeInfoItem>(sending.downloadHandler.text);
-            Debug.Log(sending.downloadHandler.text);            
+            Debug.Log(sending.downloadHandler.text);
         }
+
     }
+
+
 
     // Update is called once per frame
     void Update()
@@ -110,3 +114,6 @@ public class OwnerInfo : MonoBehaviour {
 
     }
 }
+
+
+

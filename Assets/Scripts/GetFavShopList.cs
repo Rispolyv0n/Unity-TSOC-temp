@@ -19,11 +19,11 @@ public class GetFavShopList : MonoBehaviour
         favItemParent_s = favItemParent;
         favItemPrefab = Resources.Load<GameObject>("Prefabs/ImageBtn_favItem");
         favItemPrefab_s = Resources.Load<GameObject>("Prefabs/ImageBtn_favItem");
-        foreach (string shopID in PlayerInfo.fav_shopID_list)
+        foreach (PlayerInfo.favShop shopID in PlayerInfo.fav_shopID_list)
         {
             GameObject obj = Instantiate(favItemPrefab);
             obj.transform.SetParent(favItemParent.transform);
-            obj.GetComponent<GetShopInfo_simple>().shopID = shopID;
+            obj.GetComponent<GetShopInfo_simple>().shopID = shopID.shopID;
         }
     }
 
@@ -91,11 +91,11 @@ public class GetFavShopList : MonoBehaviour
             GameObject obj = favItemParent_s.transform.GetChild(i).gameObject;
             Destroy(obj);
         }
-        foreach (string shopID in PlayerInfo.fav_shopID_list)
+        foreach (PlayerInfo.favShop shopID in PlayerInfo.fav_shopID_list)
         {
             GameObject obj = Instantiate(favItemPrefab_s);
             obj.transform.SetParent(favItemParent_s.transform);
-            obj.GetComponent<GetShopInfo_simple>().shopID = shopID;
+            obj.GetComponent<GetShopInfo_simple>().shopID = shopID.shopID;
         }
 
     }

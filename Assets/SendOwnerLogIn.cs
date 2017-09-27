@@ -4,7 +4,8 @@ using UnityEngine.UI;
 using UnityEngine.Experimental.Networking;
 using UnityEngine.SceneManagement;
 
-public class SendOwnerLogIn : MonoBehaviour {
+public class SendOwnerLogIn : MonoBehaviour
+{
 
     private Button thisBtn;
     private string toUrl;
@@ -14,8 +15,9 @@ public class SendOwnerLogIn : MonoBehaviour {
     public Text warningText;
 
     // Use this for initialization
-    void Start () {
-        toUrl = "https://kevin.imslab.org"+PlayerInfo.port+"/login_shop";
+    void Start()
+    {
+        toUrl = PlayerInfo.whichHttp + "://kevin.imslab.org" + PlayerInfo.port + "/login_shop";
         thisBtn = GetComponent<Button>();
         thisBtn.onClick.AddListener(delegate { warningText.text = "登入中..."; StartCoroutine(toLogIn(getID.text, getPW.text)); });
 
@@ -56,7 +58,8 @@ public class SendOwnerLogIn : MonoBehaviour {
     }
 
     // Update is called once per frame
-    void Update () {
-	
-	}
+    void Update()
+    {
+
+    }
 }

@@ -8,7 +8,8 @@ using System;
 // adding ownNum on its own, setting infoText and activating infoPanel when pressing
 // instantiating furni obj in the scene home, control the first time dragging
 
-public class StockItemGetInfo : MonoBehaviour , IPointerDownHandler, IPointerUpHandler, IBeginDragHandler, IDragHandler, IEndDragHandler{
+public class StockItemGetInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IBeginDragHandler, IDragHandler, IEndDragHandler
+{
 
     private Button thisBtn;
 
@@ -27,13 +28,15 @@ public class StockItemGetInfo : MonoBehaviour , IPointerDownHandler, IPointerUpH
 
     public int numInUserList;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start()
+    {
         thisBtn = GetComponent<Button>();
-        
-        
+
+
         // find the correspond num in player's stockItemList
-        switch (categoryNum) {
+        switch (categoryNum)
+        {
             case 0:
                 for (int i = 0; i < PlayerInfo.props_quant.Count; ++i)
                 {
@@ -68,8 +71,9 @@ public class StockItemGetInfo : MonoBehaviour , IPointerDownHandler, IPointerUpH
                 break;
         }
 
-        
-        switch (categoryNum) {
+
+        switch (categoryNum)
+        {
             case 0:
                 // should find the correspond id
                 img.overrideSprite = GamingInfo.props_info[itemNum].img;
@@ -90,13 +94,15 @@ public class StockItemGetInfo : MonoBehaviour , IPointerDownHandler, IPointerUpH
         objPanel = GameObject.FindGameObjectWithTag("furniParent");
 
     }
-    
+
     // Update is called once per frame
-    void Update () {
+    void Update()
+    {
 
-	}
+    }
 
-    IEnumerator adjustPanelSize() {
+    IEnumerator adjustPanelSize()
+    {
         yield return 0;
         infoPanel.GetComponent<RectTransform>().sizeDelta = new Vector2(infoPanel.GetComponent<RectTransform>().sizeDelta.x, infoText.GetComponent<RectTransform>().sizeDelta.y + 20);
         infoPanel.transform.GetChild(0).GetComponent<RectTransform>().sizeDelta = new Vector2(infoPanel.transform.GetChild(0).GetComponent<RectTransform>().sizeDelta.x, infoText.GetComponent<RectTransform>().sizeDelta.y + 20);
@@ -129,7 +135,7 @@ public class StockItemGetInfo : MonoBehaviour , IPointerDownHandler, IPointerUpH
         infoPanel.SetActive(false);
     }
 
-    
+
     public void OnBeginDrag(PointerEventData eventData)
     {
         if (categoryNum == 2 && ownNum > 0)
@@ -146,21 +152,23 @@ public class StockItemGetInfo : MonoBehaviour , IPointerDownHandler, IPointerUpH
             objImg.GetComponent<DragAlong>().id = itemNum;
             objImg.GetComponent<DragAlong>().numInUserList = numInUserList;
         }
-        else if (categoryNum == 0 && ownNum > 0) {
+        else if (categoryNum == 0 && ownNum > 0)
+        {
             objImg = Instantiate(img);
             objImg.sprite = img.overrideSprite;
             objImg.transform.SetParent(objPanel.transform);
             objImg.transform.position = Input.mousePosition;
         }
-        
+
     }
 
     public void OnDrag(PointerEventData eventData)
     {
-        if (objImg != null) {
+        if (objImg != null)
+        {
             objImg.transform.position = Input.mousePosition;
         }
-        
+
     }
 
     public void OnEndDrag(PointerEventData eventData)
@@ -171,7 +179,8 @@ public class StockItemGetInfo : MonoBehaviour , IPointerDownHandler, IPointerUpH
             {
                 Destroy(objImg.gameObject);
             }
-            else {
+            else
+            {
                 if (categoryNum == 2)
                 {
                     objImg.transform.position = Input.mousePosition;
@@ -179,33 +188,48 @@ public class StockItemGetInfo : MonoBehaviour , IPointerDownHandler, IPointerUpH
                     {
                         ownNum--;
                         PlayerInfo.furni_quant[numInUserList] = new PlayerInfo.stockItem(itemNum, PlayerInfo.furni_quant[numInUserList].quant - 1);
+                        StartCoroutine(PlayerInfo.insertFurniInfo(itemNum));
                     }
                     ownNumText.text = "擁有數量 : " + PlayerInfo.furni_quant[numInUserList].quant;
                 }
-                else if (categoryNum == 0) {
+                else if (categoryNum == 0)
+                {
                     objImg.transform.position = Input.mousePosition;
                     if (ownNum > 0)
                     {
                         ownNum--;
                         PlayerInfo.props_quant[numInUserList] = new PlayerInfo.stockItem(itemNum, PlayerInfo.props_quant[numInUserList].quant - 1);
-                        switch (itemNum) {
+                        switch (itemNum)
+                        {
                             case 0:
-                                PlayerInfo.value_strength += 10;
+                                GameObject.FindGameObjectWithTag("playerInfo").GetComponent<PlayerInfo>().increaseValue_strength(10);
                                 break;
                             case 1:
-                                PlayerInfo.value_intelligence += 10;
+                                GameObject.FindGameObjectWithTag("playerInfo").GetComponent<PlayerInfo>().increaseValue_intelligence(10);
                                 break;
                             case 2:
-                                PlayerInfo.value_like += 10;
+                                GameObject.FindGameObjectWithTag("playerInfo").GetComponent<PlayerInfo>().increaseValue_like(10);
                                 break;
+                        }
+
+                        // upload props_quant: check to delete or update
+                        if (PlayerInfo.props_quant[numInUserList].quant == 0)
+                        {
+                            //delete
+                            StartCoroutine(PlayerInfo.deletePropsInfo(itemNum));
+                        }
+                        else
+                        {
+                            //update
+                            StartCoroutine(PlayerInfo.insertPropsInfo(itemNum));
                         }
                     }
                     ownNumText.text = "擁有數量 : " + PlayerInfo.props_quant[numInUserList].quant;
                     Destroy(objImg.gameObject);
                 }
-                
+
             }
-            
+
         }
     }
 }
