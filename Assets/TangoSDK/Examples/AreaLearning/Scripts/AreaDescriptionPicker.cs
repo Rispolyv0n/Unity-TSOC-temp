@@ -33,6 +33,8 @@ using UnityEngine.UI;
 /// </summary>
 public class AreaDescriptionPicker : MonoBehaviour, ITangoLifecycle
 {
+    public Text theUUID;
+
     /// <summary>
     /// The prefab of a standard button in the scrolling list.
     /// </summary>
@@ -98,6 +100,7 @@ public class AreaDescriptionPicker : MonoBehaviour, ITangoLifecycle
     /// Description.</param>
     public void StartGame(bool isNewAreaDescription)
     {
+        
         // The game has to be started with an Area Description.
         if (!isNewAreaDescription)
         {
@@ -111,10 +114,10 @@ public class AreaDescriptionPicker : MonoBehaviour, ITangoLifecycle
         {
             m_curAreaDescriptionUUID = null;
         }
-
+        
         // Dismiss Area Description list, footer and header UI panel.
         gameObject.SetActive(false);
-
+        
         if (isNewAreaDescription)
         {
             // Completely new area description.
@@ -128,9 +131,14 @@ public class AreaDescriptionPicker : MonoBehaviour, ITangoLifecycle
             m_guiController.m_curAreaDescription = areaDescription;
             m_tangoApplication.m_areaDescriptionLearningMode = m_enableLearningToggle.isOn;
         }
+        /*
+        // Load up an existing Area Description.
+        AreaDescription areaDescription = AreaDescription.ForUUID(m_curAreaDescriptionUUID);
+        m_guiController.m_curAreaDescription = areaDescription;
+        m_tangoApplication.m_areaDescriptionLearningMode = m_enableLearningToggle.isOn;
 
-        m_tangoApplication.Startup(m_guiController.m_curAreaDescription);
-
+        m_tangoApplication.Startup(m_guiController.m_curAreaDescription);        
+        */
         // Enable GUI controller to allow user tap and interactive with the environment.
         m_poseController.gameObject.SetActive(true);
         m_guiController.enabled = true;
@@ -258,6 +266,7 @@ public class AreaDescriptionPicker : MonoBehaviour, ITangoLifecycle
         if (value)
         {
             m_curAreaDescriptionUUID = item.m_uuid;
+            theUUID.text = m_curAreaDescriptionUUID;
         }
     }
 }

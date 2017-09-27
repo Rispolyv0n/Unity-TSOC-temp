@@ -83,9 +83,10 @@ public class TangoOwnerAddObjStart : MonoBehaviour, ITangoLifecycle
     {
         gameObject.SetActive(false);
 
+        m_curAreaDescriptionUUID = "e3eaeaf2-a65d-4e45-8b90-9675e8b31b66";//sofa
         //m_curAreaDescriptionUUID = "f2953b36-b477-2fb9-81c5-1682a435250e";//204
         //m_curAreaDescriptionUUID = "ff8c3413-ced8-28f7-9801-38627ec90271";//d24test4
-        m_curAreaDescriptionUUID = "ff8c341e-ced8-28f7-9898-6ef42a5060b6";//d24test5
+        //m_curAreaDescriptionUUID = "ff8c341e-ced8-28f7-9898-6ef42a5060b6";//d24test5
         //m_curAreaDescriptionUUID = OwnerInfo.curUUID;
         AreaDescription areaDescription = AreaDescription.ForUUID(m_curAreaDescriptionUUID);
         m_guiController.m_curAreaDescription = areaDescription;
@@ -155,6 +156,18 @@ public class TangoOwnerAddObjStart : MonoBehaviour, ITangoLifecycle
         {
             Debug.Log("No Tango Manager found in scene.");
         }
+
+
+        string prefabPath = Application.dataPath + "/" + "Canvas_storeInfo 1.prefab";
+        if (File.Exists(prefabPath))
+        {
+            Debug.Log("path correct!!!!");
+        }
+        else
+        {
+            Debug.Log("path wrong!!!!!!");
+        }
+
 
         //Invoke("startGame", 0.1f);
 

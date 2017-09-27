@@ -111,7 +111,7 @@ public class StreetModeControl : MonoBehaviour {
             {
                 obj.SetActive(true);
             }
-
+            //Debug.Log("set game obj true");
             //GamePanel.SetActive(true);
             PlayerInfo.streetMode.gameObj = true;
         }
@@ -121,7 +121,7 @@ public class StreetModeControl : MonoBehaviour {
             {
                 obj.SetActive(false);
             }
-
+            //Debug.Log("set game obj false");
             //GamePanel.SetActive(false);
             PlayerInfo.streetMode.gameObj = false;
         }

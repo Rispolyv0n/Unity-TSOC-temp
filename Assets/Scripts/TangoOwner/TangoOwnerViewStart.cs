@@ -13,45 +13,13 @@ using UnityEngine.UI;
 /// to start the game and connect to Tango Service.
 /// </summary>
 public class TangoOwnerViewStart : MonoBehaviour, ITangoLifecycle
-{  
-    /// <summary>
-    /// The prefab of a standard button in the scrolling list.
-    /// </summary>
-    public GameObject m_listElement;
-
-    /// <summary>
-    /// The container panel of the Tango space Area Description scrolling list.
-    /// </summary>
-    public RectTransform m_listContentParent;
-
-    /// <summary>
-    /// Toggle group for the Area Description list.
-    /// 
-    /// You can only toggle one Area Description at a time. After we get the list of Area Description from Tango,
-    /// they are all added to this toggle group.
-    /// </summary>
-    public ToggleGroup m_toggleGroup;
-
-    /// <summary>
-    /// Enable learning mode toggle.
-    /// 
-    /// Learning Mode allows the loaded Area Description to be extended with more knowledge about the area..
-    /// </summary>
-    public Toggle m_enableLearningToggle;
-
+{      
     /// <summary>
     /// The reference of the TangoPoseController object.
     /// 
     /// TangoPoseController listens to pose updates and applies the correct pose to itself and its built-in camera.
     /// </summary>
-    public TangoPoseController m_poseController;
-
-    /// <summary>
-    /// Control panel game object.
-    /// 
-    /// The panel will be enabled when the game starts.
-    /// </summary>
-    public GameObject m_gameControlPanel;
+    public TangoPoseController m_poseController;    
 
     /// <summary>
     /// The GUI controller.
@@ -78,7 +46,7 @@ public class TangoOwnerViewStart : MonoBehaviour, ITangoLifecycle
     /// </summary>
     /// <param name="isNewAreaDescription">If set to <c>true</c> game with start to learn a new Area 
     /// Description.</param>
-    public void StartGame()//bool isNewAreaDescription)
+    public void StartGame()
     {
         gameObject.SetActive(false);
 
@@ -86,7 +54,7 @@ public class TangoOwnerViewStart : MonoBehaviour, ITangoLifecycle
         m_curAreaDescriptionUUID = "ff8c341e-ced8-28f7-9898-6ef42a5060b6";//d24test5
         AreaDescription areaDescription = AreaDescription.ForUUID(m_curAreaDescriptionUUID);
         m_guiController.m_curAreaDescription = areaDescription;
-        m_tangoApplication.m_areaDescriptionLearningMode = m_enableLearningToggle.isOn;
+        m_tangoApplication.m_areaDescriptionLearningMode = false;//m_enableLearningToggle.isOn;
         m_tangoApplication.Startup(m_guiController.m_curAreaDescription);
 
         m_poseController.gameObject.SetActive(true);
@@ -141,18 +109,17 @@ public class TangoOwnerViewStart : MonoBehaviour, ITangoLifecycle
         if (m_tangoApplication != null)
         {
             m_tangoApplication.Register(this);
-            m_tangoApplication.RequestPermissions();
-            /*if (AndroidHelper.IsTangoCorePresent())
+            //m_tangoApplication.RequestPermissions();
+            if (AndroidHelper.IsTangoCorePresent())
             {
                 m_tangoApplication.RequestPermissions();
-            }*/
+            }
         }
         else
         {
             Debug.Log("No Tango Manager found in scene.");
         }
-
-        //Invoke("StartGame", 0.1f);
+        
     }
 
     /// <summary>

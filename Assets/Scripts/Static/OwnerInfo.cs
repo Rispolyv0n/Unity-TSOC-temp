@@ -38,6 +38,7 @@ public class OwnerInfo : MonoBehaviour {
     }
     public class storeInfoItem
     {
+        public string _id = "";
         public string shopName = "";
         public day[] openTime = new day[7];
         public string shopAddress = "";
@@ -84,7 +85,7 @@ public class OwnerInfo : MonoBehaviour {
 
     IEnumerator loadShopContent()
     {
-        string toUrl = "http://kevin.imslab.org" + PlayerInfo.port + "/get_shopInfo?shopID=" + OwnerInfo.ownerID;
+        string toUrl = "https://kevin.imslab.org" + PlayerInfo.port + "/get_shopInfo?shopID=" + OwnerInfo.ownerID;
         UnityWebRequest sending = UnityWebRequest.Get(toUrl);
         yield return sending.Send();
         Debug.Log("load the shopInfo data---");
@@ -99,9 +100,8 @@ public class OwnerInfo : MonoBehaviour {
             Debug.Log("correct below:");
             JavaScriptSerializer js = new JavaScriptSerializer();
             storeInfo = js.Deserialize<storeInfoItem>(sending.downloadHandler.text);
-            Debug.Log(sending.downloadHandler.text);
+            Debug.Log(sending.downloadHandler.text);            
         }
-
     }
 
     // Update is called once per frame

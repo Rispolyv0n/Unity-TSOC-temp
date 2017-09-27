@@ -10,168 +10,109 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.Experimental.Networking;
+using System.Web.Script.Serialization;
+//using Newtonsoft.Json;
 
-public class TangoStreet : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDepth
+public class TangoStreet : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDepth, ITangoLifecycle
 {
-    //try to sprinkle
-    
-    /// <summary>
-    /// for gaming objects
-    /// 0 : coins, 1 : diamond
-    /// </summary>
-    public GameObject[] m_objPrefabs;
-
-    /// <summary>
-    /// for store objects(now only one) 
-    /// </summary>
-    public GameObject[] m_storeInfoPrefabs;
-
+    //to sprinkle    
+    public GameObject[] m_objPrefabs;//for gamign objects. 0 : coins, 1 : diamond    
+    public GameObject[] m_storeInfoPrefabs;//for store objects(now only one)
     public List<GameObject> m_objList = new List<GameObject>();//need sprinkle and delete
-
     public List<GameObject> m_storeList = new List<GameObject>();//need load
 
     private GameObject newObjObject = null;
-
     private ARObjects m_selectedObj;
-
     private ARStoreObject m_selectedStore;
-
     private int m_curObjType = 0;
 
-    /// <summary>
-    /// Prefabs of different colored markers.
-    /// </summary>
-    //public GameObject[] m_markPrefabs;
-
-    /// <summary>
-    /// The point cloud object in the scene.
-    /// </summary>
-    public TangoPointCloud m_pointCloud;
-
-    /// <summary>
-    /// The canvas to place 2D game objects under.
-    /// </summary>
-    public Canvas m_canvas;
-
-    /// <summary>
-    /// The touch effect to place on taps.
-    /// </summary>
+    //other things
     public RectTransform m_prefabTouchEffect;
-
-    /// <summary>
-    /// Saving progress UI text.
-    /// </summary>
-    //public UnityEngine.UI.Text m_savingText;
-
-    /// <summary>
-    /// The Area Description currently loaded in the Tango Service.
-    /// </summary>
+    public Canvas m_canvas;
     [HideInInspector]
     public AreaDescription m_curAreaDescription;
-
-#if UNITY_EDITOR
-    /// <summary>
-    /// Handles GUI text input in Editor where there is no device keyboard.
-    /// If true, text input for naming new saved Area Description is displayed.
-    /// </summary>
-    //private bool m_displayGuiTextInput;
-
-    /// <summary>
-    /// Handles GUI text input in Editor where there is no device keyboard.
-    /// Contains text data for naming new saved Area Descriptions.
-    /// </summary>
-    //private string m_guiTextInputContents;
-
-    /// <summary>
-    /// Handles GUI text input in Editor where there is no device keyboard.
-    /// Indicates whether last text input was ended with confirmation or cancellation.
-    /// </summary>
-    //private bool m_guiTextInputResult;
-#endif
-
-    /// <summary>
-    /// If set, then the depth camera is on and we are waiting for the next depth update.
-    /// </summary>
-    private bool m_findPlaneWaitingForDepth;
-
-    /// <summary>
-    /// A reference to TangoARPoseController instance.
-    /// 
-    /// In this class, we need TangoARPoseController reference to get the timestamp and pose when we place a marker.
-    /// The timestamp and pose is used for later loop closure position correction. 
-    /// </summary>
-    private TangoPoseController m_poseController;
-
-    /// <summary>
-    /// List of markers placed in the scene.
-    /// </summary>
-    //private List<GameObject> m_markerList = new List<GameObject>();
-
-    /// <summary>
-    /// Reference to the newly placed marker.
-    /// </summary>
-    //private GameObject newMarkObject = null;
-
-    /// <summary>
-    /// Current marker type.
-    /// </summary>
-    //private int m_currentMarkType = 0;
-
-    /// <summary>
-    /// If set, this is the selected marker.
-    /// </summary>
-    //private ARMarker m_selectedMarker;
-
-    /// <summary>
-    /// If set, this is the rectangle bounding the selected marker.
-    /// </summary>
-    private Rect m_selectedRect;
-
-    /// <summary>
-    /// If the interaction is initialized.
-    /// 
-    /// Note that the initialization is triggered by the relocalization event. We don't want user to place object before
-    /// the device is relocalized.
-    /// </summary>
+                        
+    private string m_curAreaDescriptionUUID;      
     private bool m_initialized = false;
-
-    /// <summary>
-    /// A reference to TangoApplication instance.
-    /// </summary>
+    private bool m_findPlaneWaitingForDepth;    
     private TangoApplication m_tangoApplication;
-
+    private TangoPoseController m_poseController;
+    private Rect m_selectedRect;
     //private Thread m_saveThread;
 
-    /// <summary>
-    /// Unity Start function.
-    /// 
-    /// We find and assign pose controller and tango application, and register this class to callback events.
-    /// </summary>
+    //to get all shop id in shopIDList
+    private string beaconID = "1";
+    private string getShopIdURL = "https://kevin.imslab.org" + PlayerInfo.port + "/get_shopIDs?beaconID=" + "1" + "&adfID=" + "f2953b36-b477-2fb9-81c5-1682a435250e";
+
+    public class ColumnItemOfShopIDList
+    {       
+        public string name = "";        
+        public string _id = "";//names need to be the same QAQ!!!
+    }
+    //public ColumnItemOfShopIDList IDlist = new ColumnItemOfShopIDList();
+    public List<ColumnItemOfShopIDList> shopIDlist = new List<ColumnItemOfShopIDList>();
+
     public void Start()
     {
         m_poseController = FindObjectOfType<TangoPoseController>();
         m_tangoApplication = FindObjectOfType<TangoApplication>();
-        
+
         if (m_tangoApplication != null)
         {
             m_tangoApplication.Register(this);
+            //m_tangoApplication.RequestPermissions();
+            if (AndroidHelper.IsTangoCorePresent())
+            {
+                m_tangoApplication.RequestPermissions();
+            }
+        }
+        else
+        {
+            Debug.Log("No Tango Manager found in scene.");
         }
 
-        //m_curObjType = PlayerInfo.currentCharacterID + 2;
+        Debug.Log("start to get the shop ID");
+        StartCoroutine(getShopID());
+        //StartCoroutine(loadstoreInfo());
 
     }
 
+    IEnumerator getShopID()
+    {
+        UnityWebRequest sending = UnityWebRequest.Get(getShopIdURL);
+        yield return sending.Send();
+
+        if(sending.error != null)
+        {
+            Debug.Log("error below : ");
+            Debug.Log(sending.error);
+        }
+        else
+        {
+            Debug.Log("correct below : ");
+            JavaScriptSerializer js = new JavaScriptSerializer();
+            //ColumnItemOfShopIDList[] IDlist = js.Deserialize<ColumnItemOfShopIDList[]>(sending.downloadHandler.text);
+            shopIDlist = js.Deserialize<List<ColumnItemOfShopIDList>>(sending.downloadHandler.text);
+            //Debug.Log(sending.downloadHandler.text);
+            Debug.Log("name = " + shopIDlist[0].name);            
+            Debug.Log("id = " + shopIDlist[0]._id);            
+        }
+    }
+
+    /*
+    IEnumerator loadstoreInfo()
+    {
+
+    }
+    */
     public void sprinkleObjects(int sprinkleType, int nums)//(List<Vector2> touchPoseList)
     {
         m_curObjType = sprinkleType;
         for (int i = 0; i < nums; i++)
         {
-            //m_pointCloud.FindPlane(cam, tPose, out planeCenter, out plane);//we don't need this if we have the position in the world. 
-
             Vector3 objPos = new Vector3(UnityEngine.Random.Range(-5f, 5f), UnityEngine.Random.Range(-5f, 5f), UnityEngine.Random.Range(-5f, 5f));
-            //Vector3 forward = Camera.main.transform.forward;
-            //Vector3 up = Camera.main.transform.up;
-
+            
             //instantiate cube object
             newObjObject = Instantiate(m_objPrefabs[m_curObjType], objPos, Quaternion.identity) as GameObject;//Instantiate : object type -> need 'as XX' to change type
 
@@ -196,10 +137,25 @@ public class TangoStreet : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDepth
             {
                 newObjObject.SetActive(false);
             }
-            
-            //newObjObject.SetActive(true);
-            m_objList.Add(newObjObject);
+            /*
+            Renderer newObjRender = newObjObject.GetComponent<Renderer>();
+            foreach (GameObject obj in m_objList)
+            {
+                if(newObjRender.bounds.Intersects(obj.GetComponent<Renderer>().bounds))
+                {
+                    Destroy(newObjObject);
+                }
+                else
+                {
+                    m_objList.Add(newObjObject);
+                    i++;
+                }                
+            }
+            */
 
+            //newObjObject.SetActive(true);
+
+            m_objList.Add(newObjObject);
             m_selectedObj = null;
         }
 
@@ -215,9 +171,12 @@ public class TangoStreet : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDepth
         
         if (Input.GetKey(KeyCode.Escape))
         {
+            /*
             #pragma warning disable 618
             Application.LoadLevel(Application.loadedLevel);
             #pragma warning restore 618
+            */
+            AndroidHelper.AndroidQuit();
         }
 
         if (!m_initialized)
@@ -247,13 +206,11 @@ public class TangoStreet : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDepth
                 // do nothing, the button will handle it
             }
             else if (Physics.Raycast(cam.ScreenPointToRay(t.position), out hitInfo))
-            {
-                // Found a marker, select it (so long as it isn't disappearing)!
+            {                
                 GameObject tapped = hitInfo.collider.gameObject;
-                m_selectedStore = tapped.transform.parent.GetComponent<ARStoreObject>();
                 m_selectedObj = tapped.GetComponent<ARObjects>();
-            }
-            //else if(Physics2DRaycaster.)            
+                m_selectedStore = tapped.transform.parent.GetComponent<ARStoreObject>();                
+            }        
             else
             {                
                 RectTransform touchEffectRectTransform = Instantiate(m_prefabTouchEffect) as RectTransform;
@@ -320,19 +277,7 @@ public class TangoStreet : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDepth
                        
         }
     }
-    /*
-    /// <summary>
-    /// Set the marker type.
-    /// </summary>
-    /// <param name="type">Marker type.</param>
-    public void SetCurrentMarkType(int type)
-    {
-        if (type != m_currentMarkType)
-        {
-            m_currentMarkType = type;
-        }
-    }
-    */
+    
     /// <summary>
     /// This is called each time a Tango event happens.
     /// </summary>
@@ -362,18 +307,6 @@ public class TangoStreet : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDepth
     /// <param name="poseData">Returned pose data from TangoService.</param>
     public void OnTangoPoseAvailable(Tango.TangoPoseData poseData)
     {
-        // This frame pair's callback indicates that a loop closure or relocalization has happened. 
-        //
-        // When learning mode is on, this callback indicates the loop closure event. Loop closure will happen when the
-        // system recognizes a pre-visited area, the loop closure operation will correct the previously saved pose 
-        // to achieve more accurate result. (pose can be queried through GetPoseAtTime based on previously saved
-        // timestamp).
-        // Loop closure definition: https://en.wikipedia.org/wiki/Simultaneous_localization_and_mapping#Loop_closure
-        //
-        // When learning mode is off, and an Area Description is loaded, this callback indicates a
-        // relocalization event. Relocalization is when the device finds out where it is with respect to the loaded
-        // Area Description. In our case, when the device is relocalized, the markers will be loaded because we
-        // know the relative device location to the markers.
         if (poseData.framePair.baseFrame == 
             TangoEnums.TangoCoordinateFrameType.TANGO_COORDINATE_FRAME_AREA_DESCRIPTION &&
             poseData.framePair.targetFrame ==
@@ -383,17 +316,19 @@ public class TangoStreet : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDepth
             // When we get the first loop closure/ relocalization event, we initialized all the in-game interactions.
             if (!m_initialized)
             {
+                Debug.Log("startup sofa success!!!");
                 m_initialized = true;
                 if (m_curAreaDescription == null)
                 {
                     Debug.Log("AndroidInGameController.OnTangoPoseAvailable(): m_curAreaDescription is null");
                     return;
                 }
-
+                
+                
                 sprinkleObjects(0, 10);//coins
                 sprinkleObjects(1, 10);//gameDiamonds
                 sprinkleObjects(PlayerInfo.currentCharacterID + 2, 15);
-                _LoadStoreObjFromDisk();
+                createStoreObj();
             }
         }
     }
@@ -409,51 +344,21 @@ public class TangoStreet : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDepth
         // Don't handle depth here because the PointCloud may not have been updated yet.  Just
         // tell the coroutine it can continue.
         m_findPlaneWaitingForDepth = false;
-    }
+    }   
     
-    /*
     /// <summary>
-    /// Correct all saved marks when loop closure happens.
-    /// 
-    /// When Tango Service is in learning mode, the drift will accumulate overtime, but when the system sees a
-    /// preexisting area, it will do a operation to correct all previously saved poses
-    /// (the pose you can query with GetPoseAtTime). This operation is called loop closure. When loop closure happens,
-    /// we will need to re-query all previously saved marker position in order to achieve the best result.
-    /// This function is doing the querying job based on timestamp.
+    /// get the storeInfo from database
     /// </summary>
-    private void _UpdateMarkersForLoopClosures()
+    private void createStoreObj()
     {
-        // Adjust mark's position each time we have a loop closure detected.
-        foreach (GameObject obj in m_markerList)
-        {
-            ARMarker tempMarker = obj.GetComponent<ARMarker>();
-            if (tempMarker.m_timestamp != -1.0f)
-            {
-                TangoCoordinateFramePair pair;
-                TangoPoseData relocalizedPose = new TangoPoseData();
 
-                pair.baseFrame = TangoEnums.TangoCoordinateFrameType.TANGO_COORDINATE_FRAME_AREA_DESCRIPTION;
-                pair.targetFrame = TangoEnums.TangoCoordinateFrameType.TANGO_COORDINATE_FRAME_DEVICE;
-                PoseProvider.GetPoseAtTime(relocalizedPose, tempMarker.m_timestamp, pair);
-
-                Matrix4x4 uwTDevice = TangoSupport.UNITY_WORLD_T_START_SERVICE
-                                      * relocalizedPose.ToMatrix4x4()
-                                      * TangoSupport.DEVICE_T_UNITY_CAMERA;
-
-                Matrix4x4 uwTMarker = uwTDevice * tempMarker.m_deviceTMarker;
-
-                obj.transform.position = uwTMarker.GetColumn(3);
-                obj.transform.rotation = Quaternion.LookRotation(uwTMarker.GetColumn(2), uwTMarker.GetColumn(1));
-            }
-        }
     }
-    */
-    
-    
+
+    /*
     /// <summary>
     /// Load marker list xml from application storage.
     /// </summary>
-    private void _LoadStoreObjFromDisk()
+    private void _LoadStoreObj()
     {
         // Attempt to load the exsiting markers from storage.
         string path = Application.persistentDataPath + "/" + m_curAreaDescription.m_uuid + ".xml";
@@ -482,23 +387,33 @@ public class TangoStreet : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDepth
             temp.transform.GetComponent<ARStoreObject>().m_storeName = store.m_name;
             temp.transform.GetComponent<ARStoreObject>().m_storeIntro = store.m_introduce;
             
-            /*
-            temp.transform.GetChild(1).gameObject.GetComponent<Text>().text = store.m_name;
-            temp.transform.GetChild(2).gameObject.GetComponent<Text>().text = store.m_introduce;
+            
+            //temp.transform.GetChild(1).gameObject.GetComponent<Text>().text = store.m_name;
+            //temp.transform.GetChild(2).gameObject.GetComponent<Text>().text = store.m_introduce;
 
-            Text introText = temp.transform.GetChild(2).gameObject.GetComponent<Text>();
-            for (int i = 0; i < OwnerInfo.storeInfo.infoList.Count; i++)
+            //Text introText = temp.transform.GetChild(2).gameObject.GetComponent<Text>();
+            //for (int i = 0; i < OwnerInfo.storeInfo.infoList.Count; i++)
+            //{
+            //    if (OwnerInfo.storeInfo.infoList[i].title == "©±®a¤¶²Ð")
+            //    {
+            //        introText.text = OwnerInfo.storeInfo.infoList[i].content;
+            //    }
+            //}
+            
+
+            if(PlayerInfo.streetMode.infoObj)
             {
-                if (OwnerInfo.storeInfo.infoList[i].title == "©±®a¤¶²Ð")
-                {
-                    introText.text = OwnerInfo.storeInfo.infoList[i].content;
-                }
+                temp.SetActive(true);
             }
-            */
+            else
+            {
+                temp.SetActive(false);
+            }
+
             m_storeList.Add(temp);
         }
     }
-    
+    */
     /// <summary>
     /// Convert a 3D bounding box represented by a <c>Bounds</c> object into a 2D 
     /// rectangle represented by a <c>Rect</c> object.
@@ -521,8 +436,47 @@ public class TangoStreet : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDepth
         screenBounds.Encapsulate(cam.WorldToScreenPoint(center + new Vector3(-extents.x, -extents.y, +extents.z)));
         screenBounds.Encapsulate(cam.WorldToScreenPoint(center + new Vector3(-extents.x, -extents.y, -extents.z)));
         return Rect.MinMaxRect(screenBounds.min.x, screenBounds.min.y, screenBounds.max.x, screenBounds.max.y);
-    }   
+    }
+    
+    public void OnTangoPermissions(bool permissionsGranted)
+    {
+        if (permissionsGranted)
+        {
+            Debug.Log("permission pass!!!!!");
+            m_curAreaDescriptionUUID = "e3eaeaf2-a65d-4e45-8b90-9675e8b31b66";//sofa
+            //m_curAreaDescriptionUUID = "d9390781-e773-416d-8848-77ac1eeba3ae";//adf 0000 in PC
+            //m_curAreaDescriptionUUID = "f2953b36-b477-2fb9-81c5-1682a435250e";//204
+            //m_curAreaDescriptionUUID = "e12e5a3c-5a09-29b9-98c6-7b3d6fd42737";//d24test6
+            //m_curAreaDescriptionUUID = "ff8c341e-ced8-28f7-9898-6ef42a5060b6";//d24test5
+            AreaDescription areaDescription = AreaDescription.ForUUID(m_curAreaDescriptionUUID);
+            m_curAreaDescription = areaDescription;
+            m_tangoApplication.m_areaDescriptionLearningMode = false;//m_enableLearningToggle.isOn;        
+            m_tangoApplication.Startup(m_curAreaDescription);
 
+            m_poseController.gameObject.SetActive(true);            
+        }
+        else
+        {
+            AndroidHelper.ShowAndroidToastMessage("Motion Tracking and Area Learning Permissions Needed");
+
+            // This is a fix for a lifecycle issue where calling
+            // Application.Quit() here, and restarting the application
+            // immediately results in a deadlocked app.
+            AndroidHelper.AndroidQuit();
+        }
+    }
+
+    public void OnTangoServiceConnected()
+    {
+        //throw new NotImplementedException();
+    }
+
+    public void OnTangoServiceDisconnected()
+    {
+        //throw new NotImplementedException();
+    }
+    
+    /*
     /// <summary>
     /// Data container for marker.
     /// 
@@ -570,4 +524,5 @@ public class TangoStreet : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDepth
         [XmlElement("introduce")]
         public string m_introduce;
     }
+    */
 }

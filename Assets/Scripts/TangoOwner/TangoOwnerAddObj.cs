@@ -10,122 +10,67 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Lean.Touch;
+using UnityEngine.Experimental.Networking;
+using System.Web.Script.Serialization;
 
 /// <summary>
 /// AreaLearningGUIController is responsible for the main game interaction.
 /// 
 /// This class also takes care of loading / save persistent data(marker), and loop closure handling.
 /// </summary>
-public class TangoOwnerAddObj : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDepth
+public class TangoOwnerAddObj : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDepth, ITangoLifecycle
 {
-    /// <summary>
-    /// Prefabs of different colored markers.
-    /// </summary>
-    //public GameObject[] m_markPrefabs;
-
-    public GameObject[] m_objPrefabs;
-
-    /// <summary>
-    /// The point cloud object in the scene.
-    /// </summary>
-    public TangoPointCloud m_pointCloud;
-
-    /// <summary>
-    /// The canvas to place 2D game objects under.
-    /// </summary>
-    //public Canvas m_canvas;
-
-    /// <summary>
-    /// The touch effect to place on taps.
-    /// </summary>
-    //public RectTransform m_prefabTouchEffect;
-
-    /// <summary>
-    /// Saving progress UI text.
-    /// </summary>
-    //public UnityEngine.UI.Text m_savingText;
-
-    /// <summary>
-    /// The Area Description currently loaded in the Tango Service.
-    /// </summary>
+    public GameObject[] m_objPrefabs;   
     [HideInInspector]
     public AreaDescription m_curAreaDescription;
 
-#if UNITY_EDITOR
-    /// <summary>
-    /// Handles GUI text input in Editor where there is no device keyboard.
-    /// If true, text input for naming new saved Area Description is displayed.
-    /// </summary>
-    //private bool m_displayGuiTextInput;
-
-    /// <summary>
-    /// Handles GUI text input in Editor where there is no device keyboard.
-    /// Contains text data for naming new saved Area Descriptions.
-    /// </summary>
-    //private string m_guiTextInputContents;
-
-    /// <summary>
-    /// Handles GUI text input in Editor where there is no device keyboard.
-    /// Indicates whether last text input was ended with confirmation or cancellation.
-    /// </summary>
-    //private bool m_guiTextInputResult;
-#endif
-
-    /// <summary>
-    /// If set, then the depth camera is on and we are waiting for the next depth update.
-    /// </summary>
-    private bool m_findPlaneWaitingForDepth;
-
-    /// <summary>
-    /// A reference to TangoARPoseController instance.
-    /// 
-    /// In this class, we need TangoARPoseController reference to get the timestamp and pose when we place a marker.
-    /// The timestamp and pose is used for later loop closure position correction. 
-    /// </summary>
-    private TangoPoseController m_poseController;
-
-    //private ButtonGroupToggle m_modeController;
-
-    /// <summary>
-    /// List of markers placed in the scene.
-    /// </summary>
+    //for store obj
     private List<GameObject> m_objList = new List<GameObject>();
-
-    /// <summary>
-    /// Reference to the newly placed marker.
-    /// </summary>
     private GameObject newObj = null;
-
-    /// <summary>
-    /// Current marker type.
-    /// </summary>
     private int m_currentObjType = 0;
-
-    /// <summary>
-    /// If set, this is the selected marker.
-    /// </summary>
     private ARStoreObject m_selectedObj;
 
-    /// <summary>
-    /// If set, this is the rectangle bounding the selected marker.
-    /// </summary>
-    private Rect m_selectedRect;
-
-    /// <summary>
-    /// If the interaction is initialized.
-    /// 
-    /// Note that the initialization is triggered by the relocalization event. We don't want user to place object before
-    /// the device is relocalized.
-    /// </summary>
+    //other control
+    private bool m_findPlaneWaitingForDepth;//If set, then the depth camera is on and we are waiting for the next depth update.
+    private TangoPoseController m_poseController;
     private bool m_initialized = false;
-
-    /// <summary>
-    /// A reference to TangoApplication instance.
-    /// </summary>
     private TangoApplication m_tangoApplication;
+    private string m_curAreaDescriptionUUID;
+    //private Thread m_saveThread;
 
-    private Thread m_saveThread;
-    
+    //part of connecting
+    private string getListURL = "https://kevin.imslab.org" + PlayerInfo.port + "/list_storage_hierarchy";
+    private string createShopURL = "https://kevin.imslab.org" + PlayerInfo.port + "/create_shop";
+    private string addObjURL = "https://kevin.imslab.org" + PlayerInfo.port + "/add_obj";
+    private string auth_flag = "1";
+    private string beaconID = "2";
+    //private string adfID = OwnerInfo.curUUID;
+    private string adfID;
+    private string shopID = OwnerInfo.storeInfo._id;
+    private string pw = OwnerInfo.ownerPW;    
+    private bool hasCreated = false;    
+    private byte[] contents = null;
+    //private string[] listStorage;
+
+    public class shop
+    {
+        public string name = "";
+        public string _id = "";
+    }
+    public class adf
+    {
+        public string name = "";
+        public string _id = "";
+        public List<shop> shopID = new List<shop>();
+    }
+    public class listStorage
+    {
+        public string _id = "";
+        public string beaconID = "";
+        public List<adf> adfID = new List<adf>();
+    }
+    public List<listStorage> theListStorage = new List<listStorage>(); 
+
     /// <summary>
     /// Unity Start function.
     /// 
@@ -140,10 +85,21 @@ public class TangoOwnerAddObj : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDe
         if (m_tangoApplication != null)
         {
             m_tangoApplication.Register(this);
-        }                
-    }
-    
-    
+            if (AndroidHelper.IsTangoCorePresent())
+            {
+                m_tangoApplication.RequestPermissions();
+            }
+        }
+
+        if (shopID != null)
+        {
+            Debug.Log("shopID = " + shopID);
+            StartCoroutine(createShop());
+        }
+
+        //Debug.Log("getting list start!!!");
+        //StartCoroutine(getListStorage());         
+    }    
 
     /// <summary>
     /// add an obj in markerList, and upload into the world with the upload function
@@ -208,17 +164,7 @@ public class TangoOwnerAddObj : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDe
     /// Mainly handle the touch event and place mark in place.
     /// </summary>
     public void Update()
-    {
-        if (m_saveThread != null && m_saveThread.ThreadState != ThreadState.Running)
-        {
-            // After saving an Area Description or mark data, we reload the scene to restart the game.
-            _UpdateMarkersForLoopClosures();
-            _SaveMarkerToDisk();
-#pragma warning disable 618
-            Application.LoadLevel(Application.loadedLevel);
-#pragma warning restore 618
-        }
-
+    {        
         if (Input.GetKey(KeyCode.Escape))
         {
 #pragma warning disable 618
@@ -234,51 +180,7 @@ public class TangoOwnerAddObj : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDe
         if (EventSystem.current.IsPointerOverGameObject(0) || GUIUtility.hotControl != 0)
         {
             return;
-        }
-        /*
-        if (Input.touchCount == 1)
-        {
-            Touch t = Input.GetTouch(0);
-            Vector2 guiPosition = new Vector2(t.position.x, Screen.height - t.position.y);
-            Camera cam = Camera.main;
-            RaycastHit hitInfo;
-
-            if (t.phase != TouchPhase.Began)
-            {
-                return;
-            }
-
-            if (m_selectedRect.Contains(guiPosition))
-            {
-                // do nothing, the button will handle it
-            }
-            else if (Physics.Raycast(cam.ScreenPointToRay(t.position), out hitInfo))
-            {
-                // Found a marker, select it (so long as it isn't disappearing)!
-                GameObject tapped = hitInfo.collider.gameObject;
-                if (!tapped.GetComponent<Animation>().isPlaying)
-                {
-                    m_selectedObj = tapped.GetComponent<ARStoreObject>();
-                }
-            }
-            else
-            {*/
-                /*
-                // Place a new point at that location, clear selection
-                m_selectedObj = null;
-                StartCoroutine(_WaitForDepthAndFindPlane(t.position));
-
-                // Because we may wait a small amount of time, this is a good place to play a small
-                // animation so the user knows that their input was received.
-                RectTransform touchEffectRectTransform = Instantiate(m_prefabTouchEffect) as RectTransform;
-                touchEffectRectTransform.transform.SetParent(m_canvas.transform, false);
-                Vector2 normalizedPosition = t.position;
-                normalizedPosition.x /= Screen.width;
-                normalizedPosition.y /= Screen.height;
-                touchEffectRectTransform.anchorMin = touchEffectRectTransform.anchorMax = normalizedPosition;
-                *//*
-            }
-        }*/
+        }        
     }
 
     /// <summary>
@@ -296,109 +198,7 @@ public class TangoOwnerAddObj : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDe
 #pragma warning restore 618
         }
     }
-
-    /// <summary>
-    /// Unity OnGUI function.
-    /// 
-    /// Mainly for removing markers.
-    /// </summary>
-    public void OnGUI()
-    {
-        /*
-        if (m_selectedObj != null)
-        {
-            Renderer selectedRenderer = m_selectedObj.GetComponent<Renderer>();
-
-            // GUI's Y is flipped from the mouse's Y
-            Rect screenRect = _WorldBoundsToScreen(Camera.main, selectedRenderer.bounds);
-            float yMin = Screen.height - screenRect.yMin;
-            float yMax = Screen.height - screenRect.yMax;
-            screenRect.yMin = Mathf.Min(yMin, yMax);
-            screenRect.yMax = Mathf.Max(yMin, yMax);
-
-            if (GUI.Button(screenRect, "<size=30>Hide</size>"))
-            {
-                m_objList.Remove(m_selectedObj.gameObject);
-                m_selectedObj.SendMessage("Hide");
-                m_selectedObj = null;
-                m_selectedRect = new Rect();
-            }
-            else
-            {
-                m_selectedRect = screenRect;
-            }
-        }
-        else
-        {
-            m_selectedRect = new Rect();
-        }
-        *//*
-#if UNITY_EDITOR
-        // Handle text input when there is no device keyboard in the editor.
-        if (m_displayGuiTextInput)
-        {
-            Rect textBoxRect = new Rect(100,
-                                        Screen.height - 200,
-                                        Screen.width - 200,
-                                        100);
-
-            Rect okButtonRect = textBoxRect;
-            okButtonRect.y += 100;
-            okButtonRect.width /= 2;
-
-            Rect cancelButtonRect = okButtonRect;
-            cancelButtonRect.x = textBoxRect.center.x;
-
-            GUI.SetNextControlName("TextField");
-            GUIStyle customTextFieldStyle = new GUIStyle(GUI.skin.textField);
-            customTextFieldStyle.alignment = TextAnchor.MiddleCenter;
-            m_guiTextInputContents =
-                GUI.TextField(textBoxRect, m_guiTextInputContents, customTextFieldStyle);
-            GUI.FocusControl("TextField");
-
-            if (GUI.Button(okButtonRect, "OK")
-                || (Event.current.type == EventType.keyDown && Event.current.character == '\n'))
-            {
-                m_displayGuiTextInput = false;
-                m_guiTextInputResult = true;
-            }
-            else if (GUI.Button(cancelButtonRect, "Cancel"))
-            {
-                m_displayGuiTextInput = false;
-                m_guiTextInputResult = false;
-            }
-        }
-#endif*/
-    }
-
-    /// <summary>
-    /// Set the marker type.
-    /// </summary>
-    /// <param name="type">Marker type.</param>
-    public void SetCurrentMarkType(int type)
-    {
-        if (type != m_currentObjType)
-        {
-            m_currentObjType = type;
-        }
-    }
-    /*
-    /// <summary>
-    /// Save the game.
-    /// 
-    /// Save will trigger 3 things:
-    /// 
-    /// 1. Save the Area Description if the learning mode is on.
-    /// 2. Bundle adjustment for all marker positions, please see _UpdateMarkersForLoopClosures() function header for 
-    ///     more details.
-    /// 3. Save all markers to xml, save the Area Description if the learning mode is on.
-    /// 4. Reload the scene.
-    /// </summary>
-    public void Save()
-    {
-        StartCoroutine(_DoSaveCurrentAreaDescription());
-    }
-    */
+       
     /// <summary>
     /// This is called each time a Tango event happens.
     /// </summary>
@@ -428,18 +228,6 @@ public class TangoOwnerAddObj : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDe
     /// <param name="poseData">Returned pose data from TangoService.</param>
     public void OnTangoPoseAvailable(Tango.TangoPoseData poseData)
     {
-        // This frame pair's callback indicates that a loop closure or relocalization has happened. 
-        //
-        // When learning mode is on, this callback indicates the loop closure event. Loop closure will happen when the
-        // system recognizes a pre-visited area, the loop closure operation will correct the previously saved pose 
-        // to achieve more accurate result. (pose can be queried through GetPoseAtTime based on previously saved
-        // timestamp).
-        // Loop closure definition: https://en.wikipedia.org/wiki/Simultaneous_localization_and_mapping#Loop_closure
-        //
-        // When learning mode is off, and an Area Description is loaded, this callback indicates a
-        // relocalization event. Relocalization is when the device finds out where it is with respect to the loaded
-        // Area Description. In our case, when the device is relocalized, the markers will be loaded because we
-        // know the relative device location to the markers.
         if (poseData.framePair.baseFrame ==
             TangoEnums.TangoCoordinateFrameType.TANGO_COORDINATE_FRAME_AREA_DESCRIPTION &&
             poseData.framePair.targetFrame ==
@@ -449,6 +237,7 @@ public class TangoOwnerAddObj : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDe
             // When we get the first loop closure/ relocalization event, we initialized all the in-game interactions.
             if (!m_initialized)
             {
+                Debug.Log("startup sofa in addObj success!!!");
                 m_initialized = true;
                 if (m_curAreaDescription == null)
                 {
@@ -456,7 +245,7 @@ public class TangoOwnerAddObj : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDe
                     return;
                 }
 
-                _LoadMarkerFromDisk();
+                //_LoadMarkerFromDisk();
             }
         }
     }
@@ -473,137 +262,28 @@ public class TangoOwnerAddObj : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDe
         // tell the coroutine it can continue.
         m_findPlaneWaitingForDepth = false;
     }
-    /*
-    /// <summary>
-    /// Actually do the Area Description save.
-    /// </summary>
-    /// <returns>Coroutine IEnumerator.</returns>
-    private IEnumerator _DoSaveCurrentAreaDescription()
-    {
-#if UNITY_EDITOR
-        // Work around lack of on-screen keyboard in editor:
-        if (m_displayGuiTextInput || m_saveThread != null)
-        {
-            yield break;
-        }
-
-        m_displayGuiTextInput = true;
-        m_guiTextInputContents = "Unnamed";
-        while (m_displayGuiTextInput)
-        {
-            yield return null;
-        }
-
-        bool saveConfirmed = m_guiTextInputResult;
-#else
-        if (TouchScreenKeyboard.visible || m_saveThread != null)
-        {
-            yield break;
-        }
         
-        TouchScreenKeyboard kb = TouchScreenKeyboard.Open("Unnamed");
-        while (!kb.done && !kb.wasCanceled)
-        {
-            yield return null;
-        }
-
-        bool saveConfirmed = kb.done;
-#endif
-        if (saveConfirmed)
-        {
-            // Disable interaction before saving.
-            m_initialized = false;
-            m_savingText.gameObject.SetActive(true);
-            if (m_tangoApplication.m_areaDescriptionLearningMode)
-            {
-                // The keyboard is not readable if you are not in the Unity main thread. Cache the value here.
-                string name;
-#if UNITY_EDITOR
-                name = m_guiTextInputContents;
-#else
-                name = kb.text;
-#endif
-
-                m_saveThread = new Thread(delegate ()
-                {
-                    // Start saving process in another thread.
-                    m_curAreaDescription = AreaDescription.SaveCurrent();
-                    AreaDescription.Metadata metadata = m_curAreaDescription.GetMetadata();
-                    metadata.m_name = name;
-                    m_curAreaDescription.SaveMetadata(metadata);
-                });
-                m_saveThread.Start();
-            }
-            else
-            {
-                _SaveMarkerToDisk();
-#pragma warning disable 618
-                Application.LoadLevel(Application.loadedLevel);
-#pragma warning restore 618
-            }
-        }
-    }
-    */
-    /// <summary>
-    /// Correct all saved marks when loop closure happens.
-    /// 
-    /// When Tango Service is in learning mode, the drift will accumulate overtime, but when the system sees a
-    /// preexisting area, it will do a operation to correct all previously saved poses
-    /// (the pose you can query with GetPoseAtTime). This operation is called loop closure. When loop closure happens,
-    /// we will need to re-query all previously saved marker position in order to achieve the best result.
-    /// This function is doing the querying job based on timestamp.
-    /// </summary>
-    private void _UpdateMarkersForLoopClosures()
-    {
-        // Adjust mark's position each time we have a loop closure detected.
-        foreach (GameObject obj in m_objList)
-        {
-            ARStoreObject tempObj = obj.GetComponent<ARStoreObject>();
-            m_selectedObj = tempObj;
-            if (tempObj.m_timestamp != -1.0f)
-            {
-                TangoCoordinateFramePair pair;
-                TangoPoseData relocalizedPose = new TangoPoseData();
-
-                pair.baseFrame = TangoEnums.TangoCoordinateFrameType.TANGO_COORDINATE_FRAME_AREA_DESCRIPTION;
-                pair.targetFrame = TangoEnums.TangoCoordinateFrameType.TANGO_COORDINATE_FRAME_DEVICE;
-                PoseProvider.GetPoseAtTime(relocalizedPose, tempObj.m_timestamp, pair);
-
-                Matrix4x4 uwTDevice = TangoSupport.UNITY_WORLD_T_START_SERVICE
-                                      * relocalizedPose.ToMatrix4x4()
-                                      * TangoSupport.DEVICE_T_UNITY_CAMERA;
-
-                Matrix4x4 uwTObj = uwTDevice * tempObj.m_deviceTObj;
-
-                obj.transform.position = uwTObj.GetColumn(3);
-                obj.transform.rotation = Quaternion.LookRotation(uwTObj.GetColumn(2), uwTObj.GetColumn(1));
-                
-            }
-        }
-    }
-
     /// <summary>
     /// Write marker list to an xml file stored in application storage.
     /// </summary>
-    public void _SaveMarkerToDisk()
+    public void _SaveObj()
     {
+        Debug.Log("hasCreate = " + hasCreated.ToString());
+        if(hasCreated == true)
+        {
+            string prefabPath = Application.dataPath + "/" + "Canvas_storeInfo 1.prefab";            
+            contents = File.ReadAllBytes(prefabPath);
+
+            Debug.Log("start save");            
+            //foreach(GameObject obj in m_objList)            
+            StartCoroutine(sendingAddObj());
+        }
+
+        /*
         // Compose a XML data list.
         List<storeObjectData> xmlDataList = new List<storeObjectData>();
         foreach (GameObject obj in m_objList)
-        {
-            /*
-            ARMarker markerScript = obj.GetComponent<ARMarker>();
-
-            //markerScript.m_timestamp = (float)m_poseController.LastPoseTimestamp;
-
-            Matrix4x4 uwTDevice = Matrix4x4.TRS(m_poseController.transform.position,
-                                                m_poseController.transform.rotation,
-                                                Vector3.one);
-            Matrix4x4 uwTMarker = Matrix4x4.TRS(gameObject.transform.position,
-                                                gameObject.transform.rotation,
-                                                Vector3.one);
-            markerScript.m_deviceTMarker = Matrix4x4.Inverse(uwTDevice) * uwTMarker;
-            */
+        {            
             // Add marks data to the list, we intentionally didn't add the timestamp, because the timestamp will not be
             // useful when the next time Tango Service is connected. The timestamp is only used for loop closure pose
             // correction in current Tango connection.
@@ -627,37 +307,116 @@ public class TangoOwnerAddObj : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDe
         {
             serializer.Serialize(stream, xmlDataList);
         }
+        */
     }
 
-    /// <summary>
-    /// Load marker list xml from application storage.
-    /// </summary>
-    private void _LoadMarkerFromDisk()
+    IEnumerator getListStorage()
     {
-        // Attempt to load the exsiting markers from storage.
-        string path = Application.persistentDataPath + "/" + m_curAreaDescription.m_uuid + ".xml";
-
-        var serializer = new XmlSerializer(typeof(List<storeObjectData>));
-        var stream = new FileStream(path, FileMode.Open);
-
-        List<storeObjectData> xmlDataList = serializer.Deserialize(stream) as List<storeObjectData>;
-
-        if (xmlDataList == null)
+        UnityWebRequest sending = UnityWebRequest.Get(getListURL);
+        yield return sending.Send();
+        
+        if(sending.error != null)
         {
-            Debug.Log("AndroidInGameController._LoadMarkerFromDisk(): xmlDataList is null");
-            return;
+            Debug.Log("error below : ");
+            Debug.Log(sending.error);
+        }
+        else
+        {
+            JavaScriptSerializer js = new JavaScriptSerializer();
+            theListStorage = js.Deserialize<List<listStorage>>(sending.downloadHandler.text);
+            //Debug.Log("js test : ");
+            //Debug.Log(listStorage);
+
+            Debug.Log("correct below : ");
+            Debug.Log(sending.downloadHandler.text);
+            Debug.Log("shopId = " + theListStorage[0].adfID[0].shopID[0]._id);
+            shopID = theListStorage[0].adfID[0].shopID[0]._id;
+
+            if (shopID != null)
+            {
+                //Debug.Log("shopID = " + shopID);
+                Debug.Log("create shop start!!!!!");
+                StartCoroutine(createShop());
+            }
+        }
+    }
+
+    IEnumerator createShop()
+    {
+        WWWForm formdata = new WWWForm();
+        formdata.AddField("shopID", shopID);
+        formdata.AddField("password", OwnerInfo.ownerPW);
+        formdata.AddField("auth_flag", auth_flag);
+        formdata.AddField("beaconID", beaconID);
+        //formdata.AddField("adfID", m_curAreaDescription.m_uuid);
+        //formdata.AddField("adfID", "f2953b36-b477-2fb9-81c5-1682a435250e");
+        formdata.AddField("adfID", "e3eaeaf2-a65d-4e45-8b90-9675e8b31b66");//sofa
+
+        UnityWebRequest sending = UnityWebRequest.Post(createShopURL, formdata);
+        yield return sending.Send();
+        if(sending.error != null)
+        {
+            Debug.Log(sending.error);
+        }
+        else
+        {
+            Debug.Log("correct below : ");
+            if(sending.downloadHandler.text == "success" || sending.downloadHandler.text == "success-total")
+            {
+                hasCreated = true;
+                Debug.Log("success : " + sending.downloadHandler.text);
+            }
+            else if(sending.downloadHandler.text == "duplicate-shopID")
+            {
+                hasCreated = true;
+                Debug.Log("success : " + sending.downloadHandler.text);
+            }
+            else
+            {
+                Debug.Log("false : " + sending.downloadHandler.text);
+            }
+        }
+    }
+
+    IEnumerator sendingAddObj()
+    {
+        ARStoreObject objToAdd = FindObjectOfType<ARStoreObject>();
+
+        WWWForm formdata = new WWWForm();
+        formdata.AddField("beaconID", beaconID);
+        //formdata.AddField("adfID", m_curAreaDescription.m_uuid);
+        //formdata.AddField("adfID", "f2953b36-b477-2fb9-81c5-1682a435250e");
+        formdata.AddField("adfID", "e3eaeaf2-a65d-4e45-8b90-9675e8b31b66");//sofa
+        formdata.AddField("shopID", shopID);
+        formdata.AddField("password", OwnerInfo.ownerPW);
+        formdata.AddField("shopName", objToAdd.m_storeName);//formdata.AddField("shopName", OwnerInfo.storeInfo.shopName);
+        formdata.AddField("shopIntro", objToAdd.m_storeIntro);//formdata.AddField("shopIntro", OwnerInfo.storeInfo.infoList[i].content);
+        formdata.AddField("id", objToAdd.m_type);
+        formdata.AddField("pos", objToAdd.transform.position.ToString());
+        formdata.AddField("rot", objToAdd.transform.rotation.ToString());
+        formdata.AddField("scale", objToAdd.transform.localScale.ToString());
+        formdata.AddBinaryData("file", contents);
+        
+        UnityWebRequest sending = UnityWebRequest.Post(addObjURL, formdata);
+        yield return sending.Send();
+        if (sending.error != null)
+        {
+            Debug.Log("error below:");
+            Debug.Log(sending.error);
+        }
+        else
+        {
+            Debug.Log("correct below:");
+            if (sending.downloadHandler.text == "create" || sending.downloadHandler.text == "update")
+            {
+                Debug.Log(sending.downloadHandler.text);
+            }
+            else
+            {
+                Debug.Log(sending.downloadHandler.text);
+            }
         }
 
-        m_objList.Clear();
-        foreach (storeObjectData obj in xmlDataList)
-        {
-            // Instantiate all markers' gameobject.
-            GameObject temp = Instantiate(m_objPrefabs[obj.m_type],
-                                          obj.m_position,
-                                          obj.m_orientation) as GameObject;
-            temp.transform.localScale = obj.m_scale;
-            m_objList.Add(temp);
-        }
     }
 
     /// <summary>
@@ -683,72 +442,33 @@ public class TangoOwnerAddObj : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDe
         screenBounds.Encapsulate(cam.WorldToScreenPoint(center + new Vector3(-extents.x, -extents.y, -extents.z)));
         return Rect.MinMaxRect(screenBounds.min.x, screenBounds.min.y, screenBounds.max.x, screenBounds.max.y);
     }
-    /*
-    /// <summary>
-    /// Wait for the next depth update, then find the plane at the touch position.
-    /// </summary>
-    /// <returns>Coroutine IEnumerator.</returns>
-    /// <param name="touchPosition">Touch position to find a plane at.</param>
-    private IEnumerator _WaitForDepthAndFindPlane(Vector2 touchPosition)
+
+    public void OnTangoPermissions(bool permissionsGranted)
     {
-        m_findPlaneWaitingForDepth = true;
-
-        // Turn on the camera and wait for a single depth update.
-        m_tangoApplication.SetDepthCameraRate(TangoEnums.TangoDepthCameraRate.MAXIMUM);
-        while (m_findPlaneWaitingForDepth)
+        if(permissionsGranted)
         {
-            yield return null;
+            m_curAreaDescriptionUUID = "e3eaeaf2-a65d-4e45-8b90-9675e8b31b66";//sofa
+            //m_curAreaDescriptionUUID = "f2953b36-b477-2fb9-81c5-1682a435250e";//204
+            //m_curAreaDescriptionUUID = "ff8c3413-ced8-28f7-9801-38627ec90271";//d24test4
+            //m_curAreaDescriptionUUID = "ff8c341e-ced8-28f7-9898-6ef42a5060b6";//d24test5
+            //m_curAreaDescriptionUUID = OwnerInfo.curUUID;
+            AreaDescription areaDescription = AreaDescription.ForUUID(m_curAreaDescriptionUUID);
+            m_curAreaDescription = areaDescription;
+            m_tangoApplication.m_areaDescriptionLearningMode = false;//m_enableLearningToggle.isOn;
+            m_tangoApplication.Startup(m_curAreaDescription);
+
+            m_poseController.gameObject.SetActive(true);
         }
-
-        m_tangoApplication.SetDepthCameraRate(TangoEnums.TangoDepthCameraRate.DISABLED);
-
-        // Find the plane.
-        Camera cam = Camera.main;
-        Vector3 planeCenter;
-        Plane plane;
-        if (!m_pointCloud.FindPlane(cam, touchPosition, out planeCenter, out plane))
-        {
-            yield break;
-        }
-
-        // Ensure the location is always facing the camera.  This is like a LookRotation, but for the Y axis.
-        Vector3 up = plane.normal;
-        Vector3 forward;
-        if (Vector3.Angle(plane.normal, cam.transform.forward) < 175)
-        {
-            Vector3 right = Vector3.Cross(up, cam.transform.forward).normalized;
-            forward = Vector3.Cross(right, up).normalized;
-        }
-        else
-        {
-            // Normal is nearly parallel to camera look direction, the cross product would have too much
-            // floating point error in it.
-            forward = Vector3.Cross(up, cam.transform.right);
-        }
-
-        // Instantiate marker object.
-        newObj = Instantiate(m_markPrefabs[m_currentMarkType],
-                                    planeCenter,
-                                    Quaternion.LookRotation(forward, up)) as GameObject;
-
-        ARMarker markerScript = newObj.GetComponent<ARMarker>();
-
-        markerScript.m_type = m_currentMarkType;
-        markerScript.m_timestamp = (float)m_poseController.LastPoseTimestamp;
-
-        Matrix4x4 uwTDevice = Matrix4x4.TRS(m_poseController.transform.position,
-                                            m_poseController.transform.rotation,
-                                            Vector3.one);
-        Matrix4x4 uwTMarker = Matrix4x4.TRS(newObj.transform.position,
-                                            newObj.transform.rotation,
-                                            Vector3.one);
-        markerScript.m_deviceTMarker = Matrix4x4.Inverse(uwTDevice) * uwTMarker;
-
-        m_objList.Add(newObj);
-
-        //m_selectedObj = null;
     }
-    */
+
+    public void OnTangoServiceConnected()
+    {
+    }
+
+    public void OnTangoServiceDisconnected()
+    {
+    }
+    /*
     /// <summary>
     /// Data container for marker.
     /// 
@@ -796,4 +516,5 @@ public class TangoOwnerAddObj : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDe
         [XmlElement("introduce")]
         public string m_introduce;
     }
+    */
 }

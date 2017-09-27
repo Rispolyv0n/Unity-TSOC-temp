@@ -399,6 +399,7 @@ public class AreaLearningInGameController : MonoBehaviour, ITangoPose, ITangoEve
             // When we get the first loop closure/ relocalization event, we initialized all the in-game interactions.
             if (!m_initialized)
             {
+                Debug.Log("startup the sofa success!!!");
                 m_initialized = true;
                 if (m_curAreaDescription == null)
                 {

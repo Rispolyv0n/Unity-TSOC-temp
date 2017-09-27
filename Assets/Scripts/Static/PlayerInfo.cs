@@ -148,7 +148,7 @@ public class PlayerInfo : MonoBehaviour
     void Start()
     {
         Screen.SetResolution(433, 693, false);
-        port = ":4001";
+        port = ":4000";
         justLogOut = false;
 
         fav_shopID_list = new List<string>();

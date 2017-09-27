@@ -36,6 +36,7 @@ TagManager:
   - text_story
   - img_char
   - loadingPanel
+  - storeInfoObj
   layers:
   - Default
   - TransparentFX
