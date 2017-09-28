@@ -167,6 +167,8 @@ public class PlayerInfo : MonoBehaviour
         public List<stockItem> furni_quant = new List<stockItem>();
     }
 
+    static public bool doneDownloading = false;
+
 
     // make sure only this script can stay on
     private void Awake()
@@ -206,9 +208,9 @@ public class PlayerInfo : MonoBehaviour
         characterCollection = new List<characterItem>();
         achievementCollection = new List<achievementItem>();
 
-        //downloadUserInfo();
+        
 
-        loadUserPace();
+        //loadUserPace();
 
 
         //resetCurrentCharacter(-1); // modify!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -246,93 +248,18 @@ public class PlayerInfo : MonoBehaviour
         Debug.Log("user pw get: " + user_pw);
     }
 
-    private void setUserValueInfo() // unenable ing
+    static public void setUserValueInfo() // not getting info from http yet
     {
+        Debug.Log("setUserValueInfo(initial)");
         // should get from http
-        currentCharacterID = 1;
-        totalPlayTime_hr = 150;
-        value_strength = 185;
-        value_intelligence = 100;
-        value_like = 100;
-        value_money = 600;
-        value_level = 2;
-        char_startTime = new DateTime(2017, 9, 13, 0, 0, 0);
+        currentCharacterID = -1;
+        totalPlayTime_hr = 0;
+        value_money = 300;
+        value_level = 1;
 
         // should get from http
         currentCharacterName = "";
-
-        // should get from http----------up
-        /*
-        eventItem event_item = new eventItem();
-        event_item.num = 0;
-        event_item.time = 2;
-        eventCollection.Add(event_item);
-
-        eventItem event_item2 = new eventItem();
-        event_item2.num = 2;
-        event_item2.time = 4;
-        eventCollection.Add(event_item2);
         
-
-        achievementItem ac_item = new achievementItem(0,1);
-        achievementItem ac_item2 = new achievementItem(2,3);
-        
-        achievementCollection.Add(ac_item);
-        achievementCollection.Add(ac_item2);
-        */
-        fav_shopID_list.RemoveRange(0, fav_shopID_list.Count);
-        favShop shop = new favShop();
-        shop.shopID = "Ris_shop";
-        fav_shopID_list.Add(shop); // remove!!!!!!!!!!!
-        /*
-        characterItem char_item = new characterItem();
-        char_item.id = 0;
-        char_item.name = "偶取ㄉ熊熊降";
-        char_item.value_strength = 20;
-        char_item.value_intelligence = 80;
-        char_item.value_like = 150;
-        char_item.ending = ENDING_GOOD;
-        char_item.start_time = new DateTime(2017, 9, 12, 1, 2, 3);
-        char_item.end_time = new DateTime(2017, 9, 15, 5, 7, 9);
-
-        characterItem char_item2 = new characterItem();
-        char_item2.id = 0;
-        char_item2.name = "偶取ㄉ熊熊降2";
-        char_item2.value_strength = 30;
-        char_item2.value_intelligence = 90;
-        char_item2.value_like = 160;
-        char_item2.ending = ENDING_STR;
-        char_item2.start_time = new DateTime(2017, 9, 13, 2, 3, 4);
-        char_item2.end_time = new DateTime(2017, 9, 15, 5, 7, 9);
-
-        characterItem char_item3 = new characterItem();
-        char_item3.id = 1;
-        char_item3.name = "神奇蝦仁";
-        char_item3.value_strength = 30;
-        char_item3.value_intelligence = 90;
-        char_item3.value_like = 160;
-        char_item3.ending = ENDING_STR;
-        char_item3.start_time = new DateTime(2017, 9, 13, 2, 3, 4);
-        char_item3.end_time = new DateTime(2017, 9, 15, 5, 7, 9);
-
-        characterItem char_item4 = new characterItem();
-        char_item4.id = 0;
-        char_item4.name = "偶取ㄉ熊熊降3";
-        char_item4.value_strength = 30;
-        char_item4.value_intelligence = 90;
-        char_item4.value_like = 160;
-        char_item4.ending = ENDING_STR;
-        char_item4.start_time = new DateTime(2017, 9, 13, 2, 3, 4);
-        char_item4.end_time = new DateTime(2017, 9, 15, 5, 7, 9);
-
-
-        characterCollection.Add(char_item);
-        characterCollection.Add(char_item2);
-        characterCollection.Add(char_item3);
-        characterCollection.Add(char_item4);
-        */
-        // should get from http----------down
-        //StartCoroutine(uploadBasicInfo());
     }
 
     // called when done choosing char (send btn in the scene choose_char)
@@ -486,7 +413,7 @@ public class PlayerInfo : MonoBehaviour
         StartCoroutine(uploadBasicInfo());
     }
     */
-    public void loadUserPace()
+    static public void loadUserPace()
     {
         if (PlayerPrefs.HasKey("firstLogIn") == false)
         {
@@ -1158,7 +1085,16 @@ public class PlayerInfo : MonoBehaviour
             props_quant = theInfo.props_quant;
             furni_quant = theInfo.furni_quant;
 
-            loadCharName();
+            if (value_level == 0)
+            { // first log in
+                setUserValueInfo();
+            }
+            else {
+                loadCharName();
+                loadUserPace();
+            }
+
+            doneDownloading = true;
 
             Debug.Log("mail:" + user_email);
             Debug.Log("value_str:" + value_strength);
@@ -1172,13 +1108,6 @@ public class PlayerInfo : MonoBehaviour
             Debug.Log("mode/gameObj:" + streetMode.gameObj); //
             Debug.Log("mode/infoObj:" + streetMode.infoObj); //
             Debug.Log("currentCharID:" + currentCharacterID);
-            Debug.Log("decoList" + decoration);
-            Debug.Log("charList" + characterCollection);
-            Debug.Log("achieList" + achievementCollection);
-            Debug.Log("eventList" + eventCollection);
-            Debug.Log("favShopList" + fav_shopID_list);
-            Debug.Log("propsList" + props_quant);
-            Debug.Log("furniList" + furni_quant);
 
         }
     }

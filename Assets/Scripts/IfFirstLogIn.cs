@@ -11,22 +11,16 @@ public class IfFirstLogIn : MonoBehaviour {
     public Button goHome;
     public Button goStreet;
 
+    public bool run = false;
+
     // Use this for initialization
     void Start () {
-        
+
         //firstLogIn = true;
         // get http request: if first time log in
-        if (PlayerInfo.firstLogIn)
-        {
-            PlayerInfo.firstLogIn = false;
-            GameObject.FindGameObjectWithTag("playerInfo").GetComponent<PlayerInfo>().saveUserPace();
-            panel_firstLogIn.SetActive(true);
-        }
-        else {
-            panel_chooseMode.SetActive(true);
-            goHome.onClick.AddListener(goHomeControl);
-            goStreet.onClick.AddListener(goStreetControl);
-        }
+        StartCoroutine(PlayerInfo.downloadUserInfo());
+        //while (PlayerInfo.doneDownloading == false) { };
+        
 
 
 
@@ -56,9 +50,28 @@ public class IfFirstLogIn : MonoBehaviour {
             SceneManager.LoadScene("street");
         }
     }
-	
+
+    void removeLoadingPanel() {
+        if (PlayerInfo.firstLogIn)
+        {
+            PlayerInfo.firstLogIn = false;
+            GameObject.FindGameObjectWithTag("playerInfo").GetComponent<PlayerInfo>().saveUserPace();
+            //StartCoroutine(PlayerInfo.uploadBasicInfo());
+            panel_firstLogIn.SetActive(true);
+        }
+        else
+        {
+            panel_chooseMode.SetActive(true);
+            goHome.onClick.AddListener(goHomeControl);
+            goStreet.onClick.AddListener(goStreetControl);
+        }
+    }
+
 	// Update is called once per frame
 	void Update () {
-	
+        if (PlayerInfo.doneDownloading && run == false) {
+            removeLoadingPanel();
+            run = true;
+        }
 	}
 }
