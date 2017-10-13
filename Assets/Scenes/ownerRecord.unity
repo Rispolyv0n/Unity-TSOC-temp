@@ -1001,7 +1001,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &795008656
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2075,6 +2075,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6415f1b3694ebb840a5cf2aba6c4077e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  thePanel: {fileID: 0}
+  ifNeedtoStay: 0
+  ifNeedtoOpenPanel: 0
 --- !u!114 &1434850710
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2654,7 +2657,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\u78BA\u8A8D\u96E2\u958B"
+  m_Text: "export\u4E26\u96E2\u958B"
 --- !u!222 &1857451723
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2843,7 +2846,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2074906343
 RectTransform:
   m_ObjectHideFlags: 0

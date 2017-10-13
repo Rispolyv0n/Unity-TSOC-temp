@@ -375,9 +375,37 @@ public class TangoOwnerRecording : MonoBehaviour, ITangoPose, ITangoEvent, ITang
             }
         }
     }
-    
-    
-    
+
+    /// <summary>
+    /// Export an Area Description.
+    /// </summary>
+    public void ExportSelectedAreaDescription()
+    {
+        if (m_curAreaDescription != null)
+        {
+            StartCoroutine(_DoExportAreaDescription(m_curAreaDescription));
+        }
+    }
+
+    private IEnumerator _DoExportAreaDescription(AreaDescription areaDescription)
+    {
+        if (TouchScreenKeyboard.visible)
+        {
+            yield break;
+        }
+
+        TouchScreenKeyboard kb = TouchScreenKeyboard.Open("/sdcard/", TouchScreenKeyboardType.Default, false);
+        while (!kb.done && !kb.wasCanceled)
+        {
+            yield return null;
+        }
+
+        if (kb.done)
+        {
+            areaDescription.ExportToFile(kb.text);
+        }
+    }
+
     /// <summary>
     /// Convert a 3D bounding box represented by a <c>Bounds</c> object into a 2D 
     /// rectangle represented by a <c>Rect</c> object.

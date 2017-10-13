@@ -318,6 +318,9 @@ public class RefAndListControl : MonoBehaviour
         OwnerInfo.storeInfo.openTime = tempOpenTime;
         OwnerInfo.storeInfo.infoList = columnList;
 
+        //savingPanel.SetActive(false);
+        //sendingPanel.SetActive(true);
+
         // upload edit content
         StartCoroutine(sendData());
         //StartCoroutine(printOwnerData());

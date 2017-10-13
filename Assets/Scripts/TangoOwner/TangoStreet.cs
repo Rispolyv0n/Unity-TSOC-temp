@@ -43,7 +43,16 @@ public class TangoStreet : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDepth, 
 
     //to get all shop id in shopIDList
     private string beaconID = "1";
-    private string getShopIdURL = "https://kevin.imslab.org" + PlayerInfo.port + "/get_shopIDs?beaconID=" + "1" + "&adfID=" + "f2953b36-b477-2fb9-81c5-1682a435250e";
+    //private string getShopIdURL = "https://kevin.imslab.org" + PlayerInfo.port + "/get_shopIDs?beaconID=" + "1" + "&adfID=" + "e3eaeaf2-a65d-4e45-8b90-9675e8b31b66";//sofa
+    private string getShopIdURL = "https://kevin.imslab.org" + PlayerInfo.port + "/get_shopIDs?beaconID=" + "1" + "&adfID=" + "aa305c08-fd20-2325-8b83-7e6e47b0bacc";//65104
+
+
+    //to load store obj
+    private string getStoreObjURL;
+    private string shopID = OwnerInfo.ownerID;
+    public Vector3 objPos;
+    public Quaternion objRot;
+    public Vector3 objScale;
 
     public class ColumnItemOfShopIDList
     {       
@@ -52,6 +61,17 @@ public class TangoStreet : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDepth, 
     }
     //public ColumnItemOfShopIDList IDlist = new ColumnItemOfShopIDList();
     public List<ColumnItemOfShopIDList> shopIDlist = new List<ColumnItemOfShopIDList>();
+
+    public class columnItemofStoreObj
+    {
+        public string shopName;
+        public string shopIntro;
+        public string pos;
+        public string rot;
+        public string scale;
+    }
+    //public List<columnItemofStoreObj> storeObjList = new List<columnItemofStoreObj>();
+    public columnItemofStoreObj storeObj = new columnItemofStoreObj();
 
     public void Start()
     {
@@ -74,8 +94,6 @@ public class TangoStreet : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDepth, 
 
         Debug.Log("start to get the shop ID");
         StartCoroutine(getShopID());
-        //StartCoroutine(loadstoreInfo());
-
     }
 
     IEnumerator getShopID()
@@ -96,16 +114,41 @@ public class TangoStreet : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDepth, 
             shopIDlist = js.Deserialize<List<ColumnItemOfShopIDList>>(sending.downloadHandler.text);
             //Debug.Log(sending.downloadHandler.text);
             Debug.Log("name = " + shopIDlist[0].name);            
-            Debug.Log("id = " + shopIDlist[0]._id);            
+            Debug.Log("id = " + shopIDlist[0]._id);
+            //shopID = shopIDlist[0]._id;
+            Debug.Log("start to get the obj");
+            StartCoroutine(loadstoreInfo());
         }
     }
 
-    /*
+    
     IEnumerator loadstoreInfo()
     {
+        getStoreObjURL = "https://kevin.imslab.org" + PlayerInfo.port + "/get_obj_info?beaconID=" + "1" + "&adfID=" + "f2953b36-b477-2fb9-81c5-1682a435250e" + "&shopID=" + shopID + "&id=" + "0";
+        UnityWebRequest sending = UnityWebRequest.Get(getStoreObjURL);
+        yield return sending.Send();
 
+        if(sending.error != null)
+        {
+            Debug.Log("error below");
+            Debug.Log(sending.error);
+        }
+        else
+        {
+            Debug.Log("correct below");
+            Debug.Log(sending.downloadHandler.text);
+            JavaScriptSerializer js = new JavaScriptSerializer();
+            storeObj = js.Deserialize<columnItemofStoreObj>(sending.downloadHandler.text);
+            Debug.Log("shopName = " + storeObj.shopName);
+            objPos = stringToVector3(storeObj.pos);
+            objRot = stringToQuaternion(storeObj.rot);
+            objScale = stringToVector3(storeObj.scale);
+            Debug.Log("objPos = " + objPos.ToString());
+            Debug.Log("objRot = " + objRot.ToString());
+            Debug.Log("objScale = " + objScale.ToString());
+        }
     }
-    */
+    
     public void sprinkleObjects(int sprinkleType, int nums)//(List<Vector2> touchPoseList)
     {
         m_curObjType = sprinkleType;
@@ -208,8 +251,15 @@ public class TangoStreet : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDepth, 
             else if (Physics.Raycast(cam.ScreenPointToRay(t.position), out hitInfo))
             {                
                 GameObject tapped = hitInfo.collider.gameObject;
-                m_selectedObj = tapped.GetComponent<ARObjects>();
-                m_selectedStore = tapped.transform.parent.GetComponent<ARStoreObject>();                
+                if (tapped.transform.parent.GetComponent<ARStoreObject>() != null)
+                {
+                    m_selectedStore = tapped.transform.parent.GetComponent<ARStoreObject>();
+                }
+                else
+                {
+                    m_selectedObj = tapped.GetComponent<ARObjects>();
+                }
+
             }        
             else
             {                
@@ -329,6 +379,7 @@ public class TangoStreet : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDepth, 
                 sprinkleObjects(1, 10);//gameDiamonds
                 sprinkleObjects(PlayerInfo.currentCharacterID + 2, 15);
                 createStoreObj();
+                //_LoadStoreObj();
             }
         }
     }
@@ -351,13 +402,26 @@ public class TangoStreet : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDepth, 
     /// </summary>
     private void createStoreObj()
     {
+        GameObject temp = Instantiate(m_storeInfoPrefabs[0],
+                                          objPos,
+                                          objRot) as GameObject;
+        temp.transform.localScale = objScale;
 
+        temp.transform.GetComponent<ARStoreObject>().m_storeName = storeObj.shopName;
+        temp.transform.GetComponent<ARStoreObject>().m_storeIntro = storeObj.shopIntro;
+
+        if (PlayerInfo.streetMode.infoObj)
+        {
+            temp.SetActive(true);
+        }
+        else
+        {
+            temp.SetActive(false);
+        }
+
+        m_storeList.Add(temp);
     }
-
     /*
-    /// <summary>
-    /// Load marker list xml from application storage.
-    /// </summary>
     private void _LoadStoreObj()
     {
         // Attempt to load the exsiting markers from storage.
@@ -443,7 +507,10 @@ public class TangoStreet : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDepth, 
         if (permissionsGranted)
         {
             Debug.Log("permission pass!!!!!");
-            m_curAreaDescriptionUUID = "e3eaeaf2-a65d-4e45-8b90-9675e8b31b66";//sofa
+            m_curAreaDescriptionUUID = "aa305c08-fd20-2325-8b83-7e6e47b0bacc";//65104
+            //m_curAreaDescriptionUUID = "f5b2ca87-af86-2899-86f7-2789d3d1ce3d";//0929_2
+            //m_curAreaDescriptionUUID = "f5b2ca84-af86-2899-84f3-ba48570d17b2";//0929
+            //m_curAreaDescriptionUUID = "e3eaeaf2-a65d-4e45-8b90-9675e8b31b66";//sofa
             //m_curAreaDescriptionUUID = "d9390781-e773-416d-8848-77ac1eeba3ae";//adf 0000 in PC
             //m_curAreaDescriptionUUID = "f2953b36-b477-2fb9-81c5-1682a435250e";//204
             //m_curAreaDescriptionUUID = "e12e5a3c-5a09-29b9-98c6-7b3d6fd42737";//d24test6
@@ -475,52 +542,60 @@ public class TangoStreet : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDepth, 
     {
         //throw new NotImplementedException();
     }
-    
+       
+    public Vector3 stringToVector3(string stringToConvert)
+    {
+        if(stringToConvert.StartsWith("(") && stringToConvert.EndsWith(")"))
+        {
+            stringToConvert = stringToConvert.Substring(1, stringToConvert.Length - 2);
+        }
+
+        string[] elementArray = stringToConvert.Split(',');
+
+        Vector3 result = new Vector3(
+            float.Parse(elementArray[0]),
+            float.Parse(elementArray[1]),
+            float.Parse(elementArray[2]));
+
+        return result;
+    }
+
+    public Quaternion stringToQuaternion(string stringToConvert)
+    {
+        if (stringToConvert.StartsWith("(") && stringToConvert.EndsWith(")"))
+        {
+            stringToConvert = stringToConvert.Substring(1, stringToConvert.Length - 2);
+        }
+
+        string[] elementArray = stringToConvert.Split(',');
+
+        Quaternion result = new Quaternion(
+            float.Parse(elementArray[0]),
+            float.Parse(elementArray[1]),
+            float.Parse(elementArray[2]),
+            float.Parse(elementArray[3]));
+
+        return result;
+    }
     /*
-    /// <summary>
-    /// Data container for marker.
-    /// 
-    /// Used for serializing/deserializing marker to xml.
-    /// </summary>
     [System.Serializable]
     public class storeObjectData
-    {
-        /// <summary>
-        /// Marker's type.
-        /// 
-        /// Red, green or blue markers. In a real game scenario, this could be different game objects
-        /// (e.g. banana, apple, watermelon, persimmons).
-        /// </summary>
+    {        
         [XmlElement("type")]
         public int m_type;
-
-        /// <summary>
-        /// Position of the this mark, with respect to the origin of the game world.
-        /// </summary>
+        
         [XmlElement("position")]
         public Vector3 m_position;
-
-        /// <summary>
-        /// Rotation of the this mark.
-        /// </summary>
+        
         [XmlElement("orientation")]
         public Quaternion m_orientation;
-
-        /// <summary>
-        /// Scale of this mark.
-        /// </summary>
+        
         [XmlElement("scale")]
         public Vector3 m_scale;
-
-        /// <summary>
-        /// name text
-        /// </summary>
+        
         [XmlElement("name")]
         public string m_name;
-
-        /// <summary>
-        /// introduce text
-        /// </summary>
+        
         [XmlElement("introduce")]
         public string m_introduce;
     }

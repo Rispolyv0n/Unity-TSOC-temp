@@ -13,135 +13,22 @@ using UnityEngine.UI;
 
 public class TangoOwnerView : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDepth
 {
-    //try to sprinkle
-
-    /// <summary>
-    /// for gaming objects
-    /// 0 : coins, 1 : diamond
-    /// </summary>
-    //public GameObject[] m_objPrefabs;
-
-    /// <summary>
-    /// for store objects(now only one) 
-    /// </summary>
-    public GameObject[] m_storeInfoPrefabs;
-
-    //public List<GameObject> m_objList = new List<GameObject>();//need sprinkle and delete
-
+    //for store obj    
+    public GameObject[] m_storeInfoPrefabs;// for store objects(now only one)
     public List<GameObject> m_storeList = new List<GameObject>();//need load
-
-    //private GameObject newObjObject = null;
-
-    //private ARObjects m_selectedObj;
-
     private ARStoreObject m_selectedStore;
-
     private int m_curObjType = 0;
 
-    /// <summary>
-    /// Prefabs of different colored markers.
-    /// </summary>
-    //public GameObject[] m_markPrefabs;
-
-    /// <summary>
-    /// The point cloud object in the scene.
-    /// </summary>
-    public TangoPointCloud m_pointCloud;
-
-    /// <summary>
-    /// The canvas to place 2D game objects under.
-    /// </summary>
-    public Canvas m_canvas;
-
-    /// <summary>
-    /// The touch effect to place on taps.
-    /// </summary>
-    public RectTransform m_prefabTouchEffect;
-
-    /// <summary>
-    /// Saving progress UI text.
-    /// </summary>
-    //public UnityEngine.UI.Text m_savingText;
-
-    /// <summary>
-    /// The Area Description currently loaded in the Tango Service.
-    /// </summary>
+    //other control
     [HideInInspector]
     public AreaDescription m_curAreaDescription;
-
-#if UNITY_EDITOR
-    /// <summary>
-    /// Handles GUI text input in Editor where there is no device keyboard.
-    /// If true, text input for naming new saved Area Description is displayed.
-    /// </summary>
-    //private bool m_displayGuiTextInput;
-
-    /// <summary>
-    /// Handles GUI text input in Editor where there is no device keyboard.
-    /// Contains text data for naming new saved Area Descriptions.
-    /// </summary>
-    //private string m_guiTextInputContents;
-
-    /// <summary>
-    /// Handles GUI text input in Editor where there is no device keyboard.
-    /// Indicates whether last text input was ended with confirmation or cancellation.
-    /// </summary>
-    //private bool m_guiTextInputResult;
-#endif
-
-    /// <summary>
-    /// If set, then the depth camera is on and we are waiting for the next depth update.
-    /// </summary>
-    private bool m_findPlaneWaitingForDepth;
-
-    /// <summary>
-    /// A reference to TangoARPoseController instance.
-    /// 
-    /// In this class, we need TangoARPoseController reference to get the timestamp and pose when we place a marker.
-    /// The timestamp and pose is used for later loop closure position correction. 
-    /// </summary>
+    private bool m_findPlaneWaitingForDepth;// If set, then the depth camera is on and we are waiting for the next depth update.    
     private TangoPoseController m_poseController;
-
-    /// <summary>
-    /// List of markers placed in the scene.
-    /// </summary>
-    //private List<GameObject> m_markerList = new List<GameObject>();
-
-    /// <summary>
-    /// Reference to the newly placed marker.
-    /// </summary>
-    //private GameObject newMarkObject = null;
-
-    /// <summary>
-    /// Current marker type.
-    /// </summary>
-    //private int m_currentMarkType = 0;
-
-    /// <summary>
-    /// If set, this is the selected marker.
-    /// </summary>
-    //private ARMarker m_selectedMarker;
-
-    /// <summary>
-    /// If set, this is the rectangle bounding the selected marker.
-    /// </summary>
-    private Rect m_selectedRect;
-
-    /// <summary>
-    /// If the interaction is initialized.
-    /// 
-    /// Note that the initialization is triggered by the relocalization event. We don't want user to place object before
-    /// the device is relocalized.
-    /// </summary>
+    private Rect m_selectedRect;// If set, this is the rectangle bounding the selected marker.
     private bool m_initialized = false;
-
-    /// <summary>
-    /// A reference to TangoApplication instance.
-    /// </summary>
     private TangoApplication m_tangoApplication;
 
-    //private Thread m_saveThread;
-
+    
     /// <summary>
     /// Unity Start function.
     /// 
@@ -211,12 +98,6 @@ public class TangoOwnerView : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDept
             }        
             else
             {
-                RectTransform touchEffectRectTransform = Instantiate(m_prefabTouchEffect) as RectTransform;
-                touchEffectRectTransform.transform.SetParent(m_canvas.transform, false);
-                Vector2 normalizedPosition = t.position;
-                normalizedPosition.x /= Screen.width;
-                normalizedPosition.y /= Screen.height;
-                touchEffectRectTransform.anchorMin = touchEffectRectTransform.anchorMax = normalizedPosition;
             }
         }
     }

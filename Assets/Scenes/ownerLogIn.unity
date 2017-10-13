@@ -652,6 +652,7 @@ GameObject:
   - 114: {fileID: 1054505488}
   - 114: {fileID: 1054505487}
   - 114: {fileID: 1054505490}
+  - 114: {fileID: 1054505491}
   m_Layer: 5
   m_Name: Button_logIn
   m_TagString: Untagged
@@ -757,7 +758,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1054505485}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 79c272f40d3254d4ba005698e6e1d377, type: 3}
   m_Name: 
@@ -765,6 +766,21 @@ MonoBehaviour:
   getID: {fileID: 1120507770}
   getPW: {fileID: 1174948185}
   warningText: {fileID: 568079552}
+--- !u!114 &1054505491
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1054505485}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f5416e6cac64a34ba7f8b9150e7a822, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SceneName: ownerMenu
+  addScene: 0
+  switchScene: 1
+  closeScene: 0
 --- !u!1 &1120507769
 GameObject:
   m_ObjectHideFlags: 0

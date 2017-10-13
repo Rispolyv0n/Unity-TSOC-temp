@@ -6,7 +6,7 @@ using Lean.Touch;
 public class ButtonGroupToggle : MonoBehaviour {
 
     [HideInInspector]    
-    public GameObject storeInfo;
+    public GameObject theStoreInfo;
 
     public Button btn_move;
     public Button btn_spin;
@@ -18,7 +18,7 @@ public class ButtonGroupToggle : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 
-        storeInfo = GameObject.FindGameObjectWithTag("storeInfoObj");
+        theStoreInfo = GameObject.FindGameObjectWithTag("storeInfoObj");
 
         btn_move.onClick.AddListener(moveMode);
         btn_spin.onClick.AddListener(spinMode);
@@ -27,58 +27,64 @@ public class ButtonGroupToggle : MonoBehaviour {
 
     }
 
-    void moveMode() {
-        
-        storeInfo = GameObject.FindGameObjectWithTag("storeInfoObj");
+    public void moveMode() {
+
+        Debug.Log("press move!!!");
+
+        theStoreInfo = GameObject.FindGameObjectWithTag("storeInfoObj");
 
         btn_move.GetComponent<Image>().overrideSprite = select;
         btn_spin.GetComponent<Image>().overrideSprite = unselect;
         btn_resize.GetComponent<Image>().overrideSprite = unselect;
 
-        var scriptTranslate = storeInfo.GetComponent<LeanTranslate>();
+        var scriptTranslate = theStoreInfo.GetComponent<LeanTranslate>();
         scriptTranslate.enabled = true;
 
-        var scriptScale = storeInfo.GetComponent<LeanScale>();
+        var scriptScale = theStoreInfo.GetComponent<LeanScale>();
         scriptScale.enabled = false;
 
-        var scriptRotate = storeInfo.GetComponent<rotateMarker>();
+        var scriptRotate = theStoreInfo.GetComponent<rotateMarker>();
         scriptRotate.enabled = false;
-        
+
     }
 
     void spinMode() {
-        
-        storeInfo = GameObject.FindGameObjectWithTag("storeInfoObj");
+
+        Debug.Log("press rotate!!!");
+
+        theStoreInfo = GameObject.FindGameObjectWithTag("storeInfoObj");
 
         btn_move.GetComponent<Image>().overrideSprite = unselect;
         btn_spin.GetComponent<Image>().overrideSprite = select;
         btn_resize.GetComponent<Image>().overrideSprite = unselect;
 
-        var scriptTranslate = storeInfo.GetComponent<LeanTranslate>();
+        var scriptTranslate = theStoreInfo.GetComponent<LeanTranslate>();
         scriptTranslate.enabled = false;
 
-        var scriptScale = storeInfo.GetComponent<LeanScale>();
+        var scriptScale = theStoreInfo.GetComponent<LeanScale>();
         scriptScale.enabled = false;
 
-        var scriptRotate = storeInfo.GetComponent<rotateMarker>();
+        var scriptRotate = theStoreInfo.GetComponent<rotateMarker>();
         scriptRotate.enabled = true;
     }
 
     void resizeMode() {
-        
-        storeInfo = GameObject.FindGameObjectWithTag("storeInfoObj");
+
+        Debug.Log("press resize!!!");
+
+        theStoreInfo = GameObject.FindGameObjectWithTag("storeInfoObj");
 
         btn_move.GetComponent<Image>().overrideSprite = unselect;
         btn_spin.GetComponent<Image>().overrideSprite = unselect;
         btn_resize.GetComponent<Image>().overrideSprite = select;
 
-        var scriptTranslate = storeInfo.GetComponent<LeanTranslate>();
+        var scriptTranslate = theStoreInfo.GetComponent<LeanTranslate>();
         scriptTranslate.enabled = false;
 
-        var scriptScale = storeInfo.GetComponent<LeanScale>();
+        var scriptScale = theStoreInfo.GetComponent<LeanScale>();
         scriptScale.enabled = true;
 
-        var scriptRotate = storeInfo.GetComponent<rotateMarker>();
+        var scriptRotate = theStoreInfo.GetComponent<rotateMarker>();
         scriptRotate.enabled = false;
     }
 

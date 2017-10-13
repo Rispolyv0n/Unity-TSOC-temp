@@ -1963,7 +1963,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3f21f75fc0be39469f6ef2afbbaea9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  storeInfo: {fileID: 0}
+  theStoreInfo: {fileID: 0}
   btn_move: {fileID: 1068273080}
   btn_spin: {fileID: 1717112451}
   btn_resize: {fileID: 1647881388}
@@ -3240,6 +3240,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6415f1b3694ebb840a5cf2aba6c4077e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  thePanel: {fileID: 0}
+  ifNeedtoStay: 0
+  ifNeedtoOpenPanel: 0
 --- !u!222 &1190534420
 CanvasRenderer:
   m_ObjectHideFlags: 0

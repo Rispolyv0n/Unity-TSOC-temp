@@ -43,10 +43,11 @@ public class TangoOwnerAddObj : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDe
     private string createShopURL = "https://kevin.imslab.org" + PlayerInfo.port + "/create_shop";
     private string addObjURL = "https://kevin.imslab.org" + PlayerInfo.port + "/add_obj";
     private string auth_flag = "1";
-    private string beaconID = "2";
+    private string beaconID = "1";
     //private string adfID = OwnerInfo.curUUID;
     private string adfID;
-    private string shopID = OwnerInfo.storeInfo._id;
+    //private string shopID = OwnerInfo.storeInfo._id;//???
+    private string shopID = OwnerInfo.ownerID;
     private string pw = OwnerInfo.ownerPW;    
     private bool hasCreated = false;    
     private byte[] contents = null;
@@ -91,12 +92,14 @@ public class TangoOwnerAddObj : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDe
             }
         }
 
-        if (shopID != null)
+        /*if (shopID != null)
         {
             Debug.Log("shopID = " + shopID);
             StartCoroutine(createShop());
-        }
+        }*/
 
+        StartCoroutine(createShop());
+        
         //Debug.Log("getting list start!!!");
         //StartCoroutine(getListStorage());         
     }    
@@ -116,8 +119,13 @@ public class TangoOwnerAddObj : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDe
                                         objPose,
                                         //Camera.main.transform.rotation * Vector3.forward) as GameObject;
                                         Quaternion.identity) as GameObject;
+                                        /*(Quaternion)(objPose + Camera.main.transform.rotation * Vector3.forward),
+            Camera.main.transform.rotation * Vector3.up) as GameObject;*/
 
+            //newObj.transform.LookAt(transform.position + Camera.main.transform.rotation * Vector3.forward,
+            //Camera.main.transform.rotation * Vector3.up);
             newObj.transform.GetChild(1);
+            
             ARStoreObject objScript = newObj.GetComponent<ARStoreObject>();
 
             objScript.m_type = m_currentObjType;
@@ -138,6 +146,9 @@ public class TangoOwnerAddObj : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDe
                                                 newObj.transform.rotation,
                                                 Vector3.one);
             objScript.m_deviceTObj = Matrix4x4.Inverse(uwTDevice) * uwTObj;
+
+            ButtonGroupToggle button = GameObject.FindObjectOfType<ButtonGroupToggle>();
+            button.moveMode();
 
             m_objList.Add(newObj);
 
@@ -268,6 +279,8 @@ public class TangoOwnerAddObj : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDe
     /// </summary>
     public void _SaveObj()
     {
+        //connect part
+        
         Debug.Log("hasCreate = " + hasCreated.ToString());
         if(hasCreated == true)
         {
@@ -278,8 +291,8 @@ public class TangoOwnerAddObj : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDe
             //foreach(GameObject obj in m_objList)            
             StartCoroutine(sendingAddObj());
         }
-
-        /*
+        
+        
         // Compose a XML data list.
         List<storeObjectData> xmlDataList = new List<storeObjectData>();
         foreach (GameObject obj in m_objList)
@@ -307,7 +320,7 @@ public class TangoOwnerAddObj : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDe
         {
             serializer.Serialize(stream, xmlDataList);
         }
-        */
+        
     }
 
     IEnumerator getListStorage()
@@ -344,13 +357,15 @@ public class TangoOwnerAddObj : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDe
     IEnumerator createShop()
     {
         WWWForm formdata = new WWWForm();
-        formdata.AddField("shopID", shopID);
+        formdata.AddField("shopID", OwnerInfo.ownerID);
         formdata.AddField("password", OwnerInfo.ownerPW);
         formdata.AddField("auth_flag", auth_flag);
         formdata.AddField("beaconID", beaconID);
         //formdata.AddField("adfID", m_curAreaDescription.m_uuid);
         //formdata.AddField("adfID", "f2953b36-b477-2fb9-81c5-1682a435250e");
-        formdata.AddField("adfID", "e3eaeaf2-a65d-4e45-8b90-9675e8b31b66");//sofa
+        //formdata.AddField("adfID", "e3eaeaf2-a65d-4e45-8b90-9675e8b31b66");//sofa
+        //formdata.AddField("adfID", "f5b2ca84-af86-2899-84f3-ba48570d17b2");//0929
+        formdata.AddField("adfID", "aa305c08-fd20-2325-8b83-7e6e47b0bacc");//65104
 
         UnityWebRequest sending = UnityWebRequest.Post(createShopURL, formdata);
         yield return sending.Send();
@@ -386,8 +401,10 @@ public class TangoOwnerAddObj : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDe
         formdata.AddField("beaconID", beaconID);
         //formdata.AddField("adfID", m_curAreaDescription.m_uuid);
         //formdata.AddField("adfID", "f2953b36-b477-2fb9-81c5-1682a435250e");
-        formdata.AddField("adfID", "e3eaeaf2-a65d-4e45-8b90-9675e8b31b66");//sofa
-        formdata.AddField("shopID", shopID);
+        //formdata.AddField("adfID", "e3eaeaf2-a65d-4e45-8b90-9675e8b31b66");//sofa
+        //formdata.AddField("adfID", "f5b2ca84-af86-2899-84f3-ba48570d17b2");//0929
+        formdata.AddField("adfID", "aa305c08-fd20-2325-8b83-7e6e47b0bacc");//65104
+        formdata.AddField("shopID", OwnerInfo.ownerID);
         formdata.AddField("password", OwnerInfo.ownerPW);
         formdata.AddField("shopName", objToAdd.m_storeName);//formdata.AddField("shopName", OwnerInfo.storeInfo.shopName);
         formdata.AddField("shopIntro", objToAdd.m_storeIntro);//formdata.AddField("shopIntro", OwnerInfo.storeInfo.infoList[i].content);
@@ -447,7 +464,10 @@ public class TangoOwnerAddObj : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDe
     {
         if(permissionsGranted)
         {
-            m_curAreaDescriptionUUID = "e3eaeaf2-a65d-4e45-8b90-9675e8b31b66";//sofa
+            m_curAreaDescriptionUUID = "aa305c08-fd20-2325-8b83-7e6e47b0bacc";//65104
+            //m_curAreaDescriptionUUID = "f5b2ca87-af86-2899-86f7-2789d3d1ce3d";//0929_2
+            //m_curAreaDescriptionUUID = "f5b2ca84-af86-2899-84f3-ba48570d17b2";//0929
+            //m_curAreaDescriptionUUID = "e3eaeaf2-a65d-4e45-8b90-9675e8b31b66";//sofa
             //m_curAreaDescriptionUUID = "f2953b36-b477-2fb9-81c5-1682a435250e";//204
             //m_curAreaDescriptionUUID = "ff8c3413-ced8-28f7-9801-38627ec90271";//d24test4
             //m_curAreaDescriptionUUID = "ff8c341e-ced8-28f7-9898-6ef42a5060b6";//d24test5
@@ -468,53 +488,27 @@ public class TangoOwnerAddObj : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDe
     public void OnTangoServiceDisconnected()
     {
     }
-    /*
-    /// <summary>
-    /// Data container for marker.
-    /// 
-    /// Used for serializing/deserializing marker to xml.
-    /// </summary>
+    
     [System.Serializable]
     public class storeObjectData
-    {
-        /// <summary>
-        /// Marker's type.
-        /// 
-        /// Red, green or blue markers. In a real game scenario, this could be different game objects
-        /// (e.g. banana, apple, watermelon, persimmons).
-        /// </summary>
+    {        
         [XmlElement("type")]
         public int m_type;
-
-        /// <summary>
-        /// Position of the this mark, with respect to the origin of the game world.
-        /// </summary>
+        
         [XmlElement("position")]
         public Vector3 m_position;
-
-        /// <summary>
-        /// Rotation of the this mark.
-        /// </summary>
+        
         [XmlElement("orientation")]
         public Quaternion m_orientation;
-
-        /// <summary>
-        /// Scale of this mark.
-        /// </summary>
+       
         [XmlElement("scale")]
         public Vector3 m_scale;
-
-        /// <summary>
-        /// name text
-        /// </summary>
+        
         [XmlElement("name")]
         public string m_name;
-
-        /// <summary>
-        /// introduce text
-        /// </summary>
+        
         [XmlElement("introduce")]
         public string m_introduce;
     }
-    */
+    
 }
