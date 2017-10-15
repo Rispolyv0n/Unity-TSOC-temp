@@ -39,7 +39,7 @@ public class OwnerInfo : MonoBehaviour
     }
     public class storeInfoItem
     {
-        public string _id = "";
+        //public string _id = "";
         public string shopName = "";
         public day[] openTime = new day[7];
         public string shopAddress = "";

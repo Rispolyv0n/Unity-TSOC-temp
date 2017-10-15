@@ -2166,8 +2166,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3fdb00751d7db1749a536dd79ac10f1d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_objPrefabs:
+  m_storeInfoPrefabs:
   - {fileID: 160848, guid: cb173c3223516cf4ea722d98bb71b82b, type: 2}
+  m_storeList: []
+  shopName: 
+  shopIntro: 
+  objPos: {x: 0, y: 0, z: 0}
+  objRot: {x: 0, y: 0, z: 0, w: 0}
+  objScale: {x: 0, y: 0, z: 0}
 --- !u!1 &847263904
 GameObject:
   m_ObjectHideFlags: 0

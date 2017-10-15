@@ -194,8 +194,8 @@ public class PlayerInfo : MonoBehaviour
     void Start()
     {
         Screen.SetResolution(433, 693, false);
-        port = ":4000";
-        whichHttp = "https";
+        port = ":4001";
+        whichHttp = "http";
 
         justLogOut = false;
 

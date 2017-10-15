@@ -9,6 +9,8 @@ using Tango;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
+using UnityEngine.Experimental.Networking;
+using System.Web.Script.Serialization;
 
 /// <summary>
 /// AreaLearningGUIController is responsible for the main game interaction.
@@ -16,7 +18,12 @@ using UnityEngine.SceneManagement;
 /// This class also takes care of loading / save persistent data(marker), and loop closure handling.
 /// </summary>
 public class TangoOwnerRecording : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDepth
-{    
+{
+    //to upload the adf
+    public byte[] adfContent = { 0000 };
+    private string addAdfURL = PlayerInfo.whichHttp + "://kevin.imslab.org" + PlayerInfo.port + "/add_adf";
+    private string beaconID = "1";
+    private string adfID = "e3eaeaf2-a65d-4e45-8b90-9675e8b31b66";//sofa
 
     /// <summary>
     /// Saving progress UI text.
@@ -100,6 +107,10 @@ public class TangoOwnerRecording : MonoBehaviour, ITangoPose, ITangoEvent, ITang
         {
             m_tangoApplication.Register(this);
         }
+
+        //try to send adf
+        Debug.Log("start to send adf");
+        StartCoroutine(sendingAdfFile());
     }
 
     /// <summary>
@@ -365,6 +376,7 @@ public class TangoOwnerRecording : MonoBehaviour, ITangoPose, ITangoEvent, ITang
                     OwnerInfo.curUUID = m_curAreaDescription.m_uuid;
                 });
                 m_saveThread.Start();
+                ExportSelectedAreaDescription();
             }
             else
             {
@@ -381,6 +393,7 @@ public class TangoOwnerRecording : MonoBehaviour, ITangoPose, ITangoEvent, ITang
     /// </summary>
     public void ExportSelectedAreaDescription()
     {
+        Debug.Log("start to export the new adf");
         if (m_curAreaDescription != null)
         {
             StartCoroutine(_DoExportAreaDescription(m_curAreaDescription));
@@ -403,6 +416,32 @@ public class TangoOwnerRecording : MonoBehaviour, ITangoPose, ITangoEvent, ITang
         if (kb.done)
         {
             areaDescription.ExportToFile(kb.text);
+            //if kb.text is the path...
+            adfContent = File.ReadAllBytes(kb.text);
+
+            Debug.Log("start to send the adf content");
+            //StartCoroutine(sendingAdfFile());
+        }
+    }
+
+    IEnumerator sendingAdfFile()
+    {
+        WWWForm formdata = new WWWForm();
+        formdata.AddField("beaconID", beaconID);
+        formdata.AddField("adfID", adfID);
+        formdata.AddBinaryData("file", adfContent);
+
+        UnityWebRequest sending = UnityWebRequest.Post(addAdfURL, formdata);
+        yield return sending.Send();
+        if(sending.error != null)
+        {
+            Debug.Log("error while sending adf");
+            Debug.Log(sending.error);
+        }
+        else
+        {
+            Debug.Log("correct while sending adf");
+            Debug.Log(sending.downloadHandler.text);
         }
     }
 
