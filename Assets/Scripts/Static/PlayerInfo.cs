@@ -123,7 +123,7 @@ public class PlayerInfo : MonoBehaviour
     }
     static public streetModeStruct streetMode;
 
-    static public string currentCheckingShopID;
+    static public string currentCheckingShopID = "Ris_shop";
 
     static public string currentCheckingShopName;
 
@@ -194,8 +194,8 @@ public class PlayerInfo : MonoBehaviour
     void Start()
     {
         Screen.SetResolution(433, 693, false);
-        port = ":4000";
-        whichHttp = "https";
+        port = ":4001";
+        whichHttp = "http";
 
         justLogOut = false;
 

@@ -4,9 +4,13 @@ using UnityEngine.UI;
 using System;
 using UnityEngine.Experimental.Networking;
 using UnityEngine.SceneManagement;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Text;
 
 public class CommentControl : MonoBehaviour
 {
+    static CommentControl commentControl;
 
     public Button star_1;
     public Button star_2;
@@ -24,6 +28,13 @@ public class CommentControl : MonoBehaviour
 
     private int stars;
     private string commentContent;
+
+    private struct picStruct{
+        public byte[] data;
+        public byte[] contentType;
+    };
+
+    static public string imgPath;
 
     // Use this for initialization
     void Start()
@@ -71,7 +82,25 @@ public class CommentControl : MonoBehaviour
         formdata.AddField("text_content", commentContent);
         formdata.AddField("time", DateTime.Now.ToString());
         formdata.AddField("score", stars);
-        //formdata.AddField("picture", pw);
+
+        if (imgPath != null)
+        {
+            Debug.Log("commentControl get img path: " + imgPath);
+            //byte[] imgData = File.ReadAllBytes(imgPath);
+            //formdata.AddBinaryData("file",imgData);
+
+            WWW www = new WWW("file://" + imgPath);
+            yield return www;
+            Texture2D texture = www.texture;
+            byte[] imgData = texture.EncodeToPNG();
+            formdata.AddBinaryData("file", imgData);
+        }
+        else {
+            Debug.Log("no img");
+            byte[] imgData = new byte[] { };
+            formdata.AddBinaryData("file",imgData,"img.png","image/png");
+        }
+        
 
         UnityWebRequest sending = UnityWebRequest.Post(toUrl, formdata);
         yield return sending.Send();

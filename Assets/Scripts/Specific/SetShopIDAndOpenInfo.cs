@@ -17,7 +17,7 @@ public class SetShopIDAndOpenInfo : MonoBehaviour {
     void openInfo()
     {
         PlayerInfo.currentCheckingShopID = shopID;
-        SceneManager.LoadScene("shopInfo", LoadSceneMode.Additive);
+        SceneManager.LoadScene("shopInfo");
     }
 
     // Update is called once per frame

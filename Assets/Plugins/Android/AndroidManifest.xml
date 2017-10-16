@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.unity3d.player"
+    package="com.ararara.oct"
     android:installLocation="preferExternal"
     android:theme="@android:style/Theme.NoTitleBar"
     android:versionCode="1"
@@ -36,5 +36,6 @@
             <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
           </intent-filter>
         </activity>
+        <activity android:name="iris.androidtryplugin.MainActivity"/>
     </application>
 </manifest>

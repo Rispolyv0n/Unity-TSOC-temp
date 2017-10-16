@@ -98,7 +98,6 @@ static public List<storeInfoWithID> storeInfo; // the whole storeInfo
 
     public class oneInfo
     {
-        public string _id;
         public string shopName;
         public string shopAddress;
         public List<column> infoList = new List<column>();
