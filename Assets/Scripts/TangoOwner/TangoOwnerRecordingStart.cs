@@ -131,7 +131,7 @@ public class TangoOwnerRecordingStart : MonoBehaviour, ITangoLifecycle
     {
         if (permissionsGranted)
         {
-            //StartGame();
+            StartGame();
         }
         else
         {

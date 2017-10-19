@@ -12,6 +12,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UnityEngine.Experimental.Networking;
 using System.Web.Script.Serialization;
+using Lean.Touch;
 //using Newtonsoft.Json;
 
 public class TangoStreet : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDepth, ITangoLifecycle
@@ -20,20 +21,28 @@ public class TangoStreet : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDepth, 
     public GameObject[] m_objPrefabs;//for gamign objects. 0 : coins, 1 : diamond    
     public GameObject[] m_storeInfoPrefabs;//for store objects(now only one)
     public List<GameObject> m_objList = new List<GameObject>();//need sprinkle and delete
-    public List<GameObject> m_storeList = new List<GameObject>();//need load
+    public List<GameObject> m_storeObjList = new List<GameObject>();//need load
 
     private GameObject newObjObject = null;
     private ARObjects m_selectedObj;
     private ARStoreObject m_selectedStore;
     private int m_curObjType = 0;
 
-    //other things
+    //other control
     public RectTransform m_prefabTouchEffect;
     public Canvas m_canvas;
     [HideInInspector]
     public AreaDescription m_curAreaDescription;
-                        
-    private string m_curAreaDescriptionUUID;      
+    
+    private string m_curAreaDescriptionUUID = "aa305c0a-fd20-2325-8ab0-27ae08db9a54";//lab1014
+    //private string m_curAreaDescriptionUUID = "aa305c08-fd20-2325-8b83-7e6e47b0bacc";//65104
+    //private string m_curAreaDescriptionUUID = "f5b2ca87-af86-2899-86f7-2789d3d1ce3d";//0929_2
+    //private string m_curAreaDescriptionUUID = "f5b2ca84-af86-2899-84f3-ba48570d17b2";//0929
+    //private string m_curAreaDescriptionUUID = "e3eaeaf2-a65d-4e45-8b90-9675e8b31b66";//sofa
+    //private string m_curAreaDescriptionUUID = "0c641a06-f1e7-4fe4-8f3a-cedc91df8035";//new sofa
+    //private string m_curAreaDescriptionUUID = "f2953b36-b477-2fb9-81c5-1682a435250e";//204
+    //private string m_curAreaDescriptionUUID = "e12e5a3c-5a09-29b9-98c6-7b3d6fd42737";//d24test6
+    //private string m_curAreaDescriptionUUID = "ff8c341e-ced8-28f7-9898-6ef42a5060b6";//d24test5   
     private bool m_initialized = false;
     private bool m_findPlaneWaitingForDepth;    
     private TangoApplication m_tangoApplication;
@@ -41,23 +50,29 @@ public class TangoStreet : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDepth, 
     private Rect m_selectedRect;
     //private Thread m_saveThread;
 
+    //to get adf
+    private string loadAdfURL;
+    private byte[] loadAdfContents;
+
     //to get all shop id in shopIDList
     private string beaconID = "1";
-    //private string getShopIdURL = "https://kevin.imslab.org" + PlayerInfo.port + "/get_shopIDs?beaconID=" + "1" + "&adfID=" + "e3eaeaf2-a65d-4e45-8b90-9675e8b31b66";//sofa
-    private string getShopIdURL = "https://kevin.imslab.org" + PlayerInfo.port + "/get_shopIDs?beaconID=" + "1" + "&adfID=" + "aa305c08-fd20-2325-8b83-7e6e47b0bacc";//65104
-
-
+    private string getShopIdURL = PlayerInfo.whichHttp + "://kevin.imslab.org" + PlayerInfo.port + "/get_shopIDs?beaconID=" + "1" + "&adfID=" + "e3eaeaf2-a65d-4e45-8b90-9675e8b31b66";//sofa
+    //private string getShopIdURL = PlayerInfo.whichHttp + "://kevin.imslab.org" + PlayerInfo.port + "/get_shopIDs?beaconID=" + "1" + "&adfID=" + "aa305c08-fd20-2325-8b83-7e6e47b0bacc";//65104
+    //private string getShopIdURL = PlayerInfo.whichHttp + "://kevin.imslab.org" + PlayerInfo.port + "/get_shopIDs?beaconID=" + "1" + "&adfID=" + "aa305c0a-fd20-2325-8ab0-27ae08db9a54";//lab1014
+    
     //to load store obj
     private string getStoreObjURL;
-    private string shopID = OwnerInfo.ownerID;
-    public Vector3 objPos;
-    public Quaternion objRot;
-    public Vector3 objScale;
+    private string shopID;
+    public string loadShopName;
+    public string loadShopIntro;
+    public Vector3 loadObjPos;
+    public Quaternion loadObjRot;
+    public Vector3 loadObjScale;
 
     public class ColumnItemOfShopIDList
     {       
         public string name = "";        
-        public string _id = "";//names need to be the same QAQ!!!
+        public string _id = "";//field names need to be the same QAQ!!!
     }
     //public ColumnItemOfShopIDList IDlist = new ColumnItemOfShopIDList();
     public List<ColumnItemOfShopIDList> shopIDlist = new List<ColumnItemOfShopIDList>();
@@ -75,6 +90,9 @@ public class TangoStreet : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDepth, 
 
     public void Start()
     {
+        Debug.Log("start to load adf");
+        StartCoroutine(loadAdf());
+
         m_poseController = FindObjectOfType<TangoPoseController>();
         m_tangoApplication = FindObjectOfType<TangoApplication>();
 
@@ -92,60 +110,56 @@ public class TangoStreet : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDepth, 
             Debug.Log("No Tango Manager found in scene.");
         }
 
-        Debug.Log("start to get the shop ID");
-        StartCoroutine(getShopID());
     }
 
-    IEnumerator getShopID()
+    //load adf
+    IEnumerator loadAdf()
     {
-        UnityWebRequest sending = UnityWebRequest.Get(getShopIdURL);
+        loadAdfURL = PlayerInfo.whichHttp + "://kevin.imslab.org" + PlayerInfo.port + "/get_adf?beaconID=" + "1" + "&adfID=" + "e3eaeaf2-a65d-4e45-8b90-9675e8b31b66";//sofa
+        UnityWebRequest sending = UnityWebRequest.Get(loadAdfURL);
         yield return sending.Send();
 
         if(sending.error != null)
         {
-            Debug.Log("error below : ");
+            Debug.Log("error while load adf");
             Debug.Log(sending.error);
         }
         else
         {
-            Debug.Log("correct below : ");
-            JavaScriptSerializer js = new JavaScriptSerializer();
-            //ColumnItemOfShopIDList[] IDlist = js.Deserialize<ColumnItemOfShopIDList[]>(sending.downloadHandler.text);
-            shopIDlist = js.Deserialize<List<ColumnItemOfShopIDList>>(sending.downloadHandler.text);
-            //Debug.Log(sending.downloadHandler.text);
-            Debug.Log("name = " + shopIDlist[0].name);            
-            Debug.Log("id = " + shopIDlist[0]._id);
-            //shopID = shopIDlist[0]._id;
-            Debug.Log("start to get the obj");
-            StartCoroutine(loadstoreInfo());
+            Debug.Log("correct while load adf");
+            Debug.Log(sending.downloadHandler.data.ToString());
+            loadAdfContents = sending.downloadHandler.data;
+            Debug.Log(loadAdfContents[0].ToString());
+            Debug.Log(loadAdfContents[1].ToString());
+            Debug.Log(loadAdfContents[2].ToString());
+            Debug.Log("length = " + loadAdfContents.Length.ToString());
+            File.WriteAllBytes("Assets/Resources/fileToWrite.txt", loadAdfContents);
+            //File.WriteAllBytes("/sdcard/" + "e3eaeaf2-a65d-4e45-8b90-9675e8b31b66", loadAdfContents);
+            //ImportAreaDescription();
         }
     }
-
     
-    IEnumerator loadstoreInfo()
+    public void ImportAreaDescription()
     {
-        getStoreObjURL = "https://kevin.imslab.org" + PlayerInfo.port + "/get_obj_info?beaconID=" + "1" + "&adfID=" + "f2953b36-b477-2fb9-81c5-1682a435250e" + "&shopID=" + shopID + "&id=" + "0";
-        UnityWebRequest sending = UnityWebRequest.Get(getStoreObjURL);
-        yield return sending.Send();
+        StartCoroutine(_DoImportAreaDescription());
+    }
 
-        if(sending.error != null)
+    private IEnumerator _DoImportAreaDescription()
+    {
+        if (TouchScreenKeyboard.visible)
         {
-            Debug.Log("error below");
-            Debug.Log(sending.error);
+            yield break;
         }
-        else
+
+        TouchScreenKeyboard kb = TouchScreenKeyboard.Open("/sdcard/", TouchScreenKeyboardType.Default, false);
+        while (!kb.done && !kb.wasCanceled)
         {
-            Debug.Log("correct below");
-            Debug.Log(sending.downloadHandler.text);
-            JavaScriptSerializer js = new JavaScriptSerializer();
-            storeObj = js.Deserialize<columnItemofStoreObj>(sending.downloadHandler.text);
-            Debug.Log("shopName = " + storeObj.shopName);
-            objPos = stringToVector3(storeObj.pos);
-            objRot = stringToQuaternion(storeObj.rot);
-            objScale = stringToVector3(storeObj.scale);
-            Debug.Log("objPos = " + objPos.ToString());
-            Debug.Log("objRot = " + objRot.ToString());
-            Debug.Log("objScale = " + objScale.ToString());
+            yield return null;
+        }
+
+        if (kb.done)
+        {
+            AreaDescription.ImportFromFile(kb.text);
         }
     }
     
@@ -373,42 +387,124 @@ public class TangoStreet : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDepth, 
                     Debug.Log("AndroidInGameController.OnTangoPoseAvailable(): m_curAreaDescription is null");
                     return;
                 }
-                
-                
+
+                Debug.Log("start to get the shop ID");
+                StartCoroutine(getShopID());
+
                 sprinkleObjects(0, 10);//coins
                 sprinkleObjects(1, 10);//gameDiamonds
                 sprinkleObjects(PlayerInfo.currentCharacterID + 2, 15);
-                createStoreObj();
+                //createStoreObj();
                 //_LoadStoreObj();
             }
         }
     }
 
-    /// <summary>
-    /// This is called each time new depth data is available.
-    /// 
-    /// On the Tango tablet, the depth callback occurs at 5 Hz.
-    /// </summary>
-    /// <param name="tangoDepth">Tango depth.</param>
-    public void OnTangoDepthAvailable(TangoUnityDepth tangoDepth)
+    IEnumerator getShopID()
     {
-        // Don't handle depth here because the PointCloud may not have been updated yet.  Just
-        // tell the coroutine it can continue.
-        m_findPlaneWaitingForDepth = false;
-    }   
-    
+        UnityWebRequest sending = UnityWebRequest.Get(getShopIdURL);
+        yield return sending.Send();
+
+        if (sending.error != null)
+        {
+            Debug.Log("error below : ");
+            Debug.Log(sending.error);
+        }
+        else
+        {
+            Debug.Log("correct below : ");
+            JavaScriptSerializer js = new JavaScriptSerializer();
+            //ColumnItemOfShopIDList[] IDlist = js.Deserialize<ColumnItemOfShopIDList[]>(sending.downloadHandler.text);
+            shopIDlist = js.Deserialize<List<ColumnItemOfShopIDList>>(sending.downloadHandler.text);
+            //Debug.Log(sending.downloadHandler.text);
+            Debug.Log("name = " + shopIDlist[0].name);
+            Debug.Log("id = " + shopIDlist[0]._id);
+            shopID = shopIDlist[0].name;
+            Debug.Log("start to get the obj");
+            StartCoroutine(loadstoreInfo());
+        }
+    }
+
+    IEnumerator loadstoreInfo()
+    {
+        getStoreObjURL = PlayerInfo.whichHttp + "://kevin.imslab.org" + PlayerInfo.port + "/get_obj_info?beaconID=" + "1" + "&adfID=" + "e3eaeaf2-a65d-4e45-8b90-9675e8b31b66" + "&shopID=" + shopID + "&id=" + "0";
+        UnityWebRequest sending = UnityWebRequest.Get(getStoreObjURL);
+        yield return sending.Send();
+
+        if (sending.error != null)
+        {
+            Debug.Log("error below");
+            Debug.Log(sending.error);
+        }
+        else
+        {
+            Debug.Log("correct while load store info");
+            Debug.Log(sending.downloadHandler.text);
+            JavaScriptSerializer js = new JavaScriptSerializer();
+            storeObj = js.Deserialize<columnItemofStoreObj>(sending.downloadHandler.text);
+            loadShopName = storeObj.shopName;
+            loadShopIntro = storeObj.shopIntro;
+            loadObjPos = stringToVector3(storeObj.pos);
+            loadObjRot = stringToQuaternion(storeObj.rot);
+            loadObjScale = stringToVector3(storeObj.scale);
+            Debug.Log("shopName = " + loadShopName);
+            Debug.Log("shopIntro = " + loadShopIntro);
+            Debug.Log("objPos = " + loadObjPos.ToString());
+            Debug.Log("objRot = " + loadObjRot.ToString());
+            Debug.Log("objScale = " + loadObjScale.ToString());
+            createStoreObj();
+        }
+    }
+
+    private void createStoreObj()
+    {
+        //check that create obj after relocalize
+        if (m_initialized)
+        {
+            Debug.Log("load exist store obj");
+            GameObject newObj = Instantiate(m_storeInfoPrefabs[0],
+                                        loadObjPos,
+                                        loadObjRot) as GameObject;
+
+            newObj.transform.GetChild(1);
+
+            ARStoreObject objScript = newObj.GetComponent<ARStoreObject>();
+
+            objScript.m_type = 0;
+            objScript.m_timestamp = (float)m_poseController.LastPoseTimestamp;
+            objScript.m_storeName = loadShopName;
+            objScript.m_storeIntro = loadShopIntro;
+
+            Matrix4x4 uwTDevice = Matrix4x4.TRS(m_poseController.transform.position,
+                                                m_poseController.transform.rotation,
+                                                Vector3.one);
+            Matrix4x4 uwTObj = Matrix4x4.TRS(newObj.transform.position,
+                                                newObj.transform.rotation,
+                                                Vector3.one);
+            objScript.m_deviceTObj = Matrix4x4.Inverse(uwTDevice) * uwTObj;
+
+            newObj.GetComponent<LeanTranslate>().enabled = false;
+
+            m_storeObjList.Add(newObj);           
+
+            //m_selectedObj = newObj;               
+        }
+    }
+
+    /*
     /// <summary>
     /// get the storeInfo from database
     /// </summary>
     private void createStoreObj()
     {
+        Debug.Log("load exist store obj");
         GameObject temp = Instantiate(m_storeInfoPrefabs[0],
                                           objPos,
                                           objRot) as GameObject;
         temp.transform.localScale = objScale;
 
-        temp.transform.GetComponent<ARStoreObject>().m_storeName = storeObj.shopName;
-        temp.transform.GetComponent<ARStoreObject>().m_storeIntro = storeObj.shopIntro;
+        temp.transform.GetComponent<ARStoreObject>().m_storeName = shopName;
+        temp.transform.GetComponent<ARStoreObject>().m_storeIntro = shopIntro;
 
         if (PlayerInfo.streetMode.infoObj)
         {
@@ -419,8 +515,8 @@ public class TangoStreet : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDepth, 
             temp.SetActive(false);
         }
 
-        m_storeList.Add(temp);
-    }
+        m_storeObjList.Add(temp);
+    }*/
     /*
     private void _LoadStoreObj()
     {
@@ -439,7 +535,7 @@ public class TangoStreet : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDepth, 
             return;
         }
 
-        m_storeList.Clear();
+        m_storeObjList.Clear();
         foreach (storeObjectData store in xmlDataList)
         {
             // Instantiate all markers' gameobject.
@@ -474,10 +570,24 @@ public class TangoStreet : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDepth, 
                 temp.SetActive(false);
             }
 
-            m_storeList.Add(temp);
+            m_storeObjList.Add(temp);
         }
     }
     */
+
+    /// <summary>
+    /// This is called each time new depth data is available.
+    /// 
+    /// On the Tango tablet, the depth callback occurs at 5 Hz.
+    /// </summary>
+    /// <param name="tangoDepth">Tango depth.</param>
+    public void OnTangoDepthAvailable(TangoUnityDepth tangoDepth)
+    {
+        // Don't handle depth here because the PointCloud may not have been updated yet.  Just
+        // tell the coroutine it can continue.
+        m_findPlaneWaitingForDepth = false;
+    }   
+    
     /// <summary>
     /// Convert a 3D bounding box represented by a <c>Bounds</c> object into a 2D 
     /// rectangle represented by a <c>Rect</c> object.
@@ -501,20 +611,70 @@ public class TangoStreet : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDepth, 
         screenBounds.Encapsulate(cam.WorldToScreenPoint(center + new Vector3(-extents.x, -extents.y, -extents.z)));
         return Rect.MinMaxRect(screenBounds.min.x, screenBounds.min.y, screenBounds.max.x, screenBounds.max.y);
     }
-    
+
+    private List<Beacon> mybeacons = new List<Beacon>();
+    private void InitBeaconDetect()
+    {
+        DebugText("Bluetooth initial");
+        BluetoothState.Init();
+        DebugText("Add event");
+        iBeaconReceiver.BeaconRangeChangedEvent += OnBeaconRangeChanged;
+        DebugText("Add Region");
+        iBeaconReceiver.regions = new iBeaconRegion[] { new iBeaconRegion("iBeacon", new Beacon()) };
+        DebugText("Start scan");
+        iBeaconReceiver.Scan();
+        DebugText("End Init");
+    }
+
+    private void OnBeaconRangeChanged(Beacon[] beacons)
+    {
+        DebugText("change");
+        foreach (Beacon b in beacons)
+        {
+            var index = mybeacons.IndexOf(b);
+            if (index == -1)
+            {
+                mybeacons.Add(b);
+            }
+            else
+            {
+                mybeacons[index] = b;
+            }
+        }
+        for (int i = mybeacons.Count - 1; i >= 0; --i)
+        {
+            if (mybeacons[i].lastSeen.AddSeconds(10) < DateTime.Now)
+            {
+                mybeacons.RemoveAt(i);
+            }
+        }
+        FindBeacons();
+    }
+
+    void DebugText(String str)
+    {
+        Text textView1 = GameObject.Find("Canvas_street/Text").GetComponent<Text>();
+        textView1.text = str;
+    }
+
+    void FindBeacons()
+    {
+        String beacon_str = "";
+        foreach (Beacon b in mybeacons)
+        {
+            beacon_str = beacon_str + b.UUID.ToString() + " " + b.major.ToString() + " " + b.minor.ToString() + "\n\n";
+        }
+        DebugText(beacon_str);
+    }
+
     public void OnTangoPermissions(bool permissionsGranted)
     {
         if (permissionsGranted)
         {
             Debug.Log("permission pass!!!!!");
-            m_curAreaDescriptionUUID = "aa305c08-fd20-2325-8b83-7e6e47b0bacc";//65104
-            //m_curAreaDescriptionUUID = "f5b2ca87-af86-2899-86f7-2789d3d1ce3d";//0929_2
-            //m_curAreaDescriptionUUID = "f5b2ca84-af86-2899-84f3-ba48570d17b2";//0929
-            //m_curAreaDescriptionUUID = "e3eaeaf2-a65d-4e45-8b90-9675e8b31b66";//sofa
-            //m_curAreaDescriptionUUID = "d9390781-e773-416d-8848-77ac1eeba3ae";//adf 0000 in PC
-            //m_curAreaDescriptionUUID = "f2953b36-b477-2fb9-81c5-1682a435250e";//204
-            //m_curAreaDescriptionUUID = "e12e5a3c-5a09-29b9-98c6-7b3d6fd42737";//d24test6
-            //m_curAreaDescriptionUUID = "ff8c341e-ced8-28f7-9898-6ef42a5060b6";//d24test5
+            DebugText("Start init beacon");
+            InitBeaconDetect();
+            //Get Beacon Id and request ADF from hear
             AreaDescription areaDescription = AreaDescription.ForUUID(m_curAreaDescriptionUUID);
             m_curAreaDescription = areaDescription;
             m_tangoApplication.m_areaDescriptionLearningMode = false;//m_enableLearningToggle.isOn;        

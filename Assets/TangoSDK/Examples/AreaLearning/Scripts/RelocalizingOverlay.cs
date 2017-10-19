@@ -76,6 +76,7 @@ public class RelocalizingOverlay : MonoBehaviour, ITangoPose, ITangoLifecycle
             {
                 //m_relocalizationOverlay.SetActive(false);
                 panelLoading.SetActive(false);
+                Destroy(GameObject.Find("Panel_loading"));
             }
             else
             {

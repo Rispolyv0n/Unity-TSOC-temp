@@ -1817,6 +1817,7 @@ MonoBehaviour:
   panel_chooseMode: {fileID: 1573067467}
   goHome: {fileID: 357527122}
   goStreet: {fileID: 286006108}
+  run: 0
 --- !u!4 &1324476615
 Transform:
   m_ObjectHideFlags: 0

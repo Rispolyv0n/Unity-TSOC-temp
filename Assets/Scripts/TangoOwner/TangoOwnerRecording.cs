@@ -9,6 +9,8 @@ using Tango;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
+using UnityEngine.Experimental.Networking;
+using System.Web.Script.Serialization;
 
 /// <summary>
 /// AreaLearningGUIController is responsible for the main game interaction.
@@ -16,75 +18,42 @@ using UnityEngine.SceneManagement;
 /// This class also takes care of loading / save persistent data(marker), and loop closure handling.
 /// </summary>
 public class TangoOwnerRecording : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDepth
-{    
+{
+    //to create adf 
+    private string createAdfURL = PlayerInfo.whichHttp + "://kevin.imslab.org" + PlayerInfo.port + "/create_adfID";
+    private string auth_flag = "1";
+    private bool hasCreatedAdf = false;
 
-    /// <summary>
-    /// Saving progress UI text.
-    /// </summary>
-    public UnityEngine.UI.Text m_savingText;
+    //to upload the adf
+    //public byte[] adfContent = { 0x01, 0x02, 0x03 };
+    public byte[] adfContent;
+    private string addAdfURL = PlayerInfo.whichHttp + "://kevin.imslab.org" + PlayerInfo.port + "/add_adf";
+    private string beaconID = "1";
+    private string adfID = "e3eaeaf2-a65d-4e45-8b90-9675e8b31b66";//sofa
+    private bool hasSendAdf = false;
 
-    /// <summary>
-    /// The Area Description currently loaded in the Tango Service.
-    /// </summary>
+    //other control
+    public UnityEngine.UI.Text m_savingText;    
     [HideInInspector]
     public AreaDescription m_curAreaDescription;
-
     public GameObject panelConfirm;
-
     public GameObject panelsaved;
-
-#if UNITY_EDITOR
-    /// <summary>
-    /// Handles GUI text input in Editor where there is no device keyboard.
-    /// If true, text input for naming new saved Area Description is displayed.
-    /// </summary>
-    private bool m_displayGuiTextInput;
-
-    /// <summary>
-    /// Handles GUI text input in Editor where there is no device keyboard.
-    /// Contains text data for naming new saved Area Descriptions.
-    /// </summary>
     private string m_guiTextInputContents;
-
-    /// <summary>
-    /// Handles GUI text input in Editor where there is no device keyboard.
-    /// Indicates whether last text input was ended with confirmation or cancellation.
-    /// </summary>
-    private bool m_guiTextInputResult;
-#endif
-
-    /// <summary>
-    /// If set, then the depth camera is on and we are waiting for the next depth update.
-    /// </summary>
-    private bool m_findPlaneWaitingForDepth;
-
-    /// <summary>
-    /// A reference to TangoARPoseController instance.
-    /// 
-    /// In this class, we need TangoARPoseController reference to get the timestamp and pose when we place a marker.
-    /// The timestamp and pose is used for later loop closure position correction. 
-    /// </summary>
-    private TangoPoseController m_poseController;
-    
-    /// <summary>
-    /// If set, this is the rectangle bounding the selected marker.
-    /// </summary>
-    private Rect m_selectedRect;
-
-    /// <summary>
-    /// If the interaction is initialized.
-    /// 
-    /// Note that the initialization is triggered by the relocalization event. We don't want user to place object before
-    /// the device is relocalized.
-    /// </summary>
+    private bool m_displayGuiTextInput;
     private bool m_initialized = false;
-
-    /// <summary>
-    /// A reference to TangoApplication instance.
-    /// </summary>
+    private bool m_guiTextInputResult;    
+    private bool m_findPlaneWaitingForDepth;
+    private TangoPoseController m_poseController;
+    private Rect m_selectedRect;
     private TangoApplication m_tangoApplication;
-
     private Thread m_saveThread;
+
+    /*
+    //create shop
+    private string createShopURL = PlayerInfo.whichHttp + "://kevin.imslab.org" + PlayerInfo.port + "/create_shop";
+    private string auth_flag = "1";
+    private bool hasCreatedShop = false;
+    */
 
     /// <summary>
     /// Unity Start function.
@@ -93,6 +62,17 @@ public class TangoOwnerRecording : MonoBehaviour, ITangoPose, ITangoEvent, ITang
     /// </summary>
     public void Start()
     {
+        /*
+        if (File.Exists("Assets/Resources/file.txt"))
+        {
+            adfContent = File.ReadAllBytes("Assets/Resources/file.txt");
+
+            Debug.Log("adfContent[0] = " + adfContent[0].ToString());
+            Debug.Log("adfContent[1] = " + adfContent[1].ToString());
+            Debug.Log("length = " + adfContent.Length.ToString());
+        }
+        */
+
         m_poseController = FindObjectOfType<TangoPoseController>();
         m_tangoApplication = FindObjectOfType<TangoApplication>();
 
@@ -100,7 +80,62 @@ public class TangoOwnerRecording : MonoBehaviour, ITangoPose, ITangoEvent, ITang
         {
             m_tangoApplication.Register(this);
         }
+        /*
+        //create shop
+        Debug.Log("start create shop in recording");
+        StartCoroutine(createShop());
+        */
+
     }
+    /*
+    IEnumerator createShop()
+    {
+        WWWForm formdata = new WWWForm();
+        formdata.AddField("shopID", OwnerInfo.ownerID);
+        formdata.AddField("password", OwnerInfo.ownerPW);
+        formdata.AddField("auth_flag", auth_flag);
+        formdata.AddField("beaconID", beaconID);
+        //formdata.AddField("adfID", m_curAreaDescription.m_uuid);
+        //formdata.AddField("adfID", "f2953b36-b477-2fb9-81c5-1682a435250e");
+        formdata.AddField("adfID", "e3eaeaf2-a65d-4e45-8b90-9675e8b31b66");//sofa
+        //formdata.AddField("adfID", "f5b2ca84-af86-2899-84f3-ba48570d17b2");//0929
+        //formdata.AddField("adfID", "aa305c08-fd20-2325-8b83-7e6e47b0bacc");//65104
+        //formdata.AddField("adfID", "aa305c0a-fd20-2325-8ab0-27ae08db9a54");//lab1014
+
+        UnityWebRequest sending = UnityWebRequest.Post(createShopURL, formdata);
+        yield return sending.Send();
+        if (sending.error != null)
+        {
+            Debug.Log(sending.error);
+        }
+        else
+        {
+            Debug.Log("correct while create shop : ");
+            if (sending.downloadHandler.text == "success" || sending.downloadHandler.text == "success-total")
+            {
+                hasCreatedShop = true;
+                Debug.Log("success : " + sending.downloadHandler.text);
+            }
+            else if (sending.downloadHandler.text == "duplicate-shopID")
+            {
+                hasCreatedShop = true;
+                Debug.Log("success : " + sending.downloadHandler.text);
+            }
+            else
+            {
+                Debug.Log("false : " + sending.downloadHandler.text);
+            }
+            
+            if(hasCreatedShop == true)
+            {
+                //try to send adf
+                Debug.Log("start to send adf");
+                StartCoroutine(sendingAdfFile());
+            }
+            
+        }
+    }
+    */
 
     /// <summary>
     /// Unity Update function.
@@ -108,8 +143,7 @@ public class TangoOwnerRecording : MonoBehaviour, ITangoPose, ITangoEvent, ITang
     /// Mainly handle the touch event and place mark in place.
     /// </summary>
     public void Update()
-    {
-        
+    {       
         if (m_saveThread != null && m_saveThread.ThreadState != ThreadState.Running)
         {
 
@@ -200,30 +234,7 @@ public class TangoOwnerRecording : MonoBehaviour, ITangoPose, ITangoEvent, ITang
         }
 #endif
     }
-    /*
-    /// <summary>
-    /// Set the marker type.
-    /// </summary>
-    /// <param name="type">Marker type.</param>
-    public void SetCurrentMarkType(int type)
-    {
-        if (type != m_currentMarkType)
-        {
-            m_currentMarkType = type;
-        }
-    }
-    */
-    /// <summary>
-    /// Save the game.
-    /// 
-    /// Save will trigger 3 things:
-    /// 
-    /// 1. Save the Area Description if the learning mode is on.
-    /// 2. Bundle adjustment for all marker positions, please see _UpdateMarkersForLoopClosures() function header for 
-    ///     more details.
-    /// 3. Save all markers to xml, save the Area Description if the learning mode is on.
-    /// 4. Reload the scene.
-    /// </summary>
+    
     public void Save()
     {
         panelConfirm.SetActive(false);
@@ -246,6 +257,7 @@ public class TangoOwnerRecording : MonoBehaviour, ITangoPose, ITangoEvent, ITang
             && tangoEvent.event_key == "AreaDescriptionSaveProgress")
         {
             m_savingText.text = "Saving. " + (float.Parse(tangoEvent.event_value) * 100) + "%";
+            //ExportSelectedAreaDescription();
         }
     }
 
@@ -365,6 +377,7 @@ public class TangoOwnerRecording : MonoBehaviour, ITangoPose, ITangoEvent, ITang
                     OwnerInfo.curUUID = m_curAreaDescription.m_uuid;
                 });
                 m_saveThread.Start();
+                
             }
             else
             {
@@ -381,6 +394,7 @@ public class TangoOwnerRecording : MonoBehaviour, ITangoPose, ITangoEvent, ITang
     /// </summary>
     public void ExportSelectedAreaDescription()
     {
+        Debug.Log("start to export the new adf");
         if (m_curAreaDescription != null)
         {
             StartCoroutine(_DoExportAreaDescription(m_curAreaDescription));
@@ -403,6 +417,82 @@ public class TangoOwnerRecording : MonoBehaviour, ITangoPose, ITangoEvent, ITang
         if (kb.done)
         {
             areaDescription.ExportToFile(kb.text);
+            //if kb.text is the path...
+            adfContent = File.ReadAllBytes(kb.text);
+
+            Debug.Log("start to create adf : uuid = " + OwnerInfo.curUUID);
+            StartCoroutine(createAdf());
+
+        }
+    }
+
+    IEnumerator createAdf()
+    {
+        WWWForm formdata = new WWWForm();
+        formdata.AddField("shopID", OwnerInfo.ownerID);
+        formdata.AddField("password", OwnerInfo.ownerPW);
+        formdata.AddField("auth_flag", auth_flag);
+        formdata.AddField("beaconID", beaconID);
+        formdata.AddField("adfID", m_curAreaDescription.m_uuid);
+        //formdata.AddField("adfID", "f2953b36-b477-2fb9-81c5-1682a435250e");
+        //formdata.AddField("adfID", "e3eaeaf2-a65d-4e45-8b90-9675e8b31b66");//sofa
+        //formdata.AddField("adfID", "f5b2ca84-af86-2899-84f3-ba48570d17b2");//0929
+        //formdata.AddField("adfID", "aa305c08-fd20-2325-8b83-7e6e47b0bacc");//65104
+        //formdata.AddField("adfID", "aa305c0a-fd20-2325-8ab0-27ae08db9a54");//lab1014
+
+        UnityWebRequest sending = UnityWebRequest.Post(createAdfURL, formdata);
+        yield return sending.Send();
+        if (sending.error != null)
+        {
+            Debug.Log(sending.error);
+        }
+        else
+        {
+            Debug.Log("correct while create adf : ");
+            if (sending.downloadHandler.text == "success" || sending.downloadHandler.text == "success-total")
+            {
+                hasCreatedAdf = true;
+                Debug.Log("success : " + sending.downloadHandler.text);
+            }
+            else if (sending.downloadHandler.text == "duplicate-adfID")
+            {
+                hasCreatedAdf = true;
+                Debug.Log("success : " + sending.downloadHandler.text);
+            }
+            else
+            {
+                Debug.Log("false : " + sending.downloadHandler.text);
+            }
+
+            if (hasCreatedAdf == true)
+            {
+                //try to send adf
+                Debug.Log("start to send adf");
+                StartCoroutine(sendingAdfFile());
+            }
+        }
+    }
+
+    IEnumerator sendingAdfFile()
+    {
+        WWWForm formdata = new WWWForm();
+        formdata.AddField("beaconID", beaconID);
+        //formdata.AddField("adfID", adfID);
+        formdata.AddField("adfID", OwnerInfo.curUUID);
+        formdata.AddBinaryData("file", adfContent);
+
+        UnityWebRequest sending = UnityWebRequest.Post(addAdfURL, formdata);
+        yield return sending.Send();
+        if(sending.error != null)
+        {
+            Debug.Log("error while sending adf");
+            Debug.Log(sending.error);
+        }
+        else
+        {
+            Debug.Log("correct while sending adf");
+            Debug.Log(sending.downloadHandler.text);
+            hasSendAdf = true;
         }
     }
 

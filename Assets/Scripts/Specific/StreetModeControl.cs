@@ -49,7 +49,7 @@ public class StreetModeControl : MonoBehaviour
     {
         if (arg0)
         {
-            foreach (GameObject obj in TangoStreetController.m_storeList)
+            foreach (GameObject obj in TangoStreetController.m_storeObjList)
             {
                 obj.SetActive(false);
             }
@@ -66,7 +66,7 @@ public class StreetModeControl : MonoBehaviour
         }
         else
         {
-            foreach (GameObject obj in TangoStreetController.m_storeList)
+            foreach (GameObject obj in TangoStreetController.m_storeObjList)
             {
                 obj.SetActive(true);
             }
@@ -89,7 +89,7 @@ public class StreetModeControl : MonoBehaviour
     {
         if (arg0)
         {
-            foreach (GameObject obj in TangoStreetController.m_storeList)
+            foreach (GameObject obj in TangoStreetController.m_storeObjList)
             {
                 obj.SetActive(true);
             }
@@ -100,7 +100,7 @@ public class StreetModeControl : MonoBehaviour
         else
         {
 
-            foreach (GameObject obj in TangoStreetController.m_storeList)
+            foreach (GameObject obj in TangoStreetController.m_storeObjList)
             {
                 obj.SetActive(false);
             }
