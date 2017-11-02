@@ -65,7 +65,11 @@ public class AddFavShop : MonoBehaviour
             }
 
         }
-        GetFavShopList.refreshContent();
+        if (SceneManager.GetSceneByName("favorite_shop").IsValid() == true) {
+            Debug.Log("refresh scene");
+            GetFavShopList.refreshContent();
+        }
+        
         StartCoroutine(PlayerInfo.uploadFavShopList());
     }
 

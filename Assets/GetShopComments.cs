@@ -5,6 +5,7 @@ using System;
 using UnityEngine.Experimental.Networking;
 using System.Collections.Generic;
 using System.Web.Script.Serialization;
+using UnityEngine.SceneManagement;
 
 public class GetShopComments : MonoBehaviour
 {
@@ -13,6 +14,7 @@ public class GetShopComments : MonoBehaviour
     public GameObject commentPrefab;
     public Text shopScoreText;
     public GameObject imgPrefabToBeInstantiate;
+    public GameObject loadingPanel;
 
     private float finalScore;
     private float totalScore;
@@ -74,6 +76,7 @@ public class GetShopComments : MonoBehaviour
         {
             Debug.Log("error below:");
             Debug.Log(sending.error);
+            SceneManager.LoadScene("street");
         }
         else
         {
@@ -89,6 +92,8 @@ public class GetShopComments : MonoBehaviour
                 totalScore += comment.score;
                 GameObject btn = Instantiate(commentPrefab);
                 btn.transform.SetParent(commentsParent.transform);
+                btn.transform.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
+
                 for (int i = 0; i < 5; ++i)
                 {
                     if ((i + 1) <= comment.score)
@@ -110,6 +115,7 @@ public class GetShopComments : MonoBehaviour
                     imgText.LoadImage(comment.picture.data.data);
                     Sprite imgSprite = Sprite.Create(imgText, new Rect(0, 0, imgText.width, imgText.height), Vector2.zero);
                     GameObject btnImg = Instantiate(imgPrefabToBeInstantiate) as GameObject;
+                    
                     /*
                     btnImg.AddComponent<RectTransform>();
                     btnImg.AddComponent<Button>();
@@ -121,7 +127,9 @@ public class GetShopComments : MonoBehaviour
                     btnImg.GetComponent<Image>().overrideSprite = imgSprite;
                     btnImg.transform.SetParent(btn.transform);
                     btnImg.transform.SetSiblingIndex(6);
+                    btnImg.transform.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
                 }
+                
                 
                 
             }
@@ -129,6 +137,8 @@ public class GetShopComments : MonoBehaviour
             // display score
             finalScore = totalScore / commentList.Count;
             shopScoreText.text = "顧客評分:" + finalScore;
+
+            loadingPanel.SetActive(false);
 
         }
     }

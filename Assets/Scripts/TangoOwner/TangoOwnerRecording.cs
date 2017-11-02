@@ -11,6 +11,8 @@ using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.Experimental.Networking;
 using System.Web.Script.Serialization;
+using UnityEngine.UI;
+//using System.Linq;
 
 /// <summary>
 /// AreaLearningGUIController is responsible for the main game interaction.
@@ -26,11 +28,12 @@ public class TangoOwnerRecording : MonoBehaviour, ITangoPose, ITangoEvent, ITang
 
     //to upload the adf
     //public byte[] adfContent = { 0x01, 0x02, 0x03 };
-    public byte[] adfContent;
+    public byte[] adfContent = null;
     private string addAdfURL = PlayerInfo.whichHttp + "://kevin.imslab.org" + PlayerInfo.port + "/add_adf";
-    private string beaconID = "1";
-    private string adfID = "e3eaeaf2-a65d-4e45-8b90-9675e8b31b66";//sofa
+    //private string beaconID = "1";
+    //private string adfID = "e3eaeaf2-a65d-4e45-8b90-9675e8b31b66";//sofa
     private bool hasSendAdf = false;
+    private bool startExportAdf = false;    
 
     //other control
     public UnityEngine.UI.Text m_savingText;    
@@ -80,6 +83,7 @@ public class TangoOwnerRecording : MonoBehaviour, ITangoPose, ITangoEvent, ITang
         {
             m_tangoApplication.Register(this);
         }
+        
         /*
         //create shop
         Debug.Log("start create shop in recording");
@@ -146,8 +150,15 @@ public class TangoOwnerRecording : MonoBehaviour, ITangoPose, ITangoEvent, ITang
     {       
         if (m_saveThread != null && m_saveThread.ThreadState != ThreadState.Running)
         {
+            if(startExportAdf == false)
+            {
+                startExportAdf = true;
+                ExportSelectedAreaDescription();
+            }
 
-            panelsaved.SetActive(true);
+
+            //panelsaved.SetActive(true);
+            
 
             //m_poseController.gameObject.SetActive(false);
             //Destroy(m_poseController);
@@ -155,7 +166,7 @@ public class TangoOwnerRecording : MonoBehaviour, ITangoPose, ITangoEvent, ITang
             // After saving an Area Description or mark data, hgo back to the menu
             //SceneManager.LoadScene("ownerMenu",LoadSceneMode.Single);
         }
-        
+
         if (Input.GetKey(KeyCode.Escape))
         {
             #pragma warning disable 618
@@ -234,7 +245,14 @@ public class TangoOwnerRecording : MonoBehaviour, ITangoPose, ITangoEvent, ITang
         }
 #endif
     }
-    
+
+    private void DebugText(String str)
+    {
+        Text textView1 = GameObject.Find("Canvas_UI/Text").GetComponent<Text>();
+        textView1.text = str;
+    }
+
+
     public void Save()
     {
         panelConfirm.SetActive(false);
@@ -257,7 +275,7 @@ public class TangoOwnerRecording : MonoBehaviour, ITangoPose, ITangoEvent, ITang
             && tangoEvent.event_key == "AreaDescriptionSaveProgress")
         {
             m_savingText.text = "Saving. " + (float.Parse(tangoEvent.event_value) * 100) + "%";
-            //ExportSelectedAreaDescription();
+            
         }
     }
 
@@ -395,12 +413,84 @@ public class TangoOwnerRecording : MonoBehaviour, ITangoPose, ITangoEvent, ITang
     public void ExportSelectedAreaDescription()
     {
         Debug.Log("start to export the new adf");
+        DebugText("start to export the new adf");
         if (m_curAreaDescription != null)
         {
             StartCoroutine(_DoExportAreaDescription(m_curAreaDescription));
+
+            /*
+            Debug.Log("adf != null");
+            m_curAreaDescription.ExportToFile("/sdcard/");
+
+            //bool isExported = false;
+            string path = "/sdcard/" + m_curAreaDescription.m_uuid;
+            Debug.Log(path);
+
+            int count = 0;
+            while (File.Exists(path) == false)
+            {                
+                Debug.Log("sleeping = " + count.ToString());
+                count++;
+                Thread.Sleep(500);
+            }
+
+            //kb.text = /sdcard/
+            Debug.Log("start read");
+            adfContent = File.ReadAllBytes(path);
+            if (adfContent != null)
+            {
+                Debug.Log("adfContent[0] = " + adfContent[0].ToString());
+                DebugText("adfContent[0] = " + adfContent[0].ToString());
+            }
+            else
+            {
+                Debug.Log("adfContent = null");
+                DebugText("adfContent = null");
+            }
+
+            Debug.Log("start to create adf : uuid = " + OwnerInfo.curUUID);
+            DebugText("start to create adf : uuid = " + OwnerInfo.curUUID);
+            StartCoroutine(createAdf());
+            */
         }
     }
+        
+    private IEnumerator _DoExportAreaDescription(AreaDescription areaDescription)
+    {
+        areaDescription.ExportToFile("/sdcard/");
+        DebugText("export to file");
+      
 
+        //bool isExported = false;
+        string path = "/sdcard/" + m_curAreaDescription.m_uuid;
+        
+
+        while (File.Exists(path) == false)
+        {
+            Thread.Sleep(500);
+            yield return 0;
+        }
+        DebugText("find file");
+        //kb.text = /sdcard/
+
+        adfContent = File.ReadAllBytes(path);
+        if (adfContent != null)
+        {
+            Debug.Log("adfContent[0] = " + adfContent[0].ToString());
+            DebugText("adfContent[0] = " + adfContent[0].ToString());
+        }
+        else
+        {
+            Debug.Log("adfContent = null");
+            DebugText("adfContent = null");
+        }
+
+        Debug.Log("start to create adf : uuid = " + OwnerInfo.curUUID);
+        DebugText("start to create adf : uuid = " + OwnerInfo.curUUID);
+        StartCoroutine(createAdf());
+    }
+    
+    /*
     private IEnumerator _DoExportAreaDescription(AreaDescription areaDescription)
     {
         if (TouchScreenKeyboard.visible)
@@ -416,23 +506,46 @@ public class TangoOwnerRecording : MonoBehaviour, ITangoPose, ITangoEvent, ITang
 
         if (kb.done)
         {
+            Debug.Log("kb = " + kb.text);
+            DebugText("kb = " + kb.text);
             areaDescription.ExportToFile(kb.text);
-            //if kb.text is the path...
-            adfContent = File.ReadAllBytes(kb.text);
+
+            //bool isExported = false;
+            string path = kb.text + m_curAreaDescription.m_uuid;
+            DebugText("path = " + path);
+
+            while (File.Exists(path) == false)
+            {
+                Thread.Sleep(500);
+            }
+
+            //kb.text = /sdcard/
+            
+            adfContent = File.ReadAllBytes(path);
+            if (adfContent != null)
+            {
+                Debug.Log("adfContent[0] = " + adfContent[0].ToString());
+                DebugText("adfContent[0] = " + adfContent[0].ToString());
+            }
+            else
+            {
+                Debug.Log("adfContent = null");
+                DebugText("adfContent = null");
+            }
 
             Debug.Log("start to create adf : uuid = " + OwnerInfo.curUUID);
+            DebugText("start to create adf : uuid = " + OwnerInfo.curUUID);
             StartCoroutine(createAdf());
-
         }
     }
-
+    */
     IEnumerator createAdf()
     {
         WWWForm formdata = new WWWForm();
         formdata.AddField("shopID", OwnerInfo.ownerID);
         formdata.AddField("password", OwnerInfo.ownerPW);
         formdata.AddField("auth_flag", auth_flag);
-        formdata.AddField("beaconID", beaconID);
+        formdata.AddField("beaconID", OwnerInfo.beaconID);
         formdata.AddField("adfID", m_curAreaDescription.m_uuid);
         //formdata.AddField("adfID", "f2953b36-b477-2fb9-81c5-1682a435250e");
         //formdata.AddField("adfID", "e3eaeaf2-a65d-4e45-8b90-9675e8b31b66");//sofa
@@ -444,7 +557,9 @@ public class TangoOwnerRecording : MonoBehaviour, ITangoPose, ITangoEvent, ITang
         yield return sending.Send();
         if (sending.error != null)
         {
+            Debug.Log("error while create adf");
             Debug.Log(sending.error);
+            DebugText("error while create adf : " + sending.error);
         }
         else
         {
@@ -453,21 +568,25 @@ public class TangoOwnerRecording : MonoBehaviour, ITangoPose, ITangoEvent, ITang
             {
                 hasCreatedAdf = true;
                 Debug.Log("success : " + sending.downloadHandler.text);
+                DebugText("success : " + sending.downloadHandler.text);
             }
             else if (sending.downloadHandler.text == "duplicate-adfID")
             {
                 hasCreatedAdf = true;
                 Debug.Log("success : " + sending.downloadHandler.text);
+                DebugText("success : " + sending.downloadHandler.text);
             }
             else
             {
                 Debug.Log("false : " + sending.downloadHandler.text);
+                DebugText("false : " + sending.downloadHandler.text);
             }
 
             if (hasCreatedAdf == true)
             {
                 //try to send adf
                 Debug.Log("start to send adf");
+                DebugText("start to send adf");
                 StartCoroutine(sendingAdfFile());
             }
         }
@@ -476,7 +595,7 @@ public class TangoOwnerRecording : MonoBehaviour, ITangoPose, ITangoEvent, ITang
     IEnumerator sendingAdfFile()
     {
         WWWForm formdata = new WWWForm();
-        formdata.AddField("beaconID", beaconID);
+        formdata.AddField("beaconID", OwnerInfo.beaconID);
         //formdata.AddField("adfID", adfID);
         formdata.AddField("adfID", OwnerInfo.curUUID);
         formdata.AddBinaryData("file", adfContent);
@@ -487,12 +606,15 @@ public class TangoOwnerRecording : MonoBehaviour, ITangoPose, ITangoEvent, ITang
         {
             Debug.Log("error while sending adf");
             Debug.Log(sending.error);
+            DebugText("error while sending adf : " + sending.error);
         }
         else
         {
             Debug.Log("correct while sending adf");
             Debug.Log(sending.downloadHandler.text);
+            DebugText("correct while sending adf : " + sending.downloadHandler.text);
             hasSendAdf = true;
+            panelsaved.SetActive(true);
         }
     }
 
@@ -519,6 +641,8 @@ public class TangoOwnerRecording : MonoBehaviour, ITangoPose, ITangoEvent, ITang
         screenBounds.Encapsulate(cam.WorldToScreenPoint(center + new Vector3(-extents.x, -extents.y, -extents.z)));
         return Rect.MinMaxRect(screenBounds.min.x, screenBounds.min.y, screenBounds.max.x, screenBounds.max.y);
     } 
+
+
     
 }
 

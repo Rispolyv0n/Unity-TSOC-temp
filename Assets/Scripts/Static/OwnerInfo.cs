@@ -14,6 +14,7 @@ public class OwnerInfo : MonoBehaviour
     static public string ownerPW;
     static public bool hasADF;
 
+    static public string beaconID = "D3556E50-C856-11E3-8408-0221A885EF40";
     static public string curUUID;
 
     // openTime structures

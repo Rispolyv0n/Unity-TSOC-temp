@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 
 /// <summary>
@@ -67,5 +68,10 @@ public class ARStoreObject : MonoBehaviour
     private void HideDone()
     {
         Destroy(gameObject);
+    }
+
+    public static implicit operator ARStoreObject(GameObject v)
+    {
+        throw new NotImplementedException();
     }
 }

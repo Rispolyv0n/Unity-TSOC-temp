@@ -16,7 +16,7 @@ public class RandomEventTrigger : MonoBehaviour
 
         //minHappenSecond = 150;
         //maxHappenSecond = 600;
-        if (PlayerInfo.currentCharacterID >= 0)
+        if (PlayerInfo.currentCharacterID >= 0 && PlayerInfo.streetMode.gameMode == true)
         {
             Random.seed = System.Guid.NewGuid().GetHashCode();
             float happen = Random.Range(0f, 1f);

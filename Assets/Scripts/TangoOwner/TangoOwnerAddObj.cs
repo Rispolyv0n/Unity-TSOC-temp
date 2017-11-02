@@ -27,6 +27,7 @@ public class TangoOwnerAddObj : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDe
     //for store obj
     private List<GameObject> m_storeObjList = new List<GameObject>();
     private GameObject newObj = null;
+    private GameObject loadObj = null;
     private int m_currentObjType = 0;
     private ARStoreObject m_selectedObj;
 
@@ -36,8 +37,10 @@ public class TangoOwnerAddObj : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDe
     private bool m_initialized = false;
     private TangoApplication m_tangoApplication;
 
-    //private string m_curAreaDescriptionUUID = OwnerInfo.curUUID;
-    private string m_curAreaDescriptionUUID = "aa305c0a-fd20-2325-8ab0-27ae08db9a54";//lab1014
+    private string m_curAreaDescriptionUUID = OwnerInfo.curUUID;
+    //private string m_curAreaDescriptionUUID = "A2E00851-C38E-2CD4-8C01-463ECBF172B6";//lab1022test
+    //private string m_curAreaDescriptionUUID = "aa305c0a-fd20-2325-8ab0-27ae08db9a54";//lab1014
+    //private string m_curAreaDescriptionUUID = "aa305c0a-fd20-2325-8ab0-27ae08db9a54";//lab1014
     //private string m_curAreaDescriptionUUID = "aa305c08-fd20-2325-8b83-7e6e47b0bacc";//65104
     //private string m_curAreaDescriptionUUID = "f5b2ca87-af86-2899-86f7-2789d3d1ce3d";//0929_2
     //private string m_curAreaDescriptionUUID = "f5b2ca84-af86-2899-84f3-ba48570d17b2";//0929
@@ -53,11 +56,11 @@ public class TangoOwnerAddObj : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDe
     private string createShopURL = PlayerInfo.whichHttp + "://kevin.imslab.org" + PlayerInfo.port + "/create_shop";
     private string addObjURL = PlayerInfo.whichHttp + "://kevin.imslab.org" + PlayerInfo.port + "/add_obj";
     private string auth_flag = "1";
-    private string beaconID = "1";
+    private string beaconID = OwnerInfo.beaconID;
     //private string adfID = OwnerInfo.curUUID;
     private string adfID;
     //private string shopID = OwnerInfo.storeInfo._id;//???
-    private string shopID = null;// = OwnerInfo.ownerID;
+    private string shopID = OwnerInfo.ownerID;
     private string pw = OwnerInfo.ownerPW;    
     private bool hasCreatedShop = false;
     private bool hasGetList = false;  
@@ -70,11 +73,12 @@ public class TangoOwnerAddObj : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDe
     private bool hasCreatedObj = false;
     private string getStoreObjURL;
     //private string shopID;
-    public string loadShopName;
-    public string loadShopIntro;
-    public Vector3 loadObjPos;
-    public Quaternion loadObjRot;
-    public Vector3 loadObjScale;
+    private string loadShopName;
+    private string loadShopIntro;
+    private Vector3 loadObjPos;
+    private Quaternion loadObjRot;
+    private Vector3 loadObjScale;
+    private bool hasSetScale = false;
 
     public class shop
     {
@@ -206,6 +210,7 @@ Camera.main.transform.rotation * Vector3.up) as GameObject;*/
             //tmpObj = GameObject.FindGameObjectWithTag("cube_storeInfo");
             m_storeObjList.Remove(obj);
             Destroy(obj);
+            hasCreatedObj = false;
         }        
     }
 
@@ -231,7 +236,30 @@ Camera.main.transform.rotation * Vector3.up) as GameObject;*/
         if (EventSystem.current.IsPointerOverGameObject(0) || GUIUtility.hotControl != 0)
         {
             return;
-        }        
+        }
+        /*
+        if(loadObj != null)
+        {
+            Debug.Log("has the load obj");
+            loadObj.transform.localScale = loadObjScale;
+            Debug.Log("localscale = " + loadObj.transform.localScale.ToString("0.000000"));
+        }
+        */
+        /*
+        if(m_storeObjList.Count != 0 && loadObjScale != null)
+        {
+            if(hasSetScale == false)
+            {
+                Debug.Log("obj scale before = " + m_storeObjList[0].transform.localScale.ToString("0.0000"));
+                m_storeObjList[0].transform.localScale = loadObjScale;
+                hasSetScale = true;
+                Debug.Log("m_storeObjList count = " + m_storeObjList.Count.ToString());
+                Debug.Log("load scale = " + loadObjScale.ToString("0.0000"));
+                Debug.Log("hasSetScale = " + hasSetScale.ToString());
+                Debug.Log("obj scale after = " + m_storeObjList[0].transform.localScale.ToString("0.0000"));
+            }
+        }
+        */
     }
 
     /// <summary>
@@ -328,22 +356,82 @@ Camera.main.transform.rotation * Vector3.up) as GameObject;*/
             Debug.Log(sending.downloadHandler.text);
             //Debug.Log("shopId = " + theListStorage[0].adfID[0].shopID[0].name);
             //shopID = theListStorage[0].adfID[0].shopID[0].name;
-
-            if (sending.downloadHandler.text == "[]")
+                        
+            if(theListStorage.Count == 0)
             {
-                //Debug.Log("shopID = " + shopID);
-                Debug.Log("create shop start!!!!!");
+                Debug.Log("create shop start storage = 0");
                 StartCoroutine(createShop());
             }
             else
             {
-                shopID = theListStorage[0].adfID[0].shopID[0].name;
-                Debug.Log("load exist shop obj");
-                hasCreatedObj = true;
-                StartCoroutine(loadstoreInfo());
+                for (int i = 0; i < theListStorage.Count; i++)
+                {
+                    //if(theListStorage[i].beaconID == OwnerInfo.beaconID)
+                    //{
+
+                    //}
+
+                    if (shopID == theListStorage[i].adfID[0].shopID[0].name)//this shop has created
+                    {
+                        hasCreatedShop = true;
+                        Debug.Log("load exist shop obj");
+                        StartCoroutine(loadstoreInfo());
+                    }
+                    else
+                    {
+                        Debug.Log("create shop start storage != 0");
+                        StartCoroutine(createShop());
+                    }
+                }
             }
+
+             
         }
     }
+
+    IEnumerator loadstoreInfo()
+    {
+        getStoreObjURL = PlayerInfo.whichHttp + "://kevin.imslab.org" + PlayerInfo.port + "/get_obj_info?beaconID=" + OwnerInfo.beaconID + "&adfID=" + m_curAreaDescription.m_uuid + "&shopID=" + shopID + "&id=" + "0";
+        UnityWebRequest sending = UnityWebRequest.Get(getStoreObjURL);
+        yield return sending.Send();
+
+        if (sending.error != null)
+        {
+            Debug.Log("error below");
+            Debug.Log(sending.error);
+        }
+        else
+        {            
+            Debug.Log("correct below");
+            Debug.Log(sending.downloadHandler.text);
+            JavaScriptSerializer js = new JavaScriptSerializer();
+            storeObj = js.Deserialize<columnItemofStoreObj>(sending.downloadHandler.text);
+            loadShopName = storeObj.shopName;
+            loadShopIntro = storeObj.shopIntro;
+            loadObjPos = stringToVector3(storeObj.pos);
+            loadObjRot = stringToQuaternion(storeObj.rot);
+            loadObjScale = stringToVector3(storeObj.scale);
+            Debug.Log("shopName = " + loadShopName);
+            Debug.Log("shopIntro = " + loadShopIntro);
+            Debug.Log("objPos = " + loadObjPos.ToString("0.00000000"));
+            Debug.Log("objRot = " + loadObjRot.ToString("0.00000000"));
+            Debug.Log("objScale = " + loadObjScale.ToString("0.00000000"));
+
+            if(sending.downloadHandler.text == "not found")
+            {
+                hasCreatedObj = false;
+            }
+            else
+            {
+                hasCreatedObj = true;
+                createStoreObj();
+            }
+            
+            //createObj();
+        }
+    }
+
+
 
     /// <summary>
     /// This is called each time new depth data is available.
@@ -366,7 +454,8 @@ Camera.main.transform.rotation * Vector3.up) as GameObject;*/
         //connect part
         
         Debug.Log("hasCreatedShop = " + hasCreatedShop.ToString());
-        if(hasCreatedShop == true)
+        
+        if (hasCreatedShop == true)
         {
             /*
             string prefabPath = Application.dataPath + "/" + "Canvas_storeInfo 1.prefab";            
@@ -375,6 +464,11 @@ Camera.main.transform.rotation * Vector3.up) as GameObject;*/
             Debug.Log("start save");            
             //foreach(GameObject obj in m_storeObjList)            
             StartCoroutine(sendingAddObj());
+        }
+        else
+        {
+            Debug.Log("start create shop");
+            StartCoroutine(createShop());
         }
         
         /*
@@ -408,16 +502,33 @@ Camera.main.transform.rotation * Vector3.up) as GameObject;*/
         */
     }
 
+
+    void DebugText(String str)
+    {
+        Text textView1 = GameObject.Find("Canvas_street/Text").GetComponent<Text>();
+        textView1.text = str;
+    }
+
     IEnumerator sendingAddObj()
     {
         ARStoreObject objToAdd = FindObjectOfType<ARStoreObject>();
+        //ARStoreObject objToAdd = m_storeObjList[0].GetComponent<ARStoreObject>();
+        //ARStoreObject objToAdd = loadObj.GetComponent<ARStoreObject>();
+        if (objToAdd == null)
+        {
+            Debug.Log("not found obj while sending");
+        }
+        else
+        {
+            Debug.Log("found obj while sending");
+        }
 
         WWWForm formdata = new WWWForm();
         formdata.AddField("beaconID", beaconID);
         //formdata.AddField("adfID", OwnerInfo.curUUID);
-        //formdata.AddField("adfID", m_curAreaDescription.m_uuid);
+        formdata.AddField("adfID", m_curAreaDescription.m_uuid);
         //formdata.AddField("adfID", "f2953b36-b477-2fb9-81c5-1682a435250e");
-        formdata.AddField("adfID", "e3eaeaf2-a65d-4e45-8b90-9675e8b31b66");//sofa
+        //formdata.AddField("adfID", "e3eaeaf2-a65d-4e45-8b90-9675e8b31b66");//sofa
         //formdata.AddField("adfID", "f5b2ca84-af86-2899-84f3-ba48570d17b2");//0929
         //formdata.AddField("adfID", "aa305c08-fd20-2325-8b83-7e6e47b0bacc");//65104
         //formdata.AddField("adfID", "aa305c0a-fd20-2325-8ab0-27ae08db9a54");//lab1014
@@ -426,10 +537,11 @@ Camera.main.transform.rotation * Vector3.up) as GameObject;*/
         formdata.AddField("shopName", objToAdd.m_storeName);//formdata.AddField("shopName", OwnerInfo.storeInfo.shopName);
         formdata.AddField("shopIntro", objToAdd.m_storeIntro);//formdata.AddField("shopIntro", OwnerInfo.storeInfo.infoList[i].content);
         formdata.AddField("id", objToAdd.m_type);
-        formdata.AddField("pos", objToAdd.transform.position.ToString());
-        formdata.AddField("rot", objToAdd.transform.rotation.ToString());
-        Debug.Log("sending scale = " + objToAdd.transform.localScale.ToString());
-        formdata.AddField("scale", objToAdd.transform.localScale.ToString());
+        formdata.AddField("pos", objToAdd.transform.position.ToString("0.00000000"));
+        formdata.AddField("rot", objToAdd.transform.rotation.ToString("0.00000000"));
+        //Debug.Log("sending scale = " + objToAdd.transform.localScale.ToString());
+        //DebugText("sending scale = " + objToAdd.transform.localScale.ToString("0.0000"));
+        formdata.AddField("scale", objToAdd.transform.localScale.ToString("0.00000000"));
         formdata.AddBinaryData("file", contents);
 
         UnityWebRequest sending = UnityWebRequest.Post(addObjURL, formdata);
@@ -463,9 +575,9 @@ Camera.main.transform.rotation * Vector3.up) as GameObject;*/
         formdata.AddField("auth_flag", auth_flag);
         formdata.AddField("beaconID", beaconID);
         //formdata.AddField("adfID", OwnerInfo.curUUID);
-        //formdata.AddField("adfID", m_curAreaDescription.m_uuid);
+        formdata.AddField("adfID", m_curAreaDescription.m_uuid);
         //formdata.AddField("adfID", "f2953b36-b477-2fb9-81c5-1682a435250e");
-        formdata.AddField("adfID", "e3eaeaf2-a65d-4e45-8b90-9675e8b31b66");//sofa
+        //formdata.AddField("adfID", "e3eaeaf2-a65d-4e45-8b90-9675e8b31b66");//sofa
         //formdata.AddField("adfID", "f5b2ca84-af86-2899-84f3-ba48570d17b2");//0929
         //formdata.AddField("adfID", "aa305c08-fd20-2325-8b83-7e6e47b0bacc");//65104
         //formdata.AddField("adfID", "aa305c0a-fd20-2325-8ab0-27ae08db9a54");//lab1014
@@ -496,52 +608,20 @@ Camera.main.transform.rotation * Vector3.up) as GameObject;*/
         }
     }
 
-
-    IEnumerator loadstoreInfo()
-    {
-        getStoreObjURL = PlayerInfo.whichHttp + "://kevin.imslab.org" + PlayerInfo.port + "/get_obj_info?beaconID=" + "1" + "&adfID=" + "e3eaeaf2-a65d-4e45-8b90-9675e8b31b66" + "&shopID=" + shopID + "&id=" + "0";
-        UnityWebRequest sending = UnityWebRequest.Get(getStoreObjURL);
-        yield return sending.Send();
-
-        if (sending.error != null)
-        {
-            Debug.Log("error below");
-            Debug.Log(sending.error);
-        }
-        else
-        {
-            Debug.Log("correct below");
-            Debug.Log(sending.downloadHandler.text);
-            JavaScriptSerializer js = new JavaScriptSerializer();
-            storeObj = js.Deserialize<columnItemofStoreObj>(sending.downloadHandler.text);
-            loadShopName = storeObj.shopName;
-            loadShopIntro = storeObj.shopIntro;
-            loadObjPos = stringToVector3(storeObj.pos);
-            loadObjRot = stringToQuaternion(storeObj.rot);
-            loadObjScale = stringToVector3(storeObj.scale);
-            Debug.Log("shopName = " + loadShopName);
-            Debug.Log("shopIntro = " + loadShopIntro);
-            Debug.Log("objPos = " + loadObjPos.ToString());
-            Debug.Log("objRot = " + loadObjRot.ToString());
-            Debug.Log("objScale = " + loadObjScale.ToString());
-            createStoreObj();
-            //createObj();
-        }
-    }    
-    
     private void createStoreObj()
     {
         //check that create obj after relocalize
         if (m_initialized)
         {
-            Debug.Log("load exist store obj");
-            newObj = Instantiate(m_storeInfoPrefabs[m_currentObjType],
+            Debug.Log("create the loaded obj!!");
+            loadObj = Instantiate(m_storeInfoPrefabs[0],
                                         loadObjPos,
                                         loadObjRot) as GameObject;
-            newObj.transform.localScale = loadObjScale;
-            newObj.transform.GetChild(1);
+            //newObj.SetActive(true);
+            //newObj.transform.localScale = loadObjScale;
+            loadObj.transform.GetChild(1);
 
-            ARStoreObject objScript = newObj.GetComponent<ARStoreObject>();
+            ARStoreObject objScript = loadObj.GetComponent<ARStoreObject>();
 
             objScript.m_type = m_currentObjType;
             objScript.m_timestamp = (float)m_poseController.LastPoseTimestamp;
@@ -551,12 +631,27 @@ Camera.main.transform.rotation * Vector3.up) as GameObject;*/
             Matrix4x4 uwTDevice = Matrix4x4.TRS(m_poseController.transform.position,
                                                 m_poseController.transform.rotation,
                                                 Vector3.one);
-            Matrix4x4 uwTObj = Matrix4x4.TRS(newObj.transform.position,
-                                                newObj.transform.rotation,
+            Matrix4x4 uwTObj = Matrix4x4.TRS(loadObj.transform.position,
+                                                loadObj.transform.rotation,
                                                 Vector3.one);
             objScript.m_deviceTObj = Matrix4x4.Inverse(uwTDevice) * uwTObj;
 
-            m_storeObjList.Add(newObj);
+            m_storeObjList.Add(loadObj);
+            Debug.Log("storeObjList length = " + m_storeObjList.Count.ToString());
+
+            if (m_storeObjList.Count != 0 && loadObjScale != null)
+            {
+                if (hasSetScale == false)
+                {
+                    Debug.Log("obj scale before = " + m_storeObjList[0].transform.localScale.ToString("0.00000000"));
+                    m_storeObjList[0].transform.localScale = loadObjScale;
+                    hasSetScale = true;
+                    Debug.Log("m_storeObjList count = " + m_storeObjList.Count.ToString());
+                    Debug.Log("load scale = " + loadObjScale.ToString("0.00000000"));
+                    Debug.Log("hasSetScale = " + hasSetScale.ToString());
+                    Debug.Log("obj scale after = " + m_storeObjList[0].transform.localScale.ToString("0.00000000"));
+                }
+            }
 
             ButtonGroupToggle button = GameObject.FindObjectOfType<ButtonGroupToggle>();
             button.moveMode();
@@ -594,11 +689,12 @@ Camera.main.transform.rotation * Vector3.up) as GameObject;*/
         if(permissionsGranted)
         {
             //m_curAreaDescriptionUUID = OwnerInfo.curUUID;
-            AreaDescription areaDescription = AreaDescription.ForUUID(m_curAreaDescriptionUUID);
-            m_curAreaDescription = areaDescription;
+            //AreaDescription areaDescription = AreaDescription.ForUUID(m_curAreaDescriptionUUID);
+            AreaDescription[] list = AreaDescription.GetList();
+            m_curAreaDescription = list[0];
+            m_curAreaDescriptionUUID = m_curAreaDescription.m_uuid;
             m_tangoApplication.m_areaDescriptionLearningMode = false;//m_enableLearningToggle.isOn;
             m_tangoApplication.Startup(m_curAreaDescription);
-
             m_poseController.gameObject.SetActive(true);
         }
     }

@@ -6,6 +6,9 @@ using UnityEngine.Experimental.Networking;
 using UnityEngine.SceneManagement;
 using System;
 using System.Text;
+using Tango;
+using System.Linq;
+using System.IO;
 
 public class SendLogIn : MonoBehaviour
 {
@@ -20,16 +23,19 @@ public class SendLogIn : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        
+        Debug.Log("Init beacon");
         toUrl = PlayerInfo.whichHttp + "://kevin.imslab.org" + PlayerInfo.port + "/login";
         // Btn event
         thisBtn = GetComponent<Button>();
         thisBtn.onClick.AddListener(delegate { warningText.text = "登入中..."; StartCoroutine(toLogIn(getID.text, getPW.text)); });
-
+      
         if (!PlayerInfo.justLogOut && loadUserAccountSuccess())
         {
             warningText.text = "自動登入中...";
             StartCoroutine(toLogIn(PlayerInfo.user_id, PlayerInfo.user_pw));
         }
+       
 
     }
 
@@ -92,4 +98,6 @@ public class SendLogIn : MonoBehaviour
     {
 
     }
+
+  
 }

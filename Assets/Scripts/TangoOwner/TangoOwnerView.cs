@@ -10,44 +10,216 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.Experimental.Networking;
+using System.Web.Script.Serialization;
+using Lean.Touch;
+//using Newtonsoft.Json;
 
-public class TangoOwnerView : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDepth
+public class TangoOwnerView : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDepth, ITangoLifecycle
 {
-    //for store obj    
-    public GameObject[] m_storeInfoPrefabs;// for store objects(now only one)
-    public List<GameObject> m_storeList = new List<GameObject>();//need load
+    //to sprinkle    
+    public GameObject[] m_objPrefabs;//for gamign objects. 0 : coins, 1 : diamond    
+    public GameObject[] m_storeInfoPrefabs;//for store objects(now only one)
+    public List<GameObject> m_objList = new List<GameObject>();//need sprinkle and delete
+    public List<GameObject> m_storeObjList = new List<GameObject>();//need load
+
+    private GameObject newObjObject = null;
+    private ARObjects m_selectedObj;
     private ARStoreObject m_selectedStore;
     private int m_curObjType = 0;
 
     //other control
+    public RectTransform m_prefabTouchEffect;
+    public Canvas m_canvas;
     [HideInInspector]
     public AreaDescription m_curAreaDescription;
-    private bool m_findPlaneWaitingForDepth;// If set, then the depth camera is on and we are waiting for the next depth update.    
-    private TangoPoseController m_poseController;
-    private Rect m_selectedRect;// If set, this is the rectangle bounding the selected marker.
-    private bool m_initialized = false;
-    private TangoApplication m_tangoApplication;
 
-    
-    /// <summary>
-    /// Unity Start function.
-    /// 
-    /// We find and assign pose controller and tango application, and register this class to callback events.
-    /// </summary>
+    private string m_curAreaDescriptionUUID = OwnerInfo.curUUID;
+    //private string m_curAreaDescriptionUUID = "22b6613e-abef-2f82-870f-a6dba10bbb2d";//lab1021test
+    //private string m_curAreaDescriptionUUID = "aa305c0a-fd20-2325-8ab0-27ae08db9a54";//lab1014
+    //private string m_curAreaDescriptionUUID = "aa305c08-fd20-2325-8b83-7e6e47b0bacc";//65104
+    //private string m_curAreaDescriptionUUID = "f5b2ca87-af86-2899-86f7-2789d3d1ce3d";//0929_2
+    //private string m_curAreaDescriptionUUID = "f5b2ca84-af86-2899-84f3-ba48570d17b2";//0929
+    //private string m_curAreaDescriptionUUID = "e3eaeaf2-a65d-4e45-8b90-9675e8b31b66";//sofa
+    //private string m_curAreaDescriptionUUID = "0c641a06-f1e7-4fe4-8f3a-cedc91df8035";//new sofa
+    //private string m_curAreaDescriptionUUID = "f2953b36-b477-2fb9-81c5-1682a435250e";//204
+    //private string m_curAreaDescriptionUUID = "e12e5a3c-5a09-29b9-98c6-7b3d6fd42737";//d24test6
+    //private string m_curAreaDescriptionUUID = "ff8c341e-ced8-28f7-9898-6ef42a5060b6";//d24test5   
+    private bool m_initialized = false;
+    private bool m_findPlaneWaitingForDepth;
+    private TangoApplication m_tangoApplication;
+    private TangoPoseController m_poseController;
+    private Rect m_selectedRect;
+    //private Thread m_saveThread;
+
+    //to get adf
+    private string loadAdfURL;
+    private byte[] loadAdfContents;
+
+    //to get all shop id in shopIDList
+    private string beaconID = OwnerInfo.beaconID;
+    private string getShopIdURL;// = PlayerInfo.whichHttp + "://kevin.imslab.org" + PlayerInfo.port + "/get_shopIDs?beaconID=" + OwnerInfo.beaconID + "&adfID=" + m_curAreaDescription.m_uuid;//sofa
+                                                                                                                                                                                       //private string getShopIdURL = PlayerInfo.whichHttp + "://kevin.imslab.org" + PlayerInfo.port + "/get_shopIDs?beaconID=" + "1" + "&adfID=" + "aa305c08-fd20-2325-8b83-7e6e47b0bacc";//65104
+                                                                                                                                                                                       //private string getShopIdURL = PlayerInfo.whichHttp + "://kevin.imslab.org" + PlayerInfo.port + "/get_shopIDs?beaconID=" + "1" + "&adfID=" + "aa305c0a-fd20-2325-8ab0-27ae08db9a54";//lab1014
+
+    //to load store obj
+    private string getStoreObjURL;
+    private string shopID = "Ris_shop";
+    public string loadShopName;
+    public string loadShopIntro;
+    public Vector3 loadObjPos;
+    public Quaternion loadObjRot;
+    public Vector3 loadObjScale;
+
+    public class ColumnItemOfShopIDList
+    {
+        public string name = "";
+        public string _id = "";//field names need to be the same QAQ!!!
+    }
+    //public ColumnItemOfShopIDList IDlist = new ColumnItemOfShopIDList();
+    public List<ColumnItemOfShopIDList> shopIDlist = new List<ColumnItemOfShopIDList>();
+
+    public class columnItemofStoreObj
+    {
+        public string shopName;
+        public string shopIntro;
+        public string pos;
+        public string rot;
+        public string scale;
+    }
+    //public List<columnItemofStoreObj> storeObjList = new List<columnItemofStoreObj>();
+    public columnItemofStoreObj storeObj = new columnItemofStoreObj();
+
     public void Start()
     {
+        Debug.Log("start to load adf");
+        StartCoroutine(loadAdf());
+
         m_poseController = FindObjectOfType<TangoPoseController>();
         m_tangoApplication = FindObjectOfType<TangoApplication>();
 
         if (m_tangoApplication != null)
         {
             m_tangoApplication.Register(this);
+            //m_tangoApplication.RequestPermissions();
+            if (AndroidHelper.IsTangoCorePresent())
+            {
+                m_tangoApplication.RequestPermissions();
+            }
         }
-
-        //m_curObjType = PlayerInfo.currentCharacterID + 2;
+        else
+        {
+            Debug.Log("No Tango Manager found in scene.");
+        }
 
     }
 
+    //load adf
+    IEnumerator loadAdf()
+    {
+        loadAdfURL = PlayerInfo.whichHttp + "://kevin.imslab.org" + PlayerInfo.port + "/get_adf?beaconID=" + beaconID + "&adfID=" + m_curAreaDescription.m_uuid;//sofa
+        UnityWebRequest sending = UnityWebRequest.Get(loadAdfURL);
+        yield return sending.Send();
+
+        if (sending.error != null)
+        {
+            Debug.Log("error while load adf");
+            Debug.Log(sending.error);
+        }
+        else
+        {
+            Debug.Log("correct while load adf");
+            Debug.Log(sending.downloadHandler.data.ToString());
+            loadAdfContents = sending.downloadHandler.data;
+            Debug.Log(loadAdfContents[0].ToString());
+            Debug.Log(loadAdfContents[1].ToString());
+            Debug.Log(loadAdfContents[2].ToString());
+            Debug.Log("length = " + loadAdfContents.Length.ToString());
+            File.WriteAllBytes("Assets/Resources/fileToWrite.txt", loadAdfContents);
+            //File.WriteAllBytes("/sdcard/" + "e3eaeaf2-a65d-4e45-8b90-9675e8b31b66", loadAdfContents);
+            //ImportAreaDescription();
+        }
+    }
+
+    public void ImportAreaDescription()
+    {
+        StartCoroutine(_DoImportAreaDescription());
+    }
+
+    private IEnumerator _DoImportAreaDescription()
+    {
+        if (TouchScreenKeyboard.visible)
+        {
+            yield break;
+        }
+
+        TouchScreenKeyboard kb = TouchScreenKeyboard.Open("/sdcard/", TouchScreenKeyboardType.Default, false);
+        while (!kb.done && !kb.wasCanceled)
+        {
+            yield return null;
+        }
+
+        if (kb.done)
+        {
+            AreaDescription.ImportFromFile(kb.text);
+        }
+    }
+    
+    public void sprinkleObjects(int sprinkleType, int nums)//(List<Vector2> touchPoseList)
+    {
+        m_curObjType = sprinkleType;
+        for (int i = 0; i < nums; i++)
+        {
+            Vector3 objPos = new Vector3(UnityEngine.Random.Range(-5f, 5f), UnityEngine.Random.Range(-5f, 5f), UnityEngine.Random.Range(-5f, 5f));
+
+            //instantiate cube object
+            newObjObject = Instantiate(m_objPrefabs[m_curObjType], objPos, Quaternion.identity) as GameObject;//Instantiate : object type -> need 'as XX' to change type
+
+            ARObjects objScript = newObjObject.GetComponent<ARObjects>();
+
+            objScript.m_type = m_curObjType;
+            objScript.m_timestamp = (float)m_poseController.LastPoseTimestamp;
+
+            Matrix4x4 uwTDevice = Matrix4x4.TRS(m_poseController.transform.position,
+                                                m_poseController.transform.rotation,
+                                                Vector3.one);
+            Matrix4x4 uwTObj = Matrix4x4.TRS(newObjObject.transform.position,
+                                                newObjObject.transform.rotation,
+                                                Vector3.one);
+            objScript.m_deviceTObj = Matrix4x4.Inverse(uwTDevice) * uwTObj;
+
+            if (PlayerInfo.streetMode.gameObj)
+            {
+                newObjObject.SetActive(true);
+            }
+            else
+            {
+                newObjObject.SetActive(false);
+            }
+            /*
+            Renderer newObjRender = newObjObject.GetComponent<Renderer>();
+            foreach (GameObject obj in m_objList)
+            {
+                if(newObjRender.bounds.Intersects(obj.GetComponent<Renderer>().bounds))
+                {
+                    Destroy(newObjObject);
+                }
+                else
+                {
+                    m_objList.Add(newObjObject);
+                    i++;
+                }                
+            }
+            */
+
+            //newObjObject.SetActive(true);
+
+            m_objList.Add(newObjObject);
+            m_selectedObj = null;
+        }
+
+    }
+    
     /// <summary>
     /// Unity Update function.
     /// 
@@ -58,9 +230,12 @@ public class TangoOwnerView : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDept
 
         if (Input.GetKey(KeyCode.Escape))
         {
-#pragma warning disable 618
+            /*
+            #pragma warning disable 618
             Application.LoadLevel(Application.loadedLevel);
-#pragma warning restore 618
+            #pragma warning restore 618
+            */
+            AndroidHelper.AndroidQuit();
         }
 
         if (!m_initialized)
@@ -91,13 +266,40 @@ public class TangoOwnerView : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDept
             }
             else if (Physics.Raycast(cam.ScreenPointToRay(t.position), out hitInfo))
             {
-                // Found a marker, select it (so long as it isn't disappearing)!
                 GameObject tapped = hitInfo.collider.gameObject;
+                m_selectedObj = tapped.GetComponent<ARObjects>();
                 m_selectedStore = tapped.transform.parent.GetComponent<ARStoreObject>();
-                //m_selectedObj = tapped.GetComponent<ARObjects>();
-            }        
+                /*
+                DebugText("raycast");
+                try
+                {
+                    GameObject tapped = hitInfo.collider.gameObject;
+                    DebugText("raycast1");
+                
+                    if (tapped.transform.parent.GetComponent<ARStoreObject>() != null)
+                    {
+                        DebugText("tap store obj");
+                        m_selectedStore = tapped.transform.parent.GetComponent<ARStoreObject>();
+                    }
+                    else
+                    {
+                        DebugText("tap game obj");
+                        m_selectedObj = tapped.GetComponent<ARObjects>();
+                    }
+                }
+                catch(Exception e)
+                {
+                    DebugText(e.Message);
+                }*/
+            }
             else
             {
+                RectTransform touchEffectRectTransform = Instantiate(m_prefabTouchEffect) as RectTransform;
+                touchEffectRectTransform.transform.SetParent(m_canvas.transform, false);
+                Vector2 normalizedPosition = t.position;
+                normalizedPosition.x /= Screen.width;
+                normalizedPosition.y /= Screen.height;
+                touchEffectRectTransform.anchorMin = touchEffectRectTransform.anchorMax = normalizedPosition;
             }
         }
     }
@@ -125,15 +327,42 @@ public class TangoOwnerView : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDept
     /// </summary>
     public void OnGUI()
     {
-        if (m_selectedStore != null)
+        if (m_selectedObj != null)
         {
+            if (m_selectedObj.m_type == 0)
+            {
+                DebugText("tap money in onGUI");
+                GameObject.FindGameObjectWithTag("playerInfo").GetComponent<PlayerInfo>().increaseValue_money((int)UnityEngine.Random.Range(20, 50));
+            }
+            else if (m_selectedObj.m_type == 1)
+            {
+                DebugText("tap diamond in onGUI");
+                SceneManager.LoadScene("game_1", LoadSceneMode.Additive);
+            }
+            else
+            {
+                DebugText("tap pineapple in onGUI");
+                GameObject.FindGameObjectWithTag("playerInfo").GetComponent<PlayerInfo>().increaseValue_like((int)UnityEngine.Random.Range(20, 50));
+                //GameObject.FindGameObjectWithTag("playerInfo").GetComponent<PlayerInfo>().increa
+            }
+            m_objList.Remove(m_selectedObj.gameObject);
+            m_selectedObj.SendMessage("Hide");
+            m_selectedObj = null;
+        }
+        else if (m_selectedStore != null)
+        {
+            DebugText("tap store obj in onGUI");
             GameObject.FindGameObjectWithTag("playerInfo").GetComponent<PlayerInfo>().setCheckingShopName(m_selectedStore.m_storeName);
             SceneManager.LoadScene("shopInfo", LoadSceneMode.Additive);
 
             m_selectedStore = null;
-        }        
+        }
+        else
+        {
+
+        }
     }
-    
+
     /// <summary>
     /// This is called each time a Tango event happens.
     /// </summary>
@@ -163,18 +392,6 @@ public class TangoOwnerView : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDept
     /// <param name="poseData">Returned pose data from TangoService.</param>
     public void OnTangoPoseAvailable(Tango.TangoPoseData poseData)
     {
-        // This frame pair's callback indicates that a loop closure or relocalization has happened. 
-        //
-        // When learning mode is on, this callback indicates the loop closure event. Loop closure will happen when the
-        // system recognizes a pre-visited area, the loop closure operation will correct the previously saved pose 
-        // to achieve more accurate result. (pose can be queried through GetPoseAtTime based on previously saved
-        // timestamp).
-        // Loop closure definition: https://en.wikipedia.org/wiki/Simultaneous_localization_and_mapping#Loop_closure
-        //
-        // When learning mode is off, and an Area Description is loaded, this callback indicates a
-        // relocalization event. Relocalization is when the device finds out where it is with respect to the loaded
-        // Area Description. In our case, when the device is relocalized, the markers will be loaded because we
-        // know the relative device location to the markers.
         if (poseData.framePair.baseFrame ==
             TangoEnums.TangoCoordinateFrameType.TANGO_COORDINATE_FRAME_AREA_DESCRIPTION &&
             poseData.framePair.targetFrame ==
@@ -184,17 +401,132 @@ public class TangoOwnerView : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDept
             // When we get the first loop closure/ relocalization event, we initialized all the in-game interactions.
             if (!m_initialized)
             {
+                Debug.Log("startup sofa success!!!");
                 m_initialized = true;
                 if (m_curAreaDescription == null)
                 {
                     Debug.Log("AndroidInGameController.OnTangoPoseAvailable(): m_curAreaDescription is null");
                     return;
-                }                
-                _LoadStoreObjFromDisk();
+                }
+
+                Debug.Log("start to get the shop ID");
+                StartCoroutine(getShopID());
+
+                //sprinkleObjects(0, 10);//coins
+                //sprinkleObjects(1, 10);//gameDiamonds
+                //sprinkleObjects(PlayerInfo.currentCharacterID + 2, 15);
+                //createStoreObj();
+                //_LoadStoreObj();
             }
         }
     }
 
+    IEnumerator getShopID()
+    {
+        getShopIdURL = PlayerInfo.whichHttp + "://kevin.imslab.org" + PlayerInfo.port + "/get_shopIDs?beaconID=" + OwnerInfo.beaconID + "&adfID=" + m_curAreaDescription.m_uuid;//sofa
+        UnityWebRequest sending = UnityWebRequest.Get(getShopIdURL);
+        yield return sending.Send();
+
+        if (sending.error != null)
+        {
+            Debug.Log("error below : ");
+            Debug.Log(sending.error);
+        }
+        else
+        {
+            try
+            {
+                Debug.Log("correct below while get shop ID: ");
+                JavaScriptSerializer js = new JavaScriptSerializer();
+                //ColumnItemOfShopIDList[] IDlist = js.Deserialize<ColumnItemOfShopIDList[]>(sending.downloadHandler.text);
+                shopIDlist = js.Deserialize<List<ColumnItemOfShopIDList>>(sending.downloadHandler.text);
+                //Debug.Log(sending.downloadHandler.text);
+                Debug.Log("name = " + shopIDlist[0].name);
+                Debug.Log("id = " + shopIDlist[0]._id);
+                shopID = shopIDlist[0].name;
+                Debug.Log("start to get the obj");
+                StartCoroutine(loadstoreInfo());
+            }
+            catch(Exception e)
+            {
+                Debug.Log(e.Message);
+                StartCoroutine(loadstoreInfo());
+            }
+               
+
+            
+        }
+    }
+
+    IEnumerator loadstoreInfo()
+    {
+        getStoreObjURL = PlayerInfo.whichHttp + "://kevin.imslab.org" + PlayerInfo.port + "/get_obj_info?beaconID=" + beaconID + "&adfID=" + m_curAreaDescription.m_uuid + "&shopID=" + shopID + "&id=" + "0";
+        UnityWebRequest sending = UnityWebRequest.Get(getStoreObjURL);
+        yield return sending.Send();
+
+        if (sending.error != null)
+        {
+            Debug.Log("error below");
+            Debug.Log(sending.error);
+        }
+        else
+        {
+            Debug.Log("correct while load store info");
+            Debug.Log(sending.downloadHandler.text);
+            JavaScriptSerializer js = new JavaScriptSerializer();
+            storeObj = js.Deserialize<columnItemofStoreObj>(sending.downloadHandler.text);
+            loadShopName = storeObj.shopName;
+            loadShopIntro = storeObj.shopIntro;
+            loadObjPos = stringToVector3(storeObj.pos);
+            loadObjRot = stringToQuaternion(storeObj.rot);
+            loadObjScale = stringToVector3(storeObj.scale);
+            Debug.Log("shopName = " + loadShopName);
+            Debug.Log("shopIntro = " + loadShopIntro);
+            Debug.Log("objPos = " + loadObjPos.ToString());
+            Debug.Log("objRot = " + loadObjRot.ToString());
+            Debug.Log("objScale = " + loadObjScale.ToString());
+            createStoreObj();
+        }
+    }
+
+    private void createStoreObj()
+    {
+        //check that create obj after relocalize
+        if (m_initialized)
+        {
+            Debug.Log("load exist store obj");
+            GameObject newObj = Instantiate(m_storeInfoPrefabs[0],
+                                        loadObjPos,
+                                        loadObjRot) as GameObject;
+
+            newObj.transform.GetChild(1);
+
+            ARStoreObject objScript = newObj.GetComponent<ARStoreObject>();
+
+            objScript.m_type = 0;
+            objScript.m_timestamp = (float)m_poseController.LastPoseTimestamp;
+            objScript.m_storeName = loadShopName;
+            objScript.m_storeIntro = loadShopIntro;
+
+            Matrix4x4 uwTDevice = Matrix4x4.TRS(m_poseController.transform.position,
+                                                m_poseController.transform.rotation,
+                                                Vector3.one);
+            Matrix4x4 uwTObj = Matrix4x4.TRS(newObj.transform.position,
+                                                newObj.transform.rotation,
+                                                Vector3.one);
+            objScript.m_deviceTObj = Matrix4x4.Inverse(uwTDevice) * uwTObj;
+
+            newObj.GetComponent<LeanTranslate>().enabled = false;
+
+            //newObj.transform.localScale = loadObjScale;
+            //Debug.Log("scale = " + newObj.transform.localScale.ToString());
+
+            m_storeObjList.Add(newObj);
+
+            //m_selectedObj = newObj;               
+        }
+    }
+    
     /// <summary>
     /// This is called each time new depth data is available.
     /// 
@@ -206,94 +538,6 @@ public class TangoOwnerView : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDept
         // Don't handle depth here because the PointCloud may not have been updated yet.  Just
         // tell the coroutine it can continue.
         m_findPlaneWaitingForDepth = false;
-    }
-
-    /*
-    /// <summary>
-    /// Correct all saved marks when loop closure happens.
-    /// 
-    /// When Tango Service is in learning mode, the drift will accumulate overtime, but when the system sees a
-    /// preexisting area, it will do a operation to correct all previously saved poses
-    /// (the pose you can query with GetPoseAtTime). This operation is called loop closure. When loop closure happens,
-    /// we will need to re-query all previously saved marker position in order to achieve the best result.
-    /// This function is doing the querying job based on timestamp.
-    /// </summary>
-    private void _UpdateMarkersForLoopClosures()
-    {
-        // Adjust mark's position each time we have a loop closure detected.
-        foreach (GameObject obj in m_markerList)
-        {
-            ARMarker tempMarker = obj.GetComponent<ARMarker>();
-            if (tempMarker.m_timestamp != -1.0f)
-            {
-                TangoCoordinateFramePair pair;
-                TangoPoseData relocalizedPose = new TangoPoseData();
-
-                pair.baseFrame = TangoEnums.TangoCoordinateFrameType.TANGO_COORDINATE_FRAME_AREA_DESCRIPTION;
-                pair.targetFrame = TangoEnums.TangoCoordinateFrameType.TANGO_COORDINATE_FRAME_DEVICE;
-                PoseProvider.GetPoseAtTime(relocalizedPose, tempMarker.m_timestamp, pair);
-
-                Matrix4x4 uwTDevice = TangoSupport.UNITY_WORLD_T_START_SERVICE
-                                      * relocalizedPose.ToMatrix4x4()
-                                      * TangoSupport.DEVICE_T_UNITY_CAMERA;
-
-                Matrix4x4 uwTMarker = uwTDevice * tempMarker.m_deviceTMarker;
-
-                obj.transform.position = uwTMarker.GetColumn(3);
-                obj.transform.rotation = Quaternion.LookRotation(uwTMarker.GetColumn(2), uwTMarker.GetColumn(1));
-            }
-        }
-    }
-    */
-
-
-    /// <summary>
-    /// Load marker list xml from application storage.
-    /// </summary>
-    private void _LoadStoreObjFromDisk()
-    {
-        // Attempt to load the exsiting markers from storage.
-        string path = Application.persistentDataPath + "/" + m_curAreaDescription.m_uuid + ".xml";
-        //string path = "/storage/emulated/0/Android/data/com.editor.test01/files" + "/" + m_curAreaDescription.m_uuid + ".xml";
-
-        var serializer = new XmlSerializer(typeof(List<storeObjectData>));
-        var stream = new FileStream(path, FileMode.Open);
-
-        List<storeObjectData> xmlDataList = serializer.Deserialize(stream) as List<storeObjectData>;
-
-        if (xmlDataList == null)
-        {
-            Debug.Log("AndroidInGameController._LoadMarkerFromDisk(): xmlDataList is null");
-            return;
-        }
-
-        m_storeList.Clear();
-        foreach (storeObjectData store in xmlDataList)
-        {
-            // Instantiate all markers' gameobject.
-            GameObject temp = Instantiate(m_storeInfoPrefabs[store.m_type],
-                                          store.m_position,
-                                          store.m_orientation) as GameObject;
-            temp.transform.localScale = store.m_scale;
-
-            temp.transform.GetComponent<ARStoreObject>().m_storeName = store.m_name;
-            temp.transform.GetComponent<ARStoreObject>().m_storeIntro = store.m_introduce;
-
-            /*
-            temp.transform.GetChild(1).gameObject.GetComponent<Text>().text = store.m_name;
-            temp.transform.GetChild(2).gameObject.GetComponent<Text>().text = store.m_introduce;
-
-            Text introText = temp.transform.GetChild(2).gameObject.GetComponent<Text>();
-            for (int i = 0; i < OwnerInfo.storeInfo.infoList.Count; i++)
-            {
-                if (OwnerInfo.storeInfo.infoList[i].title == "店家介紹")
-                {
-                    introText.text = OwnerInfo.storeInfo.infoList[i].content;
-                }
-            }
-            */
-            m_storeList.Add(temp);
-        }
     }
 
     /// <summary>
@@ -319,52 +563,79 @@ public class TangoOwnerView : MonoBehaviour, ITangoPose, ITangoEvent, ITangoDept
         screenBounds.Encapsulate(cam.WorldToScreenPoint(center + new Vector3(-extents.x, -extents.y, -extents.z)));
         return Rect.MinMaxRect(screenBounds.min.x, screenBounds.min.y, screenBounds.max.x, screenBounds.max.y);
     }
-   
-    /// <summary>
-    /// Data container for marker.
-    /// 
-    /// Used for serializing/deserializing marker to xml.
-    /// </summary>
-    [System.Serializable]
-    public class storeObjectData
+    
+    void DebugText(String str)
     {
-        /// <summary>
-        /// Marker's type.
-        /// 
-        /// Red, green or blue markers. In a real game scenario, this could be different game objects
-        /// (e.g. banana, apple, watermelon, persimmons).
-        /// </summary>
-        [XmlElement("type")]
-        public int m_type;
+        Text textView1 = GameObject.Find("Canvas_street/Text").GetComponent<Text>();
+        textView1.text = str;
+    }
+    
+    public void OnTangoPermissions(bool permissionsGranted)
+    {
+        if (permissionsGranted)
+        {
+            //Get Beacon Id and request ADF from hear
+            //AreaDescription areaDescription = AreaDescription.ForUUID(m_curAreaDescriptionUUID);
+            AreaDescription[] list = AreaDescription.GetList();
+            m_curAreaDescription = list[0];
+            m_curAreaDescriptionUUID = m_curAreaDescription.m_uuid;
+            m_tangoApplication.m_areaDescriptionLearningMode = false;//m_enableLearningToggle.isOn;
+            m_tangoApplication.Startup(m_curAreaDescription);
+            m_poseController.gameObject.SetActive(true);
+        }
+        else
+        {
+            AndroidHelper.ShowAndroidToastMessage("Motion Tracking and Area Learning Permissions Needed");
 
-        /// <summary>
-        /// Position of the this mark, with respect to the origin of the game world.
-        /// </summary>
-        [XmlElement("position")]
-        public Vector3 m_position;
+            // This is a fix for a lifecycle issue where calling
+            // Application.Quit() here, and restarting the application
+            // immediately results in a deadlocked app.
+            AndroidHelper.AndroidQuit();
+        }
+    }
 
-        /// <summary>
-        /// Rotation of the this mark.
-        /// </summary>
-        [XmlElement("orientation")]
-        public Quaternion m_orientation;
+    public void OnTangoServiceConnected()
+    {
+        //throw new NotImplementedException();
+    }
 
-        /// <summary>
-        /// Scale of this mark.
-        /// </summary>
-        [XmlElement("scale")]
-        public Vector3 m_scale;
+    public void OnTangoServiceDisconnected()
+    {
+        //throw new NotImplementedException();
+    }
 
-        /// <summary>
-        /// name text
-        /// </summary>
-        [XmlElement("name")]
-        public string m_name;
+    public Vector3 stringToVector3(string stringToConvert)
+    {
+        if (stringToConvert.StartsWith("(") && stringToConvert.EndsWith(")"))
+        {
+            stringToConvert = stringToConvert.Substring(1, stringToConvert.Length - 2);
+        }
 
-        /// <summary>
-        /// introduce text
-        /// </summary>
-        [XmlElement("introduce")]
-        public string m_introduce;
+        string[] elementArray = stringToConvert.Split(',');
+
+        Vector3 result = new Vector3(
+            float.Parse(elementArray[0]),
+            float.Parse(elementArray[1]),
+            float.Parse(elementArray[2]));
+
+        return result;
+    }
+
+    public Quaternion stringToQuaternion(string stringToConvert)
+    {
+        if (stringToConvert.StartsWith("(") && stringToConvert.EndsWith(")"))
+        {
+            stringToConvert = stringToConvert.Substring(1, stringToConvert.Length - 2);
+        }
+
+        string[] elementArray = stringToConvert.Split(',');
+
+        Quaternion result = new Quaternion(
+            float.Parse(elementArray[0]),
+            float.Parse(elementArray[1]),
+            float.Parse(elementArray[2]),
+            float.Parse(elementArray[3]));
+
+        return result;
     }
 }

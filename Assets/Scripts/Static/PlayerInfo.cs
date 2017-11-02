@@ -6,7 +6,9 @@ using System;
 using UnityEngine.Experimental.Networking;
 using System.Web.Script.Serialization;
 using UnityEngine.SceneManagement;
-
+using Tango;
+using System.IO;
+using System.Linq;
 
 public class PlayerInfo : MonoBehaviour
 {
@@ -193,6 +195,7 @@ public class PlayerInfo : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+
         Screen.SetResolution(433, 693, false);
         port = ":4001";
         whichHttp = "http";
@@ -208,7 +211,7 @@ public class PlayerInfo : MonoBehaviour
         characterCollection = new List<characterItem>();
         achievementCollection = new List<achievementItem>();
 
-        
+
 
         //loadUserPace();
 
@@ -226,13 +229,17 @@ public class PlayerInfo : MonoBehaviour
         Debug.Log("PlayerInfo.Start() done");
     }
 
+    bool isImportAdf = false;
     // Update is called once per frame
     void Update()
     {
+        
         if (Input.GetKey(KeyCode.Escape))
         {
             Application.Quit();
         }
+        
+        
     }
 
 
@@ -259,7 +266,7 @@ public class PlayerInfo : MonoBehaviour
 
         // should get from http
         currentCharacterName = "";
-        
+
     }
 
     // called when done choosing char (send btn in the scene choose_char)
@@ -413,7 +420,7 @@ public class PlayerInfo : MonoBehaviour
         StartCoroutine(uploadBasicInfo());
     }
     */
-    static public void loadUserPace()
+        static public void loadUserPace()
     {
         if (PlayerPrefs.HasKey("firstLogIn") == false)
         {
@@ -459,7 +466,15 @@ public class PlayerInfo : MonoBehaviour
         }
         else
         {
-            currentCharacterName = GamingInfo.characters[currentCharacterID].name;
+            if (currentCharacterID < 0)
+            {
+                currentCharacterName = "角色名稱";
+            }
+            else
+            {
+                currentCharacterName = GamingInfo.characters[currentCharacterID].name;
+            }
+
         }
     }
 
@@ -1089,7 +1104,8 @@ public class PlayerInfo : MonoBehaviour
             { // first log in
                 setUserValueInfo();
             }
-            else {
+            else
+            {
                 loadCharName();
                 loadUserPace();
             }
@@ -1111,6 +1127,14 @@ public class PlayerInfo : MonoBehaviour
 
         }
     }
+
+    private void DebugText(String str)
+    {
+        Text textView1 = GameObject.Find("Canvas/Text").GetComponent<Text>();
+        textView1.text = str;
+    }
+
+  
 
 
 }
